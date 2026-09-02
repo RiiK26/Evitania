@@ -13,6 +13,7 @@ The project architecture is strictly modularized into feature categories within 
 
 ### Economy
 * **Infinite Items**: Intercepts inventory consumption logic to prevent items from being depleted upon use (`BaseStorageService`).
+* **Enhance Item 100%**: Intercepts item enhancement logic to always return a 100% success rate (`EnhanceStationService`).
 
 ## Build and Run
 

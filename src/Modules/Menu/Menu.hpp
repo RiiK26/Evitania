@@ -10,10 +10,11 @@ namespace Menu
     bool bMenuOpen = true;
 
     // Features
-    bool  bGodMode       = false;
-    float fGodModeDamage = 999999999.0f;
-    bool  bAuraKill      = false;
-    bool  bInfiniteItems = false;
+    bool  bGodMode        = false;
+    float fGodModeDamage  = 999999999.0f;
+    bool  bAuraKill       = false;
+    bool  bInfiniteItems  = false;
+    bool  bEnhanceItem100 = false;
   };
 
   extern ConfigData Config;

@@ -117,6 +117,7 @@ namespace Menu
 
       if (ImGui::CollapsingHeader("Economy")) {
         ImGui::Checkbox("Infinite Items", &Config.bInfiniteItems);
+        ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
       }
 
       ImGui::Separator();
