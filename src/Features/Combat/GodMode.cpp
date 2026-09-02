@@ -20,7 +20,7 @@ namespace Features
         else {
           // High Attack: set the damage of the attack hitting the enemy to a massive amount
           if (attack) {
-            *(float*) ((uintptr_t) attack + 0x10) = 999999.0f;
+            *(float*) ((uintptr_t) attack + 0x10) = Menu::Config.fGodModeDamage;
           }
         }
       }

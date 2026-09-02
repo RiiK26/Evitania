@@ -10,18 +10,10 @@ namespace Menu
     bool bMenuOpen = true;
 
     // Features
-    bool bGodMode               = false;
-    bool bAuraKill              = false;
-    bool bExpMultiplier         = false;
-    bool bMonsterInstantRespawn = false;
-    bool bEnhanceItem100        = false;
-    bool bMagnet                = false;
-
-    bool bFreeCrafting         = false;
-    bool bInfiniteGold         = false;
-    bool bInfiniteItems        = false;
-    bool bDiscountedVendor     = false;
-    bool bIncreasedVendorStock = false;
+    bool  bGodMode       = false;
+    float fGodModeDamage = 999999999.0f;
+    bool  bAuraKill      = false;
+    bool  bInfiniteItems = false;
   };
 
   extern ConfigData Config;

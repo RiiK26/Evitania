@@ -1,34 +1,18 @@
 # Evitania Online (PC Build)
+![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FItsMe-RiiK%2FEvitania%2Fmain%2Fversion.json&query=%24.version&label=Version&color=green)
 
 Evitania is an online Idle RPG with an open world, inspired by classic MMORPGs but without the endless grind. Your character continues to fight, progress, and gather resources even while you're offline, allowing you to focus on what truly matters — rare loot, meaningful upgrades, and challenging boss battles.
 
-# Features Implemented
+## Features Implemented
 
-The cheat is modularized into several feature categories within `src/Features/`:
+The project architecture is strictly modularized into feature categories within the `src/Features/` directory:
 
 ### Combat
-* **God Mode**: Infinite Health and One-Hit Kill logic (`AttackReceiver`)
-* **Aura Kill**: Instantly kills all monsters loaded around you (`EnemyNpcController`)
-
-### Progression
-* **Exp Multiplier**: Multiply experience gained by x1000 for Combat, Mining, and Woodcutting (`Skill::AddExperience`)
-
-### World
-* **Item Magnet**: Automatically and instantly collect all monster drops (`LootItem::BeginLife`)
-* **Monster Instant Respawn**: Removes respawn timers and maximizes spawn counts (`EnemySpawnerService`)
+* **God Mode**: Provides infinite health and a customizable damage multiplier to eliminate targets instantly (`AttackReceiver`).
+* **Aura Kill**: Automatically and instantaneously eliminates all hostile entities loaded within the surrounding vicinity (`EnemyNpcController`).
 
 ### Economy
-* **Infinite Gold & Diamonds**: Prevents currencies from decreasing (`CurrencyService`)
-* **Infinite Items**: Prevents items from being consumed from inventory (`BaseStorageService`)
-
-### Crafting
-* **100% Enhance Item**: Guarantee success when enhancing gear (`EnhanceStationService`)
-* **Free Crafting & Smelting**: Craft items and smelt without spending resources (`SpendableVisitor`)
-* **Fast Production**: Extremely rapid crafting and smelting speed (`BaseProductionProcessorService`)
-
-### Vendor
-* **Discounted Vendor (Free)**: All vendor items cost 0 (`ShopMarketLotDescription`)
-* **Increased Vendor Stock**: Buy infinite stock from vendors (`VendorService`)
+* **Infinite Items**: Intercepts inventory consumption logic to prevent items from being depleted upon use (`BaseStorageService`).
 
 ## Build and Run
 

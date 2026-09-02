@@ -20,7 +20,7 @@ namespace Features
       if (Menu::Config.bAuraKill) {
         bool isAlive = *(bool*) ((uintptr_t) __this + 0x3C);
         if (isAlive) {
-          Orig_EnemyNpcController_TakeDamage(__this, 999999.0f, method_info);
+          Orig_EnemyNpcController_TakeDamage(__this, 999999999.0f, method_info);
         }
       }
       Orig_EnemyNpcController_Update(__this, method_info);

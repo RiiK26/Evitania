@@ -49,14 +49,24 @@ namespace Menu
     }
 
     if (Config.bMenuOpen) {
-      if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-        return true;
+      ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 
+      ImGuiIO& io = ImGui::GetIO();
+
+      // Block mouse input to the game ONLY if ImGui wants to capture it (e.g. hovering over the menu)
       if (
-        uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONDOWN
-        || uMsg == WM_RBUTTONUP || uMsg == WM_MOUSEWHEEL
+        io.WantCaptureMouse
+        && (uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP || uMsg == WM_MOUSEWHEEL || uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
       ) {
-        return true;  // block input to game while menu open
+        return 1;
+      }
+
+      // Block keyboard input to the game ONLY if ImGui is focused on a text input
+      if (
+        io.WantCaptureKeyboard
+        && (uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_CHAR || uMsg == WM_SYSKEYDOWN || uMsg == WM_SYSKEYUP)
+      ) {
+        return 1;
       }
     }
 
@@ -78,7 +88,6 @@ namespace Menu
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Disabled due to crash/freeze in Proton
 
         ImGui_ImplWin32_Init(window);
         ImGui_ImplDX11_Init(pDevice, pContext);
@@ -96,24 +105,22 @@ namespace Menu
     ImGui::NewFrame();
 
     if (Config.bMenuOpen) {
-      ImGui::Begin("Evitania Online - [INSERT] for show/hide menu");
+      ImGui::Begin("Evitania Online v" PROJECT_VERSION);
 
       if (ImGui::CollapsingHeader("Character")) {
         ImGui::Checkbox("God Mode", &Config.bGodMode);
+        if (Config.bGodMode) {
+          ImGui::InputFloat("Damage", &Config.fGodModeDamage, 100.0f, 1000.0f, "%.0f");
+        }
         ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
-        ImGui::Checkbox("EXP Multiplier", &Config.bExpMultiplier);
-        ImGui::Checkbox("Monster Instant Respawn", &Config.bMonsterInstantRespawn);
-        ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
-        ImGui::Checkbox("Item Magnet", &Config.bMagnet);
       }
 
-      if (ImGui::CollapsingHeader("Economy / Currencies")) {
-        ImGui::Checkbox("Infinite Gold/Diamonds", &Config.bInfiniteGold);
+      if (ImGui::CollapsingHeader("Economy")) {
         ImGui::Checkbox("Infinite Items", &Config.bInfiniteItems);
-        ImGui::Checkbox("Free Crafting / Smelting", &Config.bFreeCrafting);
-        ImGui::Checkbox("Discounted Vendor (Free)", &Config.bDiscountedVendor);
-        ImGui::Checkbox("Increased Vendor Stock", &Config.bIncreasedVendorStock);
       }
+
+      ImGui::Separator();
+      ImGui::TextDisabled("[INSERT] to show/hide menu");
 
       ImGui::End();
     }

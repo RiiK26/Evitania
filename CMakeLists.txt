@@ -35,7 +35,7 @@ FetchContent_Populate(imgui)
 file(GLOB MINHOOK_SRC "${minhook_SOURCE_DIR}/src/*.c" "${minhook_SOURCE_DIR}/src/hde/*.c")
 file(GLOB SRC_FILES "src/Cores/dll.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp")
 
-add_library(Evitania SHARED
+add_library(Evitania MODULE
     ${SRC_FILES}
     ${MINHOOK_SRC}
     ${imgui_SOURCE_DIR}/imgui.cpp
