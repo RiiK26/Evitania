@@ -235,7 +235,10 @@ namespace Menu
       (LPARAM) &gameWindow
     );
 
-    sd.OutputWindow = gameWindow ? gameWindow : GetForegroundWindow();
+    sd.OutputWindow     = gameWindow ? gameWindow : GetForegroundWindow();
+    sd.SampleDesc.Count = 1;
+    sd.Windowed         = TRUE;
+    sd.SwapEffect       = DXGI_SWAP_EFFECT_DISCARD;
 
     if (!sd.OutputWindow) { }
 
