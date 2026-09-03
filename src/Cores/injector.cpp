@@ -26,15 +26,28 @@ DWORD GetProcessIdByName(const char* procName)
   return pid;
 }
 
-int main(int argc, char** argv)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+  int     argc;
+  LPWSTR* argvW = CommandLineToArgvW(GetCommandLineW(), &argc);
+  if (!argvW)
+    return 1;
+
+  // Convert wide strings back to multibyte
+  char procName[MAX_PATH];
+  char dllPath[MAX_PATH];
+
   if (argc < 3) {
-    std::cerr << "Usage: injector.exe <process_name> <dll_path>\n";
+    LocalFree(argvW);
     return 1;
   }
+  WideCharToMultiByte(CP_UTF8, 0, argvW[1], -1, procName, MAX_PATH, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, argvW[2], -1, dllPath, MAX_PATH, NULL, NULL);
+  LocalFree(argvW);
 
-  const char* procName = argv[1];
-  const char* dllPath  = argv[2];
+  if (argc < 3) {
+    return 1;
+  }
 
   char fullDllPath[MAX_PATH];
   if (!GetFullPathNameA(dllPath, MAX_PATH, fullDllPath, nullptr)) {

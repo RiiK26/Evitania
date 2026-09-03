@@ -7,12 +7,21 @@ namespace Menu
 {
   struct ConfigData
   {
-    bool  bMenuOpen       = true;
-    bool  bGodMode        = false;
-    float fGodModeDamage  = 1000.0f;
-    bool  bAuraKill       = false;
-    bool  bInfiniteItems  = false;
-    bool  bEnhanceItem100 = false;
+    bool  bMenuOpen               = true;
+    bool  bGodMode                = false;
+    float fGodModeDamage          = 1000.0f;
+    float fGodModeSpeedMultiplier = 5.0f;
+    bool  bFastMobSpawn           = false;
+    bool  bFastGathering          = false;
+    bool  bAuraKill               = false;
+    bool  bExpMultiplier          = false;
+    float fExpMultiplierValue     = 100.0f;
+    bool  bInfiniteItems          = false;
+    bool  bEnhanceItem100         = false;
+    bool  bInfiniteCurrency       = false;
+    bool  bFreeStore              = false;
+    bool  bSpeedHack              = false;
+    float fSpeedMultiplier        = 2.0f;
 
     void LoadConfig();
     void SaveConfig();

@@ -1,5 +1,5 @@
 # Evitania Online (PC Build)
-![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FItsMe-RiiK%2FEvitania%2Fmain%2Fversion.json&query=%24.version&label=Version&color=green)
+![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FItsMe-RiiK%2FEvitaniaOnline-Cheeto%2Fmain%2Fversion.json&query=%24.version&label=Version&color=green)
 
 Evitania is an online Idle RPG with an open world, inspired by classic MMORPGs but without the endless grind. Your character continues to fight, progress, and gather resources even while you're offline, allowing you to focus on what truly matters — rare loot, meaningful upgrades, and challenging boss battles.
 

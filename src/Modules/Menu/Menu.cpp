@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "../../Features/Combat/SpeedHack.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -49,12 +50,30 @@ namespace Menu
             } catch (...) {
             }
           }
+          else if (key == "god_mode_speed_multiplier")
+            fGodModeSpeedMultiplier = std::stof(value);
+          else if (key == "fast_mob_spawn")
+            bFastMobSpawn = (value == "1");
+          else if (key == "fast_gathering")
+            bFastGathering = (value == "1");
           else if (key == "aura_kill")
             bAuraKill = (value == "1");
+          else if (key == "exp_multiplier")
+            bExpMultiplier = (value == "1");
+          else if (key == "exp_multiplier_value")
+            fExpMultiplierValue = std::stof(value);
           else if (key == "infinite_items")
             bInfiniteItems = (value == "1");
           else if (key == "enhance_item_100")
             bEnhanceItem100 = (value == "1");
+          else if (key == "infinite_currency")
+            bInfiniteCurrency = (value == "1");
+          else if (key == "free_store")
+            bFreeStore = (value == "1");
+          else if (key == "speed_hack")
+            bSpeedHack = (value == "1");
+          else if (key == "speed_multiplier")
+            fSpeedMultiplier = std::stof(value);
         }
       }
     }
@@ -66,11 +85,21 @@ namespace Menu
     if (!out.is_open())
       return;
 
+    out << "menu_open=" << (bMenuOpen ? "1" : "0") << "\n";
     out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
-    out << "god_mode_damage=" << (long long) fGodModeDamage << "\n";
+    out << "god_mode_damage=" << fGodModeDamage << "\n";
+    out << "god_mode_speed_multiplier=" << fGodModeSpeedMultiplier << "\n";
+    out << "fast_mob_spawn=" << (bFastMobSpawn ? "1" : "0") << "\n";
+    out << "fast_gathering=" << (bFastGathering ? "1" : "0") << "\n";
     out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
+    out << "exp_multiplier=" << (bExpMultiplier ? "1" : "0") << "\n";
+    out << "exp_multiplier_value=" << (long long) fExpMultiplierValue << "\n";
     out << "infinite_items=" << (bInfiniteItems ? "1" : "0") << "\n";
     out << "enhance_item_100=" << (bEnhanceItem100 ? "1" : "0") << "\n";
+    out << "infinite_currency=" << (bInfiniteCurrency ? "1" : "0") << "\n";
+    out << "free_store=" << (bFreeStore ? "1" : "0") << "\n";
+    out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
+    out << "speed_multiplier=" << fSpeedMultiplier << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -172,20 +201,38 @@ namespace Menu
     if (Config.bMenuOpen) {
       ImGui::Begin("Evitania Online v" PROJECT_VERSION);
 
-      if (ImGui::CollapsingHeader("Character")) {
+      if (ImGui::CollapsingHeader("Combat")) {
         ImGui::Checkbox("God Mode", &Config.bGodMode);
         if (Config.bGodMode) {
-          ImGui::InputFloat("Damage", &Config.fGodModeDamage, 100.0f, 1000.0f, "%.0f");
-          if (Config.fGodModeDamage < 0.0f) {
+          ImGui::InputFloat("Damage (Attack)", &Config.fGodModeDamage);
+          if (Config.fGodModeDamage < 0.0f)
             Config.fGodModeDamage = 0.0f;
+          ImGui::SliderFloat("Speed Multiplier##GodMode", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+        }
+        ImGui::Checkbox("Fast Mob Spawn", &Config.bFastMobSpawn);
+        ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
+        ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
+        if (Config.bExpMultiplier) {
+          ImGui::InputFloat("Exp Multiplier Amount", &Config.fExpMultiplierValue);
+          if (Config.fExpMultiplierValue < 1.0f)
+            Config.fExpMultiplierValue = 1.0f;
+        }
+        if (ImGui::Checkbox("Speed Hack (Global TimeScale)", &Config.bSpeedHack)) {
+          Features::SpeedHack::ApplySpeedHack();
+        }
+        if (Config.bSpeedHack) {
+          if (ImGui::SliderFloat("Speed Multiplier##SpeedHack", &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
+            Features::SpeedHack::ApplySpeedHack();
           }
         }
-        ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
       }
 
       if (ImGui::CollapsingHeader("Economy")) {
+        ImGui::Checkbox("Fast Gathering (Mining/Woodcutting)", &Config.bFastGathering);
         ImGui::Checkbox("Infinite Items", &Config.bInfiniteItems);
         ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
+        ImGui::Checkbox("Infinite Currency (Diamonds, etc.)", &Config.bInfiniteCurrency);
+        ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
       }
 
       ImGui::Separator();

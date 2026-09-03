@@ -12,6 +12,8 @@ project(
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -s")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/release")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/release")
@@ -47,7 +49,9 @@ FetchContent_Declare(
 FetchContent_Populate(imgui)
 
 file(GLOB MINHOOK_SRC "${minhook_SOURCE_DIR}/src/*.c" "${minhook_SOURCE_DIR}/src/hde/*.c")
-file(GLOB SRC_FILES "src/Cores/dll.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp")
+file(GLOB SRC_FILES "src/Cores/dll.cpp" "src/Cores/Scanner.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp"
+    src/Features/Combat/FastMobSpawn.cpp
+    src/Features/Economy/FastGathering.cpp)
 
 add_library(Evitania MODULE
     ${SRC_FILES}
@@ -61,7 +65,7 @@ add_library(Evitania MODULE
 )
 
 # Build the injector separately
-add_executable(injector src/Cores/injector.cpp)
+add_executable(injector WIN32 src/Cores/injector.cpp)
 set_target_properties(injector PROPERTIES SUFFIX ".exe")
 target_link_options(injector PRIVATE "-static" "-static-libgcc" "-static-libstdc++")
 

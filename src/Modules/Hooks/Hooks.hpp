@@ -11,6 +11,15 @@
     } \
   } while (0)
 
+#include "../../Cores/Scanner.hpp"
+#define HOOK_SIGNATURE(OffsetName, Signature, HookFunc, OrigFuncPtr) \
+  do { \
+    void* target = (void*) Scanner::FindPattern((HMODULE) IL2CPP::Globals.m_GameAssembly, Signature); \
+    if (target) { \
+      MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
+    } \
+  } while (0)
+
 #define HOOK_OFFSET(OffsetName, RVA, HookFunc, OrigFuncPtr) \
   do { \
     void* target = (void*) ((uintptr_t) IL2CPP::Globals.m_GameAssembly + RVA); \

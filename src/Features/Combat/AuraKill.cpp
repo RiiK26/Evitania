@@ -1,5 +1,6 @@
 #include "AuraKill.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
+#include "../../Modules/Hooks/Offsets.hpp"
 #include "../../Modules/Menu/Menu.hpp"
 #include <cstdint>
 #include <unordered_map>
@@ -22,7 +23,7 @@ namespace Features
     void Hook_EnemyNpcController_Update(void* __this, void* method_info)
     {
       if (Menu::Config.bAuraKill) {
-        bool isAlive = *(bool*) ((uintptr_t) __this + 0x3C);
+        bool isAlive = *(bool*) ((uintptr_t) __this + Offsets::Fields::EnemyNpcController::alive);
         if (isAlive) {
           ULONGLONG currentTick = GetTickCount64();
           if (currentTick - damageCooldowns[__this] > 1000) {
