@@ -2,6 +2,8 @@
 #include "../../Modules/Hooks/Hooks.hpp"
 #include "../../Modules/Menu/Menu.hpp"
 #include <cstdint>
+#include <unordered_map>
+#include <windows.h>
 
 namespace Features
 {
@@ -15,12 +17,22 @@ namespace Features
       Orig_EnemyNpcController_TakeDamage(__this, damage, method_info);
     }
 
+    std::unordered_map<void*, ULONGLONG> damageCooldowns;
+
     void Hook_EnemyNpcController_Update(void* __this, void* method_info)
     {
       if (Menu::Config.bAuraKill) {
         bool isAlive = *(bool*) ((uintptr_t) __this + 0x3C);
         if (isAlive) {
-          Orig_EnemyNpcController_TakeDamage(__this, 999999999.0f, method_info);
+          ULONGLONG currentTick = GetTickCount64();
+          if (currentTick - damageCooldowns[__this] > 1000) {
+            Orig_EnemyNpcController_TakeDamage(__this, 999999999.0f, method_info);
+            damageCooldowns[__this] = currentTick;
+          }
+        }
+        else {
+          // Cleanup if dead to prevent memory leaks from reused pointers
+          damageCooldowns.erase(__this);
         }
       }
       Orig_EnemyNpcController_Update(__this, method_info);

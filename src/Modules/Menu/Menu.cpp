@@ -41,6 +41,17 @@ namespace Menu
     pBackBuffer->Release();
   }
 
+  static bool IsMouseMessage(UINT uMsg)
+  {
+    return uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONDOWN
+        || uMsg == WM_RBUTTONUP || uMsg == WM_MOUSEWHEEL || uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP;
+  }
+
+  static bool IsKeyboardMessage(UINT uMsg)
+  {
+    return uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_CHAR || uMsg == WM_SYSKEYDOWN || uMsg == WM_SYSKEYUP;
+  }
+
   LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
     if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) {
@@ -54,18 +65,12 @@ namespace Menu
       ImGuiIO& io = ImGui::GetIO();
 
       // Block mouse input to the game ONLY if ImGui wants to capture it (e.g. hovering over the menu)
-      if (
-        io.WantCaptureMouse
-        && (uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP || uMsg == WM_MOUSEWHEEL || uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
-      ) {
+      if (io.WantCaptureMouse && IsMouseMessage(uMsg)) {
         return 1;
       }
 
       // Block keyboard input to the game ONLY if ImGui is focused on a text input
-      if (
-        io.WantCaptureKeyboard
-        && (uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_CHAR || uMsg == WM_SYSKEYDOWN || uMsg == WM_SYSKEYUP)
-      ) {
+      if (io.WantCaptureKeyboard && IsKeyboardMessage(uMsg)) {
         return 1;
       }
     }

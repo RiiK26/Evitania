@@ -3,6 +3,29 @@
 #include <tlhelp32.h>
 #include <string.h>
 
+DWORD GetProcessIdByName(const char* procName)
+{
+  HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  if (hSnap == INVALID_HANDLE_VALUE)
+    return 0;
+
+  PROCESSENTRY32 pe;
+  pe.dwSize = sizeof(pe);
+  DWORD pid = 0;
+
+  if (Process32First(hSnap, &pe)) {
+    do {
+      if (_stricmp(pe.szExeFile, procName) == 0) {
+        pid = pe.th32ProcessID;
+        break;
+      }
+    } while (Process32Next(hSnap, &pe));
+  }
+
+  CloseHandle(hSnap);
+  return pid;
+}
+
 int main(int argc, char** argv)
 {
   if (argc < 3) {
@@ -13,21 +36,19 @@ int main(int argc, char** argv)
   const char* procName = argv[1];
   const char* dllPath  = argv[2];
 
-  DWORD  pid   = 0;
-  HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  if (hSnap != INVALID_HANDLE_VALUE) {
-    PROCESSENTRY32 pe;
-    pe.dwSize = sizeof(pe);
-    if (Process32First(hSnap, &pe)) {
-      do {
-        if (_stricmp(pe.szExeFile, procName) == 0) {
-          pid = pe.th32ProcessID;
-          break;
-        }
-      } while (Process32Next(hSnap, &pe));
-    }
-    CloseHandle(hSnap);
+  char fullDllPath[MAX_PATH];
+  if (!GetFullPathNameA(dllPath, MAX_PATH, fullDllPath, nullptr)) {
+    std::cerr << "Failed to resolve absolute path for DLL.\n";
+    return 1;
   }
+
+  DWORD fileAttr = GetFileAttributesA(fullDllPath);
+  if (fileAttr == INVALID_FILE_ATTRIBUTES || (fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
+    std::cerr << "DLL file not found or is a directory: " << fullDllPath << "\n";
+    return 1;
+  }
+
+  DWORD pid = GetProcessIdByName(procName);
 
   if (pid == 0) {
     std::cerr << "Process not found: " << procName << "\n";
@@ -36,20 +57,23 @@ int main(int argc, char** argv)
 
   std::cout << "Found process " << procName << " with PID " << pid << "\n";
 
-  HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+  HANDLE hProc = OpenProcess(
+    PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
+    FALSE, pid
+  );
   if (!hProc) {
     std::cerr << "OpenProcess failed! Error: " << GetLastError() << "\n";
     return 1;
   }
 
-  void* loc = VirtualAllocEx(hProc, 0, strlen(dllPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+  void* loc = VirtualAllocEx(hProc, 0, strlen(fullDllPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
   if (!loc) {
     std::cerr << "VirtualAllocEx failed!\n";
     CloseHandle(hProc);
     return 1;
   }
 
-  WriteProcessMemory(hProc, loc, dllPath, strlen(dllPath) + 1, 0);
+  WriteProcessMemory(hProc, loc, fullDllPath, strlen(fullDllPath) + 1, 0);
 
   HANDLE hThread = CreateRemoteThread(hProc, 0, 0, (LPTHREAD_START_ROUTINE) LoadLibraryA, loc, 0, 0);
   if (!hThread) {
@@ -64,6 +88,6 @@ int main(int argc, char** argv)
   CloseHandle(hThread);
   CloseHandle(hProc);
 
-  std::cout << "Successfully injected " << dllPath << "\n";
+  std::cout << "Successfully injected " << fullDllPath << "\n";
   return 0;
 }
