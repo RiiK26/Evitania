@@ -3,15 +3,61 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 #include "MinHook.h"
-#include <iostream>
+#include <cstdio>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-extern void Log(const char* msg);
 
 namespace Menu
 {
   ConfigData Config;
+
+  void ConfigData::LoadConfig()
+  {
+    std::ifstream f(PROJECT_ROOT "/config.txt");
+    if (!f.is_open())
+      return;
+
+    std::string line;
+    while (std::getline(f, line)) {
+      std::istringstream is_line(line);
+      std::string        key;
+      if (std::getline(is_line, key, '=')) {
+        std::string value;
+        if (std::getline(is_line, value)) {
+          if (key == "god_mode")
+            bGodMode = (value == "1");
+          else if (key == "god_mode_damage") {
+            try {
+              fGodModeDamage = std::stof(value);
+            } catch (...) {
+            }
+          }
+          else if (key == "aura_kill")
+            bAuraKill = (value == "1");
+          else if (key == "infinite_items")
+            bInfiniteItems = (value == "1");
+          else if (key == "enhance_item_100")
+            bEnhanceItem100 = (value == "1");
+        }
+      }
+    }
+  }
+
+  void ConfigData::SaveConfig()
+  {
+    std::ofstream out(PROJECT_ROOT "/config.txt");
+    if (!out.is_open())
+      return;
+
+    out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
+    out << "god_mode_damage=" << fGodModeDamage << "\n";
+    out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
+    out << "infinite_items=" << (bInfiniteItems ? "1" : "0") << "\n";
+    out << "enhance_item_100=" << (bEnhanceItem100 ? "1" : "0") << "\n";
+  }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
   Present_t oPresent = nullptr;
@@ -116,6 +162,9 @@ namespace Menu
         ImGui::Checkbox("God Mode", &Config.bGodMode);
         if (Config.bGodMode) {
           ImGui::InputFloat("Damage", &Config.fGodModeDamage, 100.0f, 1000.0f, "%.0f");
+          if (Config.fGodModeDamage < 0.0f) {
+            Config.fGodModeDamage = 0.0f;
+          }
         }
         ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
       }
@@ -123,6 +172,11 @@ namespace Menu
       if (ImGui::CollapsingHeader("Economy")) {
         ImGui::Checkbox("Infinite Items", &Config.bInfiniteItems);
         ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
+      }
+
+      ImGui::Separator();
+      if (ImGui::Button("Save Config", ImVec2(-1, 0))) {
+        Config.SaveConfig();
       }
 
       ImGui::Separator();
@@ -141,7 +195,7 @@ namespace Menu
 
   void Initialize()
   {
-    Log("Menu::Initialize started.");
+    Config.LoadConfig();
 
     // Dummy DX11 swap chain creation to get the vtable address of Present
     D3D_FEATURE_LEVEL    featureLevel = D3D_FEATURE_LEVEL_11_0;
@@ -155,9 +209,7 @@ namespace Menu
     sd.Windowed          = TRUE;
     sd.SwapEffect        = DXGI_SWAP_EFFECT_DISCARD;
 
-    if (!sd.OutputWindow) {
-      Log("GetForegroundWindow() returned NULL.");
-    }
+    if (!sd.OutputWindow) { }
 
     IDXGISwapChain*      pDummySwapChain = nullptr;
     ID3D11Device*        pDummyDevice    = nullptr;
@@ -169,7 +221,7 @@ namespace Menu
     );
 
     if (SUCCEEDED(hr) && pDummySwapChain) {
-      Log("D3D11CreateDeviceAndSwapChain success.");
+
       void** pVTable  = *reinterpret_cast<void***>(pDummySwapChain);
       void*  pPresent = pVTable[8];
 
@@ -190,9 +242,6 @@ namespace Menu
       pDummySwapChain->Release();
       pDummyDevice->Release();
       pDummyContext->Release();
-    }
-    else {
-      Log("D3D11CreateDeviceAndSwapChain failed.");
     }
   }
 

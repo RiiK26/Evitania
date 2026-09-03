@@ -1,28 +1,17 @@
 #include <windows.h>
 #include <thread>
-#include <fstream>
 #include "Modules/Il2CppResolver/IL2CPP_Resolver.hpp"
 #include "Modules/Hooks/Hooks.hpp"
 #include "Modules/Menu/Menu.hpp"
 #include "MinHook.h"
 
-void Log(const char* msg)
-{
-  std::ofstream out("C:\\users\\steamuser\\Evitania.log", std::ios::app);
-  out << msg << std::endl;
-}
-
 void MainThread(HMODULE hModule)
 {
-  Log("MainThread started.");
   if (MH_Initialize() != MH_OK) {
-    Log("MH_Initialize failed.");
     return;
   }
-  Log("MH_Initialize success.");
 
   IL2CPP::Initialize();
-  Log("IL2CPP::Initialize success.");
 
   Menu::Initialize();
   Hooks::Initialize();

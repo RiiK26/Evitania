@@ -85,11 +85,13 @@ namespace IL2CPP
       // Replace (Hook) - only if we successfully located targets
       if (OnUpdate::m_CallbackHook.m_VFunc)
         Utils::VTable::ReplaceFunction(
-          OnUpdate::m_CallbackHook.m_VFunc, OnUpdate::Hook, &OnUpdate::m_CallbackHook.m_Original
+          OnUpdate::m_CallbackHook.m_VFunc, reinterpret_cast<void*>(OnUpdate::Hook),
+          &OnUpdate::m_CallbackHook.m_Original
         );
       if (OnLateUpdate::m_CallbackHook.m_VFunc)
         Utils::VTable::ReplaceFunction(
-          OnLateUpdate::m_CallbackHook.m_VFunc, OnLateUpdate::Hook, &OnLateUpdate::m_CallbackHook.m_Original
+          OnLateUpdate::m_CallbackHook.m_VFunc, reinterpret_cast<void*>(OnLateUpdate::Hook),
+          &OnLateUpdate::m_CallbackHook.m_Original
         );
     }
 

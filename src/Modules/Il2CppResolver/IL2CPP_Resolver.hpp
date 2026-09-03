@@ -352,7 +352,9 @@ namespace IL2CPP
         if (m_ROTObfuscationValue == -1)  // Bruteforce
         {
           for (int i = 1; 26 > i; ++i) {
-            void* m_Return = GetProcAddress(Globals.m_GameAssembly, &Unity::Obfuscators::ROT_String(m_Name, i)[0]);
+            void* m_Return = reinterpret_cast<void*>(
+              GetProcAddress(Globals.m_GameAssembly, &Unity::Obfuscators::ROT_String(m_Name, i)[0])
+            );
             if (m_Return) {
               m_ROTObfuscationValue = i;
               return m_Return;
@@ -362,12 +364,12 @@ namespace IL2CPP
           return nullptr;
         }
 
-        return GetProcAddress(
-          Globals.m_GameAssembly, &Unity::Obfuscators::ROT_String(m_Name, m_ROTObfuscationValue)[0]
+        return reinterpret_cast<void*>(
+          GetProcAddress(Globals.m_GameAssembly, &Unity::Obfuscators::ROT_String(m_Name, m_ROTObfuscationValue)[0])
         );
       }
       default :
-        return GetProcAddress(Globals.m_GameAssembly, m_Name);
+        return reinterpret_cast<void*>(GetProcAddress(Globals.m_GameAssembly, m_Name));
       }
     }
 

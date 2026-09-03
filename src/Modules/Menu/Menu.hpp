@@ -7,14 +7,15 @@ namespace Menu
 {
   struct ConfigData
   {
-    bool bMenuOpen = true;
-
-    // Features
+    bool  bMenuOpen       = false;
     bool  bGodMode        = false;
-    float fGodModeDamage  = 999999999.0f;
+    float fGodModeDamage  = 1000.0f;
     bool  bAuraKill       = false;
     bool  bInfiniteItems  = false;
     bool  bEnhanceItem100 = false;
+
+    void LoadConfig();
+    void SaveConfig();
   };
 
   extern ConfigData Config;

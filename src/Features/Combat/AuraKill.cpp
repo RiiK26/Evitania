@@ -26,7 +26,7 @@ namespace Features
         if (isAlive) {
           ULONGLONG currentTick = GetTickCount64();
           if (currentTick - damageCooldowns[__this] > 1000) {
-            Orig_EnemyNpcController_TakeDamage(__this, 999999999.0f, method_info);
+            Orig_EnemyNpcController_TakeDamage(__this, Menu::Config.fGodModeDamage, method_info);
             damageCooldowns[__this] = currentTick;
           }
         }

@@ -3,21 +3,11 @@
 #include "MinHook.h"
 #include <cstdio>
 
-extern void Log(const char* msg);
-
 #define HOOK_METHOD(ClassName, MethodName, ArgsCount, HookFunc, OrigFuncPtr) \
   do { \
     void* target = IL2CPP::ResolveUnityMethod(ClassName, MethodName, ArgsCount); \
     if (target) { \
-      MH_STATUS s = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
-      char      buf[128]; \
-      snprintf(buf, sizeof(buf), "Hooking %s::%s -> %s", ClassName, MethodName, s == MH_OK ? "Success" : "Failed"); \
-      Log(buf); \
-    } \
-    else { \
-      char buf[128]; \
-      snprintf(buf, sizeof(buf), "Failed to resolve %s::%s", ClassName, MethodName); \
-      Log(buf); \
+      MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
     } \
   } while (0)
 
@@ -25,15 +15,7 @@ extern void Log(const char* msg);
   do { \
     void* target = (void*) ((uintptr_t) IL2CPP::Globals.m_GameAssembly + RVA); \
     if (target) { \
-      MH_STATUS s = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
-      char      buf[128]; \
-      snprintf(buf, sizeof(buf), "Hooking Offset %s -> %s", OffsetName, s == MH_OK ? "Success" : "Failed"); \
-      Log(buf); \
-    } \
-    else { \
-      char buf[128]; \
-      snprintf(buf, sizeof(buf), "Failed to resolve Offset %s", OffsetName); \
-      Log(buf); \
+      MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
     } \
   } while (0)
 

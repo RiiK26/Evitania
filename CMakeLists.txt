@@ -13,11 +13,19 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/release")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/release")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/release")
+
 add_compile_definitions(
     PROJECT_VERSION=\"${PROJECT_VERSION}\"
+    PROJECT_ROOT=\"${CMAKE_BINARY_DIR}/release\"
 )
 add_compile_options(-fpermissive)
 
+if(POLICY CMP0169)
+  cmake_policy(SET CMP0169 OLD)
+endif()
 include(FetchContent)
 
 # Fetch MinHook
@@ -25,6 +33,7 @@ FetchContent_Declare(
     minhook
     GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
     GIT_TAG        master
+    GIT_SHALLOW    ON
 )
 FetchContent_Populate(minhook)
 
@@ -33,6 +42,7 @@ FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
     GIT_TAG        docking
+    GIT_SHALLOW    ON
 )
 FetchContent_Populate(imgui)
 

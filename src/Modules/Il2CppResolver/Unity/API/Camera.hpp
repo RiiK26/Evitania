@@ -1,5 +1,4 @@
 #pragma once
-
 namespace Unity
 {
   struct CameraFunctions_t

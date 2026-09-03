@@ -1,10 +1,4 @@
 #include "Hooks.hpp"
-#include "./Il2CppResolver/IL2CPP_Resolver.hpp"
-#include "MinHook.h"
-#include "../Menu/Menu.hpp"
-#include <iostream>
-
-extern void Log(const char* msg);
 
 #include "../../Features/Combat/GodMode.hpp"
 #include "../../Features/Combat/AuraKill.hpp"
@@ -14,7 +8,6 @@ extern void Log(const char* msg);
 
 void Hooks::Initialize()
 {
-
   // Initialize modular features
   Features::GodMode::Initialize();
   Features::AuraKill::Initialize();

@@ -1,6 +1,5 @@
 #include "AntiCheat.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
-#include <cstdint>
 
 // Original function pointers
 void (*Orig_AntiCheat_Initialize)(void* __this);

@@ -7,8 +7,8 @@ set -e
 # Change to project root directory
 cd "$(dirname "$0")/.."
 
-DLL_PATH="$(pwd)/build/Evitania.dll"
-INJECTOR_EXE="$(pwd)/build/injector.exe"
+DLL_PATH="$(pwd)/build/release/Evitania.dll"
+INJECTOR_EXE="$(pwd)/build/release/injector.exe"
 
 if [ ! -f "$DLL_PATH" ] || [ ! -f "$INJECTOR_EXE" ]; then
     echo "Error: Project not built. Please run scripts/build.sh first."
