@@ -7,7 +7,7 @@ namespace Menu
 {
   struct ConfigData
   {
-    bool  bMenuOpen       = false;
+    bool  bMenuOpen       = true;
     bool  bGodMode        = false;
     float fGodModeDamage  = 1000.0f;
     bool  bAuraKill       = false;
