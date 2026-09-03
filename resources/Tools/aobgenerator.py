@@ -50,48 +50,73 @@ def get_offsets():
 
     return class_data
 
-def generate_signature(pe, md, rva, min_length=15):
-    # Read bytes at RVA
+def parse_pattern_to_regex(pattern):
+    regex_str = b""
+    for b in pattern.split():
+        if b == '?':
+            regex_str += b"."
+        else:
+            regex_str += re.escape(bytes([int(b, 16)]))
+    return regex_str
+
+def is_unique_signature(pe_data, pattern):
+    regex_str = parse_pattern_to_regex(pattern)
+    regex = re.compile(regex_str, re.DOTALL)
+    matches = 0
+    for _ in regex.finditer(pe_data):
+        matches += 1
+        if matches > 1:
+            return False
+    return matches == 1
+
+def generate_signature(pe, md, pe_data, rva, initial_min_length=15):
     offset = pe.get_offset_from_rva(rva)
     if offset == 0:
         return None
 
-    # Read a chunk of bytes to disassemble
-    code = pe.get_memory_mapped_image()[rva:rva+100]
+    code = pe_data[rva:rva+200]
 
-    sig_bytes = []
+    current_min_length = initial_min_length
+    while current_min_length < 150:
+        sig_bytes = []
+        for i in md.disasm(code, rva):
+            instr_bytes = i.bytes
 
-    for i in md.disasm(code, rva):
-        instr_bytes = i.bytes
-
-        # Heuristic: Wildcard relative offsets and hardcoded absolute addresses
-        # CALL / JMP rel32
-        if i.mnemonic in ["call", "jmp"] and len(instr_bytes) == 5:
-            sig_bytes.extend([f"{instr_bytes[0]:02X}", "?", "?", "?", "?"])
-        # RIP-relative addressing (e.g. MOV RAX, [RIP + disp32]) or absolute immediate (e.g. MOV EAX, imm32)
-        else:
-            has_disp32 = False
-            for op in i.operands:
-                if op.type == CS_OP_MEM and op.mem.base == 0: # Absolute address
-                    has_disp32 = True
-                elif op.type == CS_OP_IMM and len(instr_bytes) >= 5: # Immediate
-                    has_disp32 = True
-
-            if has_disp32 and len(instr_bytes) >= 5:
-                # Keep first few bytes (opcode/ModRM), wildcard the immediate 4 bytes
-                prefix_len = len(instr_bytes) - 4
-                for b in instr_bytes[:prefix_len]:
-                    sig_bytes.append(f"{b:02X}")
-                sig_bytes.extend(["?"] * 4)
+            # Heuristic: Wildcard relative offsets and hardcoded absolute addresses
+            # CALL / JMP rel32
+            if i.mnemonic in ["call", "jmp"] and len(instr_bytes) == 5:
+                sig_bytes.extend([f"{instr_bytes[0]:02X}", "?", "?", "?", "?"])
+            # RIP-relative addressing (e.g. MOV RAX, [RIP + disp32]) or absolute immediate (e.g. MOV EAX, imm32)
             else:
-                for b in instr_bytes:
-                    sig_bytes.append(f"{b:02X}")
+                has_disp32 = False
+                for op in i.operands:
+                    if op.type == CS_OP_MEM and op.mem.base == 0: # Absolute address
+                        has_disp32 = True
+                    elif op.type == CS_OP_IMM and len(instr_bytes) >= 5: # Immediate
+                        has_disp32 = True
 
-        if len(sig_bytes) >= min_length:
-            # We must end on a full instruction boundary, so we can stop here
-            break
+                if has_disp32 and len(instr_bytes) >= 5:
+                    # Keep first few bytes (opcode/ModRM), wildcard the immediate 4 bytes
+                    prefix_len = len(instr_bytes) - 4
+                    for b in instr_bytes[:prefix_len]:
+                        sig_bytes.append(f"{b:02X}")
+                    sig_bytes.extend(["?"] * 4)
+                else:
+                    for b in instr_bytes:
+                        sig_bytes.append(f"{b:02X}")
 
-    return " ".join(sig_bytes)
+            if len(sig_bytes) >= current_min_length:
+                # We must end on a full instruction boundary, so we can stop here
+                break
+
+        sig = " ".join(sig_bytes)
+        if is_unique_signature(pe_data, sig):
+            return sig
+        
+        # If not unique, increase length and try again
+        current_min_length += 5
+
+    return None
 
 def main():
     if not os.path.exists(DLL_PATH):
@@ -106,22 +131,24 @@ def main():
     print("Loading GameAssembly.dll...")
     pe = pefile.PE(DLL_PATH)
     pe.parse_data_directories()
+    pe_data = pe.get_memory_mapped_image()
 
     md = Cs(CS_ARCH_X86, CS_MODE_64)
     md.detail = True
 
     targets = [
-        ("CurrencyService", "Subtract"),
-        ("Skill", "AddExperience"),
-        ("SteamPurchaseService", "InitiatePurchase"),
-        ("MobilePurchaseService", "InitiatePurchase"),
-        ("SteamPurchaseService", "FindLot"),
-        ("MobilePurchaseService", "FindLot"),
-        ("IAPRewarder", "Reward"),
-        ("MovementControl", "Move"),
-        ("Time", "set_timeScale"),
-        ("SpawnPortal", "CurrentSpawnInterval"),
-        ("GatheringService", "GetSpeed")
+        ("CurrencyService", "Subtract", 0),
+        ("CurrencyService", "Subtract", 1),
+        ("Skill", "AddExperience", 0),
+        ("SteamPurchaseService", "InitiatePurchase", 0),
+        ("MobilePurchaseService", "InitiatePurchase", 0),
+        ("SteamPurchaseService", "FindLot", 0),
+        ("MobilePurchaseService", "FindLot", 0),
+        ("IAPRewarder", "Reward", 0),
+        ("MovementControl", "Move", 0),
+        ("Time", "set_timeScale", 0),
+        ("SpawnPortal", "CurrentSpawnInterval", 0),
+        ("GatheringService", "GetSpeed", 0)
     ]
 
     print("\n--- Generated AOB Signatures ---")
@@ -133,18 +160,21 @@ def main():
         "{",
     ]
 
-    for cls, method in targets:
+    for cls, method, overload_idx in targets:
         if cls in class_data and method in class_data[cls]['methods']:
-            rva_hex = class_data[cls]['methods'][method][0]
-            rva = int(rva_hex, 16)
+            if overload_idx < len(class_data[cls]['methods'][method]):
+                rva_hex = class_data[cls]['methods'][method][overload_idx]
+                rva = int(rva_hex, 16)
 
-            sig = generate_signature(pe, md, rva)
+                sig = generate_signature(pe, md, pe_data, rva)
             if sig:
                 print(f"[+] {cls}::{method} -> {sig}")
 
                 # Format for C++ header
                 safe_cls = cls
                 safe_method = method.replace("set_", "").replace("get_", "")
+                if overload_idx > 0:
+                    safe_method = f"{safe_method}_{overload_idx}"
 
                 signatures_content.append(f"  // 0x{rva_hex}")
                 signatures_content.append(f"  constexpr const char* {safe_cls}_{safe_method} = \"{sig}\";")

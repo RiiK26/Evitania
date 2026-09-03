@@ -8,21 +8,21 @@ namespace Features
 {
   namespace SpeedHack
   {
-    void (*Orig_Time_set_timeScale)(void* __this, float value, void* method_info);
+    void (*Orig_Time_set_timeScale)(float value, void* method_info);
 
-    void Hook_Time_set_timeScale(void* __this, float value, void* method_info)
+    void Hook_Time_set_timeScale(float value, void* method_info)
     {
       if (Menu::Config.bSpeedHack) {
         value = Menu::Config.fSpeedMultiplier;
       }
-      Orig_Time_set_timeScale(__this, value, method_info);
+      Orig_Time_set_timeScale(value, method_info);
     }
 
     void ApplySpeedHack()
     {
       if (Orig_Time_set_timeScale) {
         // Calling it with 1.0f will trigger our hook to multiply it by fSpeedMultiplier if enabled.
-        Hook_Time_set_timeScale(nullptr, 1.0f, nullptr);
+        Hook_Time_set_timeScale(1.0f, nullptr);
       }
     }
 
