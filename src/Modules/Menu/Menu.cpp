@@ -14,9 +14,23 @@ namespace Menu
 {
   ConfigData Config;
 
+  std::string GetConfigPath()
+  {
+    char    path[MAX_PATH];
+    HMODULE hMod = GetModuleHandleA("Evitania.dll");
+    if (hMod && GetModuleFileNameA(hMod, path, MAX_PATH)) {
+      std::string fullPath(path);
+      size_t      lastSlash = fullPath.find_last_of("\\/");
+      if (lastSlash != std::string::npos) {
+        return fullPath.substr(0, lastSlash) + "\\config.txt";
+      }
+    }
+    return "config.txt";
+  }
+
   void ConfigData::LoadConfig()
   {
-    std::ifstream f(PROJECT_ROOT "/config.txt");
+    std::ifstream f(GetConfigPath());
     if (!f.is_open())
       return;
 
@@ -48,12 +62,12 @@ namespace Menu
 
   void ConfigData::SaveConfig()
   {
-    std::ofstream out(PROJECT_ROOT "/config.txt");
+    std::ofstream out(GetConfigPath());
     if (!out.is_open())
       return;
 
     out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
-    out << "god_mode_damage=" << fGodModeDamage << "\n";
+    out << "god_mode_damage=" << (long long) fGodModeDamage << "\n";
     out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
     out << "infinite_items=" << (bInfiniteItems ? "1" : "0") << "\n";
     out << "enhance_item_100=" << (bEnhanceItem100 ? "1" : "0") << "\n";
@@ -204,10 +218,24 @@ namespace Menu
     sd.BufferCount       = 1;
     sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     sd.BufferUsage       = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow      = GetForegroundWindow();
-    sd.SampleDesc.Count  = 1;
-    sd.Windowed          = TRUE;
-    sd.SwapEffect        = DXGI_SWAP_EFFECT_DISCARD;
+    // Find the game's actual window instead of relying on Foreground (which might be the terminal)
+    HWND gameWindow = nullptr;
+    EnumWindows(
+      [](HWND hwnd, LPARAM lParam) -> BOOL {
+        DWORD pid = 0;
+        GetWindowThreadProcessId(hwnd, &pid);
+        if (pid == GetCurrentProcessId()) {
+          if (GetWindow(hwnd, GW_OWNER) == (HWND) 0 && IsWindowVisible(hwnd)) {
+            *(HWND*) lParam = hwnd;
+            return FALSE;
+          }
+        }
+        return TRUE;
+      },
+      (LPARAM) &gameWindow
+    );
+
+    sd.OutputWindow = gameWindow ? gameWindow : GetForegroundWindow();
 
     if (!sd.OutputWindow) { }
 
