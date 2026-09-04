@@ -112,7 +112,7 @@ def generate_signature(pe, md, pe_data, rva, initial_min_length=15):
         sig = " ".join(sig_bytes)
         if is_unique_signature(pe_data, sig):
             return sig
-        
+
         # If not unique, increase length and try again
         current_min_length += 5
 

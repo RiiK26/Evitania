@@ -5,24 +5,24 @@ namespace Offsets
 {
   namespace CurrencyService
   {
-    constexpr uintptr_t Subtract = 0x6EAB60;
+    constexpr uintptr_t Subtract = 0x6EAFB0;
   }  // namespace CurrencyService
 
   namespace Skill
   {
     // public void AddExperience(float amount) { }
-    constexpr uintptr_t AddExperience = 0x77B210;
+    constexpr uintptr_t AddExperience = 0x77B8F0;
   }  // namespace Skill
 
   namespace FreeStore
   {
-    constexpr uintptr_t SteamPurchaseService_InitiatePurchase  = 0x7675B0;
-    constexpr uintptr_t MobilePurchaseService_InitiatePurchase = 0x749460;
+    constexpr uintptr_t SteamPurchaseService_InitiatePurchase  = 0x767C90;
+    constexpr uintptr_t MobilePurchaseService_InitiatePurchase = 0x749870;
 
-    constexpr uintptr_t SteamPurchaseService_FindLot  = 0x767370;
-    constexpr uintptr_t MobilePurchaseService_FindLot = 0x748D10;
+    constexpr uintptr_t SteamPurchaseService_FindLot  = 0x767A50;
+    constexpr uintptr_t MobilePurchaseService_FindLot = 0x749120;
 
-    constexpr uintptr_t IAPRewarder_Reward = 0x7F2EB0;
+    constexpr uintptr_t IAPRewarder_Reward = 0x7F3A20;
   }  // namespace FreeStore
 
   namespace MovementControl
@@ -31,15 +31,15 @@ namespace Offsets
   }
   namespace Time
   {
-    constexpr uintptr_t set_timeScale = 0x363C6B0;
+    constexpr uintptr_t set_timeScale = 0x363CE80;
   }
   namespace SpawnPortal
   {
-    constexpr uintptr_t CurrentSpawnInterval = 0x89CB90;
+    constexpr uintptr_t CurrentSpawnInterval = 0x89D700;
   }
   namespace GatheringService
   {
-    constexpr uintptr_t GetSpeed = 0x6F0790;
+    constexpr uintptr_t GetSpeed = 0x6F0BE0;
   }
 
   namespace Fields

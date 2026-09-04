@@ -1,6 +1,5 @@
 #include "Scanner.hpp"
 #include <vector>
-#include <string>
 #include <cstdint>
 
 namespace Scanner

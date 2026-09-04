@@ -2,7 +2,6 @@
 #include "../../Modules/Hooks/Hooks.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
 #include "../../Modules/Menu/Menu.hpp"
-#include <cstdint>
 
 namespace Features
 {
