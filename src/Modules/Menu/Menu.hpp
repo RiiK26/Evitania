@@ -9,6 +9,9 @@ namespace Menu
   {
     bool  bMenuOpen               = true;
     bool  bGodMode                = false;
+    bool  bGodMode_Nullify        = true;
+    bool  bGodMode_Damage         = true;
+    bool  bGodMode_Speed          = false;
     float fGodModeDamage          = 1000.0f;
     float fGodModeSpeedMultiplier = 5.0f;
     bool  bFastMobSpawn           = false;

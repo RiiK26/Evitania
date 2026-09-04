@@ -18,13 +18,13 @@ namespace Features
       }
 
       bool isPlayer = *(bool*) ((uintptr_t) __this + Offsets::Fields::AttackReceiver::isPlayer);
-      if (isPlayer) {
+      if (isPlayer && Menu::Config.bGodMode_Nullify) {
         // Infinite HP: nullify the attack damage by returning early (player takes no damage)
         return;
       }
 
       // High Attack: set the damage of the attack hitting the enemy to a massive amount
-      if (attack) {
+      if (attack && Menu::Config.bGodMode_Damage) {
         *(float*) ((uintptr_t) attack + Offsets::Fields::Attack::AttackDamage) = Menu::Config.fGodModeDamage;
       }
 
@@ -35,7 +35,7 @@ namespace Features
 
     void Hook_MovementControl_Move(void* __this, float movespeed, void* method_info)
     {
-      if (Menu::Config.bGodMode) {
+      if (Menu::Config.bGodMode && Menu::Config.bGodMode_Speed) {
         // Check if the MovementControl belongs to a PlayerCharacter
         void* _view = *(void**) ((uintptr_t) __this + Offsets::Fields::MovementControl::_view);
         if (_view) {

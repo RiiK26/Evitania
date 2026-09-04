@@ -44,6 +44,12 @@ namespace Menu
         if (std::getline(is_line, value)) {
           if (key == "god_mode")
             bGodMode = (value == "1");
+          else if (key == "god_mode_nullify")
+            bGodMode_Nullify = (value == "1");
+          else if (key == "god_mode_damage_toggle")
+            bGodMode_Damage = (value == "1");
+          else if (key == "god_mode_speed_toggle")
+            bGodMode_Speed = (value == "1");
           else if (key == "god_mode_damage") {
             try {
               fGodModeDamage = std::stof(value);
@@ -87,6 +93,9 @@ namespace Menu
 
     out << "menu_open=" << (bMenuOpen ? "1" : "0") << "\n";
     out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
+    out << "god_mode_nullify=" << (bGodMode_Nullify ? "1" : "0") << "\n";
+    out << "god_mode_damage_toggle=" << (bGodMode_Damage ? "1" : "0") << "\n";
+    out << "god_mode_speed_toggle=" << (bGodMode_Speed ? "1" : "0") << "\n";
     out << "god_mode_damage=" << fGodModeDamage << "\n";
     out << "god_mode_speed_multiplier=" << fGodModeSpeedMultiplier << "\n";
     out << "fast_mob_spawn=" << (bFastMobSpawn ? "1" : "0") << "\n";
@@ -188,6 +197,38 @@ namespace Menu
 
         ImGui::StyleColorsDark();
 
+        // --- Apply Styling ---
+        ImGuiStyle& style       = ImGui::GetStyle();
+        style.WindowRounding    = 8.0f;
+        style.FrameRounding     = 6.0f;
+        style.PopupRounding     = 6.0f;
+        style.ScrollbarRounding = 6.0f;
+        style.GrabRounding      = 6.0f;
+        style.TabRounding       = 6.0f;
+
+        style.WindowPadding    = ImVec2(12, 12);
+        style.FramePadding     = ImVec2(8, 4);
+        style.ItemSpacing      = ImVec2(8, 8);
+        style.ItemInnerSpacing = ImVec2(6, 6);
+
+        // Custom Dark/Vibrant Palette
+        ImVec4* colors                    = style.Colors;
+        colors[ImGuiCol_WindowBg]         = ImVec4(0.08f, 0.08f, 0.09f, 0.96f);
+        colors[ImGuiCol_Header]           = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
+        colors[ImGuiCol_HeaderHovered]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
+        colors[ImGuiCol_HeaderActive]     = ImVec4(0.30f, 0.30f, 0.32f, 1.00f);
+        colors[ImGuiCol_Button]           = ImVec4(0.20f, 0.25f, 0.30f, 1.00f);
+        colors[ImGuiCol_ButtonHovered]    = ImVec4(0.26f, 0.35f, 0.44f, 1.00f);
+        colors[ImGuiCol_ButtonActive]     = ImVec4(0.36f, 0.45f, 0.54f, 1.00f);
+        colors[ImGuiCol_FrameBg]          = ImVec4(0.12f, 0.12f, 0.14f, 1.00f);
+        colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
+        colors[ImGuiCol_FrameBgActive]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
+        colors[ImGuiCol_CheckMark]        = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
+        colors[ImGuiCol_SliderGrab]       = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
+        colors[ImGuiCol_SliderGrabActive] = ImVec4(0.38f, 0.73f, 1.00f, 1.00f);
+        colors[ImGuiCol_TitleBg]          = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
+        colors[ImGuiCol_TitleBgActive]    = ImVec4(0.15f, 0.15f, 0.18f, 1.00f);
+
         init = true;
       }
       else
@@ -199,15 +240,37 @@ namespace Menu
     ImGui::NewFrame();
 
     if (Config.bMenuOpen) {
-      ImGui::Begin("Evitania Online v" PROJECT_VERSION);
+      ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
+      ImGui::Begin("Evitania Online v" PROJECT_VERSION, nullptr, ImGuiWindowFlags_NoCollapse);
 
-      if (ImGui::CollapsingHeader("Combat")) {
-        ImGui::Checkbox("God Mode", &Config.bGodMode);
-        if (Config.bGodMode) {
-          ImGui::InputFloat("Damage (Attack)", &Config.fGodModeDamage);
-          if (Config.fGodModeDamage < 0.0f)
-            Config.fGodModeDamage = 0.0f;
-          ImGui::SliderFloat("Speed Multiplier##GodMode", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+      if (ImGui::CollapsingHeader("Combat", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::Checkbox("Master God Mode", &Config.bGodMode);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(?)");
+        if (ImGui::IsItemHovered()) {
+          ImGui::SetTooltip("Enable to use the granular God Mode settings below.");
+        }
+
+        if (ImGui::TreeNode("God Mode Settings")) {
+          // Disable individual toggles if master God Mode is off, but still show them
+          ImGui::BeginDisabled(!Config.bGodMode);
+
+          ImGui::Checkbox("Nullify Damage (Infinite HP)", &Config.bGodMode_Nullify);
+
+          ImGui::Checkbox("High Damage", &Config.bGodMode_Damage);
+          if (Config.bGodMode_Damage) {
+            ImGui::InputFloat("Damage Value", &Config.fGodModeDamage);
+            if (Config.fGodModeDamage < 0.0f)
+              Config.fGodModeDamage = 0.0f;
+          }
+
+          ImGui::Checkbox("Movement Speed", &Config.bGodMode_Speed);
+          if (Config.bGodMode_Speed) {
+            ImGui::SliderFloat("Speed Multiplier##GodMode", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+          }
+
+          ImGui::EndDisabled();
+          ImGui::TreePop();
         }
         ImGui::Checkbox("Fast Mob Spawn", &Config.bFastMobSpawn);
         ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
