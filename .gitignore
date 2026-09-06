@@ -5,3 +5,8 @@ dumped/
 logs/
 
 .clangd
+
+resources/Android/
+resources/apk/
+
+*.jar
