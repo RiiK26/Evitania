@@ -44,12 +44,13 @@
 
 #ifndef IL2CPP_RStr
 // If you wanna forward to some string encryption just define before including this file.
-  #define IL2CPP_RStr(x) x
+  #include "../../Cores/skCrypter.h"
+  #define IL2CPP_RStr(x) skCrypt(x)
 #endif
 
 #ifndef IL2CPP_MAIN_MODULE
 // If the game for some reason uses diff module name just define own one before including this file.
-  #define IL2CPP_MAIN_MODULE IL2CPP_RStr("GameAssembly.dll")
+  #define IL2CPP_MAIN_MODULE skCrypt("GameAssembly.dll")
 #endif
 
 #include "Defines.hpp"
@@ -420,7 +421,7 @@ namespace IL2CPP
       Globals.m_Initialized = false;
 
       if (!Globals.m_GameAssembly) {
-        m_LastInitError = "Failed to locate IL2CPP module";
+        m_LastInitError = skCrypt("Failed to locate IL2CPP module");
         return false;
       }
 
@@ -434,7 +435,7 @@ namespace IL2CPP
       }
 
       if (!m_InitExportResolved) {
-        m_LastInitError = "Failed to resolve il2cpp_init in selected module";
+        m_LastInitError = skCrypt("Failed to resolve il2cpp_init in selected module");
         return false;
       }
 
@@ -453,44 +454,51 @@ namespace IL2CPP
       };
 
       // Required core exports
-      if (!resolveRequired(&Functions.m_ClassFromName, "il2cpp_class_from_name", {IL2CPP_CLASS_FROM_NAME_EXPORT}))
+      if (!resolveRequired(
+            &Functions.m_ClassFromName, skCrypt("il2cpp_class_from_name"), {IL2CPP_CLASS_FROM_NAME_EXPORT}
+          ))
         return false;
-      if (!resolveRequired(&Functions.m_ClassGetFields, "il2cpp_class_get_fields", {IL2CPP_CLASS_GET_FIELDS}))
+      if (!resolveRequired(&Functions.m_ClassGetFields, skCrypt("il2cpp_class_get_fields"), {IL2CPP_CLASS_GET_FIELDS}))
         return false;
       if (!resolveRequired(
-            &Functions.m_ClassGetFieldFromName, "il2cpp_class_get_field_from_name",
+            &Functions.m_ClassGetFieldFromName, skCrypt("il2cpp_class_get_field_from_name"),
             {IL2CPP_CLASS_GET_FIELD_FROM_NAME_EXPORT}
           ))
         return false;
-      if (!resolveRequired(&Functions.m_ClassGetMethods, "il2cpp_class_get_methods", {IL2CPP_CLASS_GET_METHODS}))
+      if (!resolveRequired(
+            &Functions.m_ClassGetMethods, skCrypt("il2cpp_class_get_methods"), {IL2CPP_CLASS_GET_METHODS}
+          ))
         return false;
       if (!resolveRequired(
-            &Functions.m_ClassGetMethodFromName, "il2cpp_class_get_method_from_name",
+            &Functions.m_ClassGetMethodFromName, skCrypt("il2cpp_class_get_method_from_name"),
             {IL2CPP_CLASS_GET_METHOD_FROM_NAME_EXPORT}
           ))
         return false;
       if (!resolveRequired(
-            &Functions.m_ClassGetPropertyFromName, "il2cpp_class_get_property_from_name",
+            &Functions.m_ClassGetPropertyFromName, skCrypt("il2cpp_class_get_property_from_name"),
             {IL2CPP_CLASS_GET_PROPERTY_FROM_NAME_EXPORT}
           ))
         return false;
-      if (!resolveRequired(&Functions.m_ClassGetType, "il2cpp_class_get_type", {IL2CPP_CLASS_GET_TYPE_EXPORT}))
+      if (!resolveRequired(&Functions.m_ClassGetType, skCrypt("il2cpp_class_get_type"), {IL2CPP_CLASS_GET_TYPE_EXPORT}))
         return false;
-      if (!resolveRequired(&Functions.m_DomainGet, "il2cpp_domain_get", {IL2CPP_DOMAIN_GET_EXPORT}))
+      if (!resolveRequired(&Functions.m_DomainGet, skCrypt("il2cpp_domain_get"), {IL2CPP_DOMAIN_GET_EXPORT}))
         return false;
       if (!resolveRequired(
-            &Functions.m_DomainGetAssemblies, "il2cpp_domain_get_assemblies", {IL2CPP_DOMAIN_GET_ASSEMBLIES_EXPORT}
+            &Functions.m_DomainGetAssemblies, skCrypt("il2cpp_domain_get_assemblies"),
+            {IL2CPP_DOMAIN_GET_ASSEMBLIES_EXPORT}
           ))
         return false;
-      if (!resolveRequired(&Functions.m_StringNew, "il2cpp_string_new", {IL2CPP_STRING_NEW_EXPORT}))
+      if (!resolveRequired(&Functions.m_StringNew, skCrypt("il2cpp_string_new"), {IL2CPP_STRING_NEW_EXPORT}))
         return false;
-      if (!resolveRequired(&Functions.m_ThreadAttach, "il2cpp_thread_attach", {IL2CPP_THREAD_ATTACH_EXPORT}))
+      if (!resolveRequired(&Functions.m_ThreadAttach, skCrypt("il2cpp_thread_attach"), {IL2CPP_THREAD_ATTACH_EXPORT}))
         return false;
-      if (!resolveRequired(&Functions.m_ThreadDetach, "il2cpp_thread_detach", {IL2CPP_THREAD_DETACH_EXPORT}))
+      if (!resolveRequired(&Functions.m_ThreadDetach, skCrypt("il2cpp_thread_detach"), {IL2CPP_THREAD_DETACH_EXPORT}))
         return false;
-      if (!resolveRequired(&Functions.m_TypeGetObject, "il2cpp_type_get_object", {IL2CPP_TYPE_GET_OBJECT_EXPORT}))
+      if (!resolveRequired(
+            &Functions.m_TypeGetObject, skCrypt("il2cpp_type_get_object"), {IL2CPP_TYPE_GET_OBJECT_EXPORT}
+          ))
         return false;
-      if (!resolveRequired(&Functions.m_pObjectNew, "il2cpp_object_new", {IL2CPP_OBJECT_NEW}))
+      if (!resolveRequired(&Functions.m_pObjectNew, skCrypt("il2cpp_object_new"), {IL2CPP_OBJECT_NEW}))
         return false;
 
       // Optional / version-specific aliases
@@ -618,7 +626,7 @@ namespace IL2CPP
       int m_SecondsWaited = 0;
       while (!Globals.m_GameAssembly) {
         if (m_SecondsWaited >= m_MaxSecondsWait) {
-          UnityAPI::m_LastInitError = "Timed out while waiting for IL2CPP module";
+          UnityAPI::m_LastInitError = skCrypt("Timed out while waiting for IL2CPP module");
           return false;
         }
 
@@ -631,7 +639,7 @@ namespace IL2CPP
     }
 
     if (!Globals.m_GameAssembly) {
-      UnityAPI::m_LastInitError = "Failed to locate IL2CPP module";
+      UnityAPI::m_LastInitError = skCrypt("Failed to locate IL2CPP module");
       return false;
     }
 

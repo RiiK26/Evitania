@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "../../Cores/skCrypter.h"
 #include "../../Features/Combat/SpeedHack.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -18,15 +19,15 @@ namespace Menu
   std::string GetConfigPath()
   {
     char    path[MAX_PATH];
-    HMODULE hMod = GetModuleHandleA("Evitania.dll");
+    HMODULE hMod = GetModuleHandleA(skCrypt("Evitania.dll"));
     if (hMod && GetModuleFileNameA(hMod, path, MAX_PATH)) {
       std::string fullPath(path);
       size_t      lastSlash = fullPath.find_last_of("\\/");
       if (lastSlash != std::string::npos) {
-        return fullPath.substr(0, lastSlash) + "\\config.txt";
+        return fullPath.substr(0, lastSlash) + skCrypt("\\config.txt");
       }
     }
-    return "config.txt";
+    return skCrypt("config.txt");
   }
 
   void ConfigData::LoadConfig()
@@ -384,15 +385,15 @@ namespace Menu
       MH_STATUS createStatus = MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent);
       if (createStatus != MH_OK) {
         char buf[64];
-        snprintf(buf, sizeof(buf), "MH_CreateHook for Present failed: %d", (int) createStatus);
-        MessageBoxA(NULL, buf, "Evitania Error", MB_OK);
+        snprintf(buf, sizeof(buf), skCrypt("MH_CreateHook for Present failed: %d"), (int) createStatus);
+        MessageBoxA(NULL, buf, skCrypt("Evitania Error"), MB_OK);
       }
 
       MH_STATUS enableStatus = MH_EnableHook(pPresent);
       if (enableStatus != MH_OK) {
         char buf[64];
-        snprintf(buf, sizeof(buf), "MH_EnableHook for Present failed: %d", (int) enableStatus);
-        MessageBoxA(NULL, buf, "Evitania Error", MB_OK);
+        snprintf(buf, sizeof(buf), skCrypt("MH_EnableHook for Present failed: %d"), (int) enableStatus);
+        MessageBoxA(NULL, buf, skCrypt("Evitania Error"), MB_OK);
       }
 
       void*     pResizeBuffers = pVTable[13];

@@ -4,9 +4,16 @@
 #include "Modules/Hooks/Hooks.hpp"
 #include "Modules/Menu/Menu.hpp"
 #include "MinHook.h"
+#include "AntiRE.hpp"
 
 void MainThread(HMODULE hModule)
 {
+  if (AntiRE::CheckDebugger()) {
+    FreeLibraryAndExitThread(hModule, 0);
+    return;
+  }
+  AntiRE::ErasePEHeaders(hModule);
+
   if (MH_Initialize() != MH_OK) {
     return;
   }

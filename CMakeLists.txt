@@ -22,8 +22,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/release")
 add_compile_definitions(
     PROJECT_VERSION=\"${PROJECT_VERSION}\"
     PROJECT_ROOT=\"${CMAKE_BINARY_DIR}/release\"
+    NDEBUG # Disables asserts, hiding ImGui file paths
 )
-add_compile_options(-fpermissive)
+add_compile_options(-fpermissive -ffunction-sections -fdata-sections)
+add_link_options(-Wl,--gc-sections)
 
 if(POLICY CMP0169)
   cmake_policy(SET CMP0169 OLD)
@@ -49,7 +51,7 @@ FetchContent_Declare(
 FetchContent_Populate(imgui)
 
 file(GLOB MINHOOK_SRC "${minhook_SOURCE_DIR}/src/*.c" "${minhook_SOURCE_DIR}/src/hde/*.c")
-file(GLOB SRC_FILES "src/Cores/dll.cpp" "src/Cores/Scanner.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp"
+file(GLOB SRC_FILES "src/Cores/AntiRE.cpp" "src/Cores/dll.cpp" "src/Cores/Scanner.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp"
     src/Features/Combat/FastMobSpawn.cpp
     src/Features/Economy/FastGathering.cpp)
 
