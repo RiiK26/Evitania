@@ -1,11 +1,11 @@
 # Evitania Online - Cheat Release
 
-## Instructions
+Instructions
 
-1. **Open The Game**
-2. **Run** the provided script for your operating system:
-   - **Windows:** Double-click `run.bat`
-   - **Linux:** Run `./run.sh` in your terminal
+1. Open The Game
+2. Run the provided script for your operating system:
+   - Windows: Double-click `run.bat`
+   - Linux: Run `./run.sh` in your terminal
 3. The script will automatically launch the game and inject the cheat.
 4. Once you are inside the game, press **`INSERT`** on your keyboard to open or hide the mod menu.
 
