@@ -1,10 +1,8 @@
 # Evitania Online - Cheat Release
 
-Welcome to Evitania Online Cheeto!
-
 ## Instructions
 
-1. **Extract** this ZIP file to a folder on your computer.
+1. **Open The Game**
 2. **Run** the provided script for your operating system:
    - **Windows:** Double-click `run.bat`
    - **Linux:** Run `./run.sh` in your terminal
