@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install MinGW-w64
         run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake zip jq
@@ -37,10 +37,10 @@ jobs:
           zip -r ../Evitania-v${{ steps.get_version.outputs.version }}.zip .
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: Evitania-v${{ steps.get_version.outputs.version }}.zip
-          name: Release v${{ steps.get_version.outputs.version }}
+          name: v${{ steps.get_version.outputs.version }}
           tag_name: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
