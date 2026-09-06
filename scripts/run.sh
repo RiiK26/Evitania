@@ -4,14 +4,16 @@
 
 set -e
 
-# Change to project root directory
-cd "$(dirname "$0")/.."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-DLL_PATH="$(pwd)/build/release/Evitania.dll"
-INJECTOR_EXE="$(pwd)/build/release/injector.exe"
-
-if [ ! -f "$DLL_PATH" ] || [ ! -f "$INJECTOR_EXE" ]; then
-    echo "Error: Project not built. Please run scripts/build.sh first."
+if [ -f "$SCRIPT_DIR/Evitania.dll" ] && [ -f "$SCRIPT_DIR/injector.exe" ]; then
+    DLL_PATH="$SCRIPT_DIR/Evitania.dll"
+    INJECTOR_EXE="$SCRIPT_DIR/injector.exe"
+elif [ -f "$SCRIPT_DIR/../build/release/Evitania.dll" ] && [ -f "$SCRIPT_DIR/../build/release/injector.exe" ]; then
+    DLL_PATH="$SCRIPT_DIR/../build/release/Evitania.dll"
+    INJECTOR_EXE="$SCRIPT_DIR/../build/release/injector.exe"
+else
+    echo "Error: Could not find Evitania.dll and injector.exe. Please build the project or extract the release archive."
     exit 1
 fi
 

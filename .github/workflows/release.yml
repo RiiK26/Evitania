@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install MinGW-w64
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake zip jq
+
+      - name: Build Evitania
+        run: ./scripts/build.sh
+
+      - name: Get Version
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version version.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Prepare Release Artifacts
+        run: |
+          mkdir -p release_pkg
+          cp build/release/Evitania.dll release_pkg/
+          cp build/release/injector.exe release_pkg/
+          cp scripts/run.sh release_pkg/
+          cp scripts/run.bat release_pkg/
+          cd release_pkg
+          zip -r ../Evitania-v${{ steps.get_version.outputs.version }}.zip .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Evitania-v${{ steps.get_version.outputs.version }}.zip
+          name: Release v${{ steps.get_version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

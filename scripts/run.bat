@@ -1,7 +1,21 @@
 @echo off
 REM Run this script to start the game and inject the Evitania cheat on Windows
 
-cd /d "%~dp0.."
+set "SCRIPT_DIR=%~dp0"
+set "DLL_PATH="
+set "INJECTOR_EXE="
+
+if exist "%SCRIPT_DIR%Evitania.dll" if exist "%SCRIPT_DIR%injector.exe" (
+    set "DLL_PATH=%SCRIPT_DIR%Evitania.dll"
+    set "INJECTOR_EXE=%SCRIPT_DIR%injector.exe"
+) else if exist "%SCRIPT_DIR%..\build\release\Evitania.dll" if exist "%SCRIPT_DIR%..\build\release\injector.exe" (
+    set "DLL_PATH=%SCRIPT_DIR%..\build\release\Evitania.dll"
+    set "INJECTOR_EXE=%SCRIPT_DIR%..\build\release\injector.exe"
+) else (
+    echo Error: Could not find Evitania.dll and injector.exe
+    pause
+    exit /b 1
+)
 
 echo Starting Evitania Online...
 start "" "C:\Program Files (x86)\Steam\steamapps\common\Evitania Online\Evitania.exe"
@@ -10,8 +24,7 @@ echo Waiting for game to load...
 timeout /t 5 /nobreak
 
 echo Injecting Evitania.dll...
-cd build\release
-injector.exe "Evitania.exe" "Evitania.dll"
+"%INJECTOR_EXE%" "Evitania.exe" "%DLL_PATH%"
 
 echo Injection complete!
 pause
