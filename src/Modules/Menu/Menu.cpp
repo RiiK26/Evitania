@@ -114,6 +114,11 @@ namespace Menu
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
   Present_t oPresent = nullptr;
 
+  typedef HRESULT(__stdcall* ResizeBuffers_t)(
+    IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags
+  );
+  ResizeBuffers_t oResizeBuffers = nullptr;
+
   typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
   WNDPROC oWndProc = nullptr;
 
@@ -174,6 +179,16 @@ namespace Menu
     }
 
     return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
+  }
+
+  HRESULT __stdcall hkResizeBuffers(
+    IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags
+  )
+  {
+    CleanupRenderTarget();
+    HRESULT hr = oResizeBuffers(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+    CreateRenderTarget(pSwapChain);
+    return hr;
   }
 
   HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
@@ -244,7 +259,7 @@ namespace Menu
       ImGui::Begin("Evitania Online v" PROJECT_VERSION, nullptr, ImGuiWindowFlags_NoCollapse);
 
       if (ImGui::CollapsingHeader("Combat", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::Checkbox("Master God Mode", &Config.bGodMode);
+        ImGui::Checkbox("God Mode", &Config.bGodMode);
         ImGui::SameLine();
         ImGui::TextDisabled("(?)");
         if (ImGui::IsItemHovered()) {
@@ -378,6 +393,12 @@ namespace Menu
         char buf[64];
         snprintf(buf, sizeof(buf), "MH_EnableHook for Present failed: %d", (int) enableStatus);
         MessageBoxA(NULL, buf, "Evitania Error", MB_OK);
+      }
+
+      void*     pResizeBuffers = pVTable[13];
+      MH_STATUS createStatusRB = MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers);
+      if (createStatusRB == MH_OK) {
+        MH_EnableHook(pResizeBuffers);
       }
 
       pDummySwapChain->Release();
