@@ -43,4 +43,7 @@ namespace Signatures
   // 0x6F0BE0
   constexpr const char* GatheringService_GetSpeed = "48 83 EC 28 48 85 D2 74 42 8B 52 40 85 D2 74 18";
 
+  // 0x802F50
+  constexpr const char* TimeskipItem_CanUseImpl = "48 83 EC 28 80 3D CA ? ? ? ? 75 13 48 8D 0D 14 C4 3D 04";
+
 }  // namespace Signatures

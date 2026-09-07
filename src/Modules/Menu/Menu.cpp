@@ -81,6 +81,8 @@ namespace Menu
             bSpeedHack = (value == "1");
           else if (key == "speed_multiplier")
             fSpeedMultiplier = std::stof(value);
+          else if (key == "hourglass_bypass")
+            bHourglassBypass = (value == "1");
         }
       }
     }
@@ -110,6 +112,7 @@ namespace Menu
     out << "free_store=" << (bFreeStore ? "1" : "0") << "\n";
     out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
     out << "speed_multiplier=" << fSpeedMultiplier << "\n";
+    out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -312,6 +315,7 @@ namespace Menu
         ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
         ImGui::Checkbox("Infinite Currency (Diamonds, etc.)", &Config.bInfiniteCurrency);
         ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
+        ImGui::Checkbox(skCrypt("Hourglass Use Anywhere"), &Config.bHourglassBypass);
       }
 
       ImGui::Separator();

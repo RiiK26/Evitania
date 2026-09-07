@@ -25,6 +25,7 @@ namespace Menu
     bool  bFreeStore              = false;
     bool  bSpeedHack              = false;
     float fSpeedMultiplier        = 2.0f;
+    bool  bHourglassBypass        = false;
 
     void LoadConfig();
     void SaveConfig();

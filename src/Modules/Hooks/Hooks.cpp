@@ -11,6 +11,7 @@
 #include "../../Features/AntiCheat/AntiCheat.hpp"
 #include "../../Features/Combat/FastMobSpawn.hpp"
 #include "../../Features/Economy/FastGathering.hpp"
+#include "../../Features/Economy/HourglassBypass.hpp"
 
 void Hooks::Initialize()
 {
@@ -26,11 +27,13 @@ void Hooks::Initialize()
   Features::AntiCheat::Initialize();
   Features::FastMobSpawn::Initialize();
   Features::FastGathering::Initialize();
+  Features::HourglassBypass::Initialize();
 }
 
 void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
+  Features::HourglassBypass::Uninitialize();
   Features::GodMode::Uninitialize();
   Features::AuraKill::Uninitialize();
   Features::ExpMultiplier::Uninitialize();

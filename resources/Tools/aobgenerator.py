@@ -4,8 +4,8 @@ import re
 import pefile
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM
 
-DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
-DLL_PATH = os.path.join(os.path.dirname(__file__), "../dumped/GameAssembly.dll")
+DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/pc/dump.cs")
+DLL_PATH = os.path.join(os.path.dirname(__file__), "../dumped/pc/GameAssembly.dll")
 
 def get_offsets():
     print("Parsing dump.cs...")
@@ -148,7 +148,8 @@ def main():
         ("MovementControl", "Move", 0),
         ("Time", "set_timeScale", 0),
         ("SpawnPortal", "CurrentSpawnInterval", 0),
-        ("GatheringService", "GetSpeed", 0)
+        ("GatheringService", "GetSpeed", 0),
+        ("TimeskipItem", "get_CanUseImpl", 0)
     ]
 
     print("\n--- Generated AOB Signatures ---")
