@@ -3,7 +3,6 @@
 
 namespace AntiRE
 {
-
   void ErasePEHeaders(HINSTANCE hModule)
   {
     if (!hModule)

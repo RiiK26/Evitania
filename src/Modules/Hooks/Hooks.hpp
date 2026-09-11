@@ -1,7 +1,7 @@
 #pragma once
-#include "../Il2CppResolver/IL2CPP_Resolver.hpp"
-#include "MinHook.h"
-#include <cstdio>
+#include "../Il2CppResolver/IL2CPP_Resolver.hpp"  // IWYU pragma: keep
+#include "MinHook.h"                              // IWYU pragma: keep
+#include <cstdio>                                 // IWYU pragma: keep
 
 #define HOOK_METHOD(ClassName, MethodName, ArgsCount, HookFunc, OrigFuncPtr) \
   do { \
@@ -11,7 +11,7 @@
     } \
   } while (0)
 
-#include "../../Cores/Scanner.hpp"
+#include "../../Cores/Scanner.hpp"  // IWYU pragma: keep
 #define HOOK_SIGNATURE(OffsetName, Signature, HookFunc, OrigFuncPtr) \
   do { \
     void* target = (void*) Scanner::FindPattern((HMODULE) IL2CPP::Globals.m_GameAssembly, Signature); \

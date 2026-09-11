@@ -83,6 +83,12 @@ namespace Menu
             fSpeedMultiplier = std::stof(value);
           else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
+          else if (key == "infinite_sand")
+            bInfiniteSand = (value == "1");
+          else if (key == "fast_timeline")
+            bFastTimeLine = (value == "1");
+          else if (key == "timeline_multiplier")
+            fTimeLineMultiplier = std::stof(value);
         }
       }
     }
@@ -113,6 +119,9 @@ namespace Menu
     out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
     out << "speed_multiplier=" << fSpeedMultiplier << "\n";
     out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
+    out << "infinite_sand=" << (bInfiniteSand ? "1" : "0") << "\n";
+    out << "fast_timeline=" << (bFastTimeLine ? "1" : "0") << "\n";
+    out << "timeline_multiplier=" << fTimeLineMultiplier << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -314,8 +323,13 @@ namespace Menu
         ImGui::Checkbox("Infinite Items", &Config.bInfiniteItems);
         ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
         ImGui::Checkbox("Infinite Currency (Diamonds, etc.)", &Config.bInfiniteCurrency);
+        ImGui::Checkbox("Infinite Sand (Hourglass)", &Config.bInfiniteSand);
         ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
         ImGui::Checkbox(skCrypt("Hourglass Use Anywhere"), &Config.bHourglassBypass);
+        ImGui::Checkbox("Timeline engine modifier", &Config.bFastTimeLine);
+        if (Config.bFastTimeLine) {
+          ImGui::SliderFloat("Timeline Multiplier", &Config.fTimeLineMultiplier, 1.0f, 1000.0f);
+        }
       }
 
       ImGui::Separator();

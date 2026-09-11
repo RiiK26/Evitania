@@ -26,6 +26,9 @@ namespace Menu
     bool  bSpeedHack              = false;
     float fSpeedMultiplier        = 2.0f;
     bool  bHourglassBypass        = false;
+    bool  bInfiniteSand           = false;
+    bool  bFastTimeLine           = false;
+    float fTimeLineMultiplier     = 10.0f;
 
     void LoadConfig();
     void SaveConfig();
