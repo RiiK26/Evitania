@@ -83,6 +83,12 @@ namespace Menu
             fSpeedMultiplier = std::stof(value);
           else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
+          else if (key == "hourglass_free_talents")
+            bHourglassFreeTalents = (value == "1");
+          else if (key == "hourglass_unlock_all_talents")
+            bHourglassUnlockAllTalents = (value == "1");
+          else if (key == "hourglass_massive_remort")
+            bHourglassMassiveRemort = (value == "1");
           else if (key == "infinite_sand")
             bInfiniteSand = (value == "1");
           else if (key == "fast_timeline")
@@ -119,6 +125,9 @@ namespace Menu
     out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
     out << "speed_multiplier=" << fSpeedMultiplier << "\n";
     out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
+    out << "hourglass_free_talents=" << (bHourglassFreeTalents ? "1" : "0") << "\n";
+    out << "hourglass_unlock_all_talents=" << (bHourglassUnlockAllTalents ? "1" : "0") << "\n";
+    out << "hourglass_massive_remort=" << (bHourglassMassiveRemort ? "1" : "0") << "\n";
     out << "infinite_sand=" << (bInfiniteSand ? "1" : "0") << "\n";
     out << "fast_timeline=" << (bFastTimeLine ? "1" : "0") << "\n";
     out << "timeline_multiplier=" << fTimeLineMultiplier << "\n";
@@ -326,6 +335,9 @@ namespace Menu
         ImGui::Checkbox("Infinite Sand (Hourglass)", &Config.bInfiniteSand);
         ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
         ImGui::Checkbox(skCrypt("Hourglass Use Anywhere"), &Config.bHourglassBypass);
+        ImGui::Checkbox("Free Hourglass Talents", &Config.bHourglassFreeTalents);
+        ImGui::Checkbox("Unlock All Hourglass Talents", &Config.bHourglassUnlockAllTalents);
+        ImGui::Checkbox("Massive Prestige on Remort", &Config.bHourglassMassiveRemort);
         ImGui::Checkbox("Timeline engine modifier", &Config.bFastTimeLine);
         if (Config.bFastTimeLine) {
           ImGui::SliderFloat("Timeline Multiplier", &Config.fTimeLineMultiplier, 1.0f, 1000.0f);

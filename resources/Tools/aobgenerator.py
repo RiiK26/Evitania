@@ -74,10 +74,10 @@ def generate_signature(pe, md, pe_data, rva, initial_min_length=15):
     if offset == 0:
         return None
 
-    code = pe_data[rva:rva+200]
+    code = pe_data[rva:rva+400]
 
     current_min_length = initial_min_length
-    while current_min_length < 150:
+    while current_min_length < 300:
         sig_bytes = []
         for i in md.disasm(code, rva):
             instr_bytes = i.bytes
@@ -86,23 +86,30 @@ def generate_signature(pe, md, pe_data, rva, initial_min_length=15):
             # CALL / JMP rel32
             if i.mnemonic in ["call", "jmp"] and len(instr_bytes) == 5:
                 sig_bytes.extend([f"{instr_bytes[0]:02X}", "?", "?", "?", "?"])
-            # RIP-relative addressing (e.g. MOV RAX, [RIP + disp32]) or absolute immediate (e.g. MOV EAX, imm32)
             else:
-                has_disp32 = False
-                for op in i.operands:
-                    if op.type == CS_OP_MEM and op.mem.base == 0: # Absolute address
-                        has_disp32 = True
-                    elif op.type == CS_OP_IMM and len(instr_bytes) >= 5: # Immediate
-                        has_disp32 = True
+                wildcards = [False] * len(instr_bytes)
 
-                if has_disp32 and len(instr_bytes) >= 5:
-                    # Keep first few bytes (opcode/ModRM), wildcard the immediate 4 bytes
-                    prefix_len = len(instr_bytes) - 4
-                    for b in instr_bytes[:prefix_len]:
-                        sig_bytes.append(f"{b:02X}")
-                    sig_bytes.extend(["?"] * 4)
-                else:
-                    for b in instr_bytes:
+                has_rel_or_abs = False
+                for op in i.operands:
+                    if op.type == CS_OP_MEM and op.mem.base in (0, 41): # 0 = absolute, 41 = X86_REG_RIP
+                        has_rel_or_abs = True
+
+                if has_rel_or_abs and getattr(i, "disp_size", 0) >= 4:
+                    disp_off = getattr(i, "disp_offset", 0)
+                    for j in range(disp_off, disp_off + i.disp_size):
+                        if j < len(wildcards):
+                            wildcards[j] = True
+
+                if getattr(i, "imm_size", 0) >= 4:
+                    imm_off = getattr(i, "imm_offset", 0)
+                    for j in range(imm_off, imm_off + i.imm_size):
+                        if j < len(wildcards):
+                            wildcards[j] = True
+
+                for j, b in enumerate(instr_bytes):
+                    if wildcards[j]:
+                        sig_bytes.append("?")
+                    else:
                         sig_bytes.append(f"{b:02X}")
 
             if len(sig_bytes) >= current_min_length:
@@ -169,6 +176,17 @@ def main():
         ("HourglassService", "BuyTalent", 0),
         ("HourglassService", "BuyGenerator", 0),
         ("HourglassService", "BuyUpgradeBlock", 0),
+        ("HourglassService", "CanBuyTalent", 0),
+        ("HourglassService", "IsTalentUnlocked", 0),
+        ("HourglassService", "PreviewRemortReward", 0),
+        ("HourglassService", "GetTalentLevel", 0),
+        ("HourglassService", "RunEarned", 0),
+        ("AntiCheatService", "Initialize", 0),
+        ("AntiCheatService", "OnSpeedHackDetected", 0),
+        ("AntiCheatService", "OnObscuredCheatingDetected", 0),
+        ("AntiCheatService", "Handle", 0),
+        ("AntiCheatService", "Apply", 0),
+        ("AntiCheatService", "ReportCheatToAnalytics", 0),
     ]
 
     print("\n--- Generated AOB Signatures ---")

@@ -7,17 +7,18 @@ namespace Signatures
 
   // 0x6EAE10
   constexpr const char* CurrencyService_Subtract_1 =
-    "48 89 5C 24 10 56 48 81 EC ? ? ? ? 80 3D AE ? ? ? ? 48 8B DA 0F 29 74 24 70";
+    "48 89 5C 24 10 56 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 70";
 
   // 0x77B8F0
   constexpr const char* Skill_AddExperience = "40 53 48 83 EC 70 0F 10 41 30 8B 41 40 48 8B D9";
 
   // 0x767C90
-  constexpr const char* SteamPurchaseService_InitiatePurchase = "48 89 5C 24 20 57 48 83 EC 20 80 3D E6 ? ? ? ?";
+  constexpr const char* SteamPurchaseService_InitiatePurchase =
+    "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 73";
 
   // 0x749870
   constexpr const char* MobilePurchaseService_InitiatePurchase =
-    "48 89 5C 24 10 57 48 83 EC 20 80 3D ED ? ? ? ? 48 8B FA 48 8B D9 75 13 48 8D 0D D8 A2 4C 04";
+    "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 3C 00";
 
   // 0x767A50
   constexpr const char* SteamPurchaseService_FindLot =
@@ -28,40 +29,46 @@ namespace Signatures
     "48 83 EC 28 48 8B 49 30 48 85 C9 74 0C 45 33 C0 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 83 EC 28";
 
   // 0x7F3A20
-  constexpr const char* IAPRewarder_Reward = "40 53 56 57 41 56 48 83 EC 28 80 3D 4C ? ? ? ?";
+  constexpr const char* IAPRewarder_Reward = "40 53 56 57 41 56 48 83 EC 28 80 3D ? ? ? ? 00 45 0F B6 F1 41 0F B6 F0";
 
   // 0x680530
   constexpr const char* MovementControl_Move =
-    "40 53 48 81 EC ? ? ? ? 80 3D B3 ? ? ? ? 48 8B D9 0F 29 BC 24 E0 00 00 00";
+    "40 53 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B D9 0F 29 BC 24 E0 00 00 00";
 
   // 0x363CE80
-  constexpr const char* Time_timeScale = "48 83 EC 38 48 8B 05 C5 3D 8E 01 0F 29 74 24 20";
+  constexpr const char* Time_timeScale =
+    "48 83 EC 38 48 8B 05 ? ? ? ? 0F 29 74 24 20 0F 28 F0 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 0F 28 C6 0F 28 74 24 20 48 83 C4 38 48 FF E0 CC CC CC CC CC CC 40 53 48 83 EC 20 80 3D ? ? ? ? 00";
 
   // 0x89D700
-  constexpr const char* SpawnPortal_CurrentSpawnInterval = "40 53 48 83 EC 30 80 3D B7 ? ? ? ? 48 8B D9 48 89 7C 24 40";
+  constexpr const char* SpawnPortal_CurrentSpawnInterval =
+    "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 48 89 7C 24 40 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? 48 8B 7B 38";
 
   // 0x6F0BE0
   constexpr const char* GatheringService_GetSpeed = "48 83 EC 28 48 85 D2 74 42 8B 52 40 85 D2 74 18";
 
   // 0x802F50
-  constexpr const char* TimeskipItem_CanUseImpl = "48 83 EC 28 80 3D CA ? ? ? ? 75 13 48 8D 0D 14 C4 3D 04";
+  constexpr const char* TimeskipItem_CanUseImpl =
+    "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 88 A0 00 00 00 48 8B 09 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 40 57 48 83 EC 20";
 
   // 0x746CC0
   constexpr const char* HourglassService_Sand =
-    "48 89 5C 24 08 57 48 83 EC 30 33 D2 0F 29 74 24 20 48 8B D9 E8 ? ? ? ? 80 3D 23 ? ? ? ?";
+    "48 89 5C 24 08 57 48 83 EC 30 33 D2 0F 29 74 24 20 48 8B D9 E8 ? ? ? ? 80 3D ? ? ? ? 00 48 8B F8 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 0F 57 F6 F2 0F 11 74 24 50 48 85 FF 74 36 33 D2 48 8B CB E8 ? ? ? ? 48 85 C0 74 3A 48 8B 48 18 48 85 C9 74 31 4C 8B 0D ? ? ? ? 4C 8D 44 24 50 48 8B D7 E8 ? ? ? ? 84 C0 74 06 F2 0F 10 74 24 50 48 8B 5C 24 40 0F 28 C6 0F 28 74 24 20 48 83 C4 30 5F C3 E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC CC CC 40 53 48 83 EC 20";
 
   // 0x740600
-  constexpr const char* HourglassService_GrantReward = "48 89 5C 24 08 57 48 83 EC 40 80 3D F4 ? ? ? ? 48 8B FA";
+  constexpr const char* HourglassService_GrantReward =
+    "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 0F 29 74 24 30 48 8B D9 0F 29 7C 24 20 0F 28 F2";
 
   // 0x73E4E0
   constexpr const char* HourglassService_CostFactor =
-    "48 89 5C 24 08 57 48 83 EC 30 80 3D 21 ? ? ? ? 48 8B DA 0F 29 74 24 20";
+    "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 20 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 03";
 
   // 0x739B30
-  constexpr const char* HourglassService_AccruePrestige = "40 53 48 83 EC 50 80 3D C5 ? ? ? ? 48 8B D9";
+  constexpr const char* HourglassService_AccruePrestige =
+    "40 53 48 83 EC 50 80 3D ? ? ? ? 00 48 8B D9 0F 29 7C 24 30 44 0F 29 44 24 20 44 0F 28 C1";
 
   // 0x825740
-  constexpr const char* HourglassSimulator_Simulate = "40 55 56 48 81 EC ? ? ? ? 80 3D F7 ? ? ? ?";
+  constexpr const char* HourglassSimulator_Simulate =
+    "40 55 56 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8 44 0F 29 A4 24 10 01 00 00";
 
   // 0x742890
   constexpr const char* HourglassService_PrestigeSpeedMult = "45 33 C9 45 33 C0 BA ? ? ? ? E9 ? ? ? ? 48 83 EC 38";
@@ -71,14 +78,15 @@ namespace Signatures
     "45 33 C9 45 33 C0 BA ? ? ? ? E9 ? ? ? ? 40 53 48 83 EC 40";
 
   // 0x746090
-  constexpr const char* HourglassService_UpgradeCost = "48 89 5C 24 08 56 48 83 EC 20 80 3D 79 ? ? ? ?";
+  constexpr const char* HourglassService_UpgradeCost =
+    "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 38 ? ? ? ? 48 85 DB 74 51 48 8B 4E 78 48 85 C9 74 56 4C 8B 0D ? ? ? ?";
 
   // 0x742000
   constexpr const char* HourglassService_LevelCost = "40 53 48 83 EC 20 48 8B 41 10 48 85 C0 74 2A";
 
   // 0x745870
   constexpr const char* HourglassService_TotalRate =
-    "48 8B C4 48 89 58 10 48 89 70 18 57 41 56 41 57 48 81 EC ? ? ? ? 0F 29 70 D8 0F 29 78 C8 44 0F 29 40 B8 48 8B F1 80 3D 75 ? ? ? ?";
+    "48 8B C4 48 89 58 10 48 89 70 18 57 41 56 41 57 48 81 EC ? ? ? ? 0F 29 70 D8 0F 29 78 C8 44 0F 29 40 B8 48 8B F1 80 3D ? ? ? ? 00";
 
   // 0x742850
   constexpr const char* HourglassService_PrestigeRatePerSecond =
@@ -89,28 +97,72 @@ namespace Signatures
 
   // 0x856690
   constexpr const char* HourglassUpgradeItem_GetCost =
-    "48 89 5C 24 08 57 48 83 EC 50 80 3D C8 ? ? ? ? 8B FA 0F 29 74 24 40";
+    "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 0F 29 74 24 40";
 
   // 0x824970
   constexpr const char* HourglassHardUUpgrade_GetCostAmount =
-    "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D D4 ? ? ? ? 8B FA 48 8B D9";
+    "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 8B FA 48 8B D9";
 
   // 0x73CDC0
   constexpr const char* HourglassService_BuyUpgrade =
-    "48 89 5C 24 08 57 48 83 EC 20 80 3D 4D ? ? ? ? 48 8B FA 48 8B D9 75 1F 48 8D 0D C8 54 4D 04";
+    "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 33 D2 48 8B CB E8 ? ? ? ? 45 33 C0 48 8B D7";
 
   // 0x73C220
-  constexpr const char* HourglassService_BuyHardUpgrade = "40 55 56 48 83 EC 48 80 3D 02 ? ? ? ? 48 8B EA";
+  constexpr const char* HourglassService_BuyHardUpgrade =
+    "40 55 56 48 83 EC 48 80 3D ? ? ? ? 00 48 8B EA 48 8B F1 75 37 48 8D 0D ? ? ? ?";
 
   // 0x73C8E0
-  constexpr const char* HourglassService_BuyTalent = "48 89 5C 24 18 57 48 83 EC 40 80 3D 36 ? ? ? ?";
+  constexpr const char* HourglassService_BuyTalent =
+    "48 89 5C 24 18 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 0F 57 C0 48 89 74 24 50";
 
   // 0x73BF40
   constexpr const char* HourglassService_BuyGenerator =
-    "48 89 6C 24 18 48 89 74 24 20 57 48 81 EC ? ? ? ? 80 3D BB ? ? ? ?";
+    "48 89 6C 24 18 48 89 74 24 20 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8 48 8B F2";
 
   // 0x73CB60
   constexpr const char* HourglassService_BuyUpgradeBlock =
     "48 89 5C 24 18 48 89 54 24 10 48 89 4C 24 08 56 57 41 56 48 83 EC 60 4C 8B F2";
+
+  // 0x73D320
+  constexpr const char* HourglassService_CanBuyTalent =
+    "48 89 5C 24 08 57 48 83 EC 20 45 33 C0 48 8B DA 48 8B F9 E8 ? ? ? ? 84 C0 0F 84 ? ? ? ?";
+
+  // 0x741AD0
+  constexpr const char* HourglassService_IsTalentUnlocked =
+    "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 40 48 8B FA 48 8B F1 80 3D ? ? ? ? 00 75 43 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 58 ? ? ? ? 80 3D ? ? ? ? 00";
+
+  // 0x7428A0
+  constexpr const char* HourglassService_PreviewRemortReward = "48 83 EC 38 80 3D ? ? ? ? 00 48 89 5C 24 30";
+
+  // 0x7404E0
+  constexpr const char* HourglassService_GetTalentLevel =
+    "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 33 D2 C7 44 24 48 ? ? ? ? 48 8B CB E8 ? ? ? ? 48 85 C0 74 33 48 8B 48 58";
+
+  // 0x743FD0
+  constexpr const char* HourglassService_RunEarned = "48 83 EC 28 33 D2 E8 ? ? ? ? 48 85 C0 74 1E 48 8B 80 90 00 00 00";
+
+  // 0x753A00
+  constexpr const char* AntiCheatService_Initialize =
+    "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F1 75 5B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ?";
+
+  // 0x753EC0
+  constexpr const char* AntiCheatService_OnSpeedHackDetected =
+    "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 0D ? ? ? ? 48 8B 18 83 B9 E4 00 00 00 00 75 05 E8 ? ? ? ? 45 33 C0 33 D2 48 8B CB E8 ? ? ? ? 84 C0 74 58 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 08 48 85 C9 74 77";
+
+  // 0x753D70
+  constexpr const char* AntiCheatService_OnObscuredCheatingDetected =
+    "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 0D ? ? ? ? 48 8B 18 83 B9 E4 00 00 00 00 75 05 E8 ? ? ? ? 45 33 C0 33 D2 48 8B CB E8 ? ? ? ? 84 C0 74 58 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 08 48 85 C9 74 7A";
+
+  // 0x753900
+  constexpr const char* AntiCheatService_Handle =
+    "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 28 00 74 23";
+
+  // 0x7534D0
+  constexpr const char* AntiCheatService_Apply =
+    "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 8B 03";
+
+  // 0x754010
+  constexpr const char* AntiCheatService_ReportCheatToAnalytics =
+    "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA 48 8B F1 0F 85 ? ? ? ?";
 
 }  // namespace Signatures

@@ -12,6 +12,7 @@
 #include "../../Features/Combat/FastMobSpawn.hpp"
 #include "../../Features/Economy/FastGathering.hpp"
 #include "../../Features/Economy/HourglassBypass.hpp"
+#include "../../Features/Economy/HourglassTalents.hpp"
 #include "../../Features/Economy/InfiniteSand.hpp"
 #include "../../Features/Economy/FastTimeLine.hpp"
 
@@ -30,6 +31,7 @@ void Hooks::Initialize()
   Features::FastMobSpawn::Initialize();
   Features::FastGathering::Initialize();
   Features::HourglassBypass::Initialize();
+  Features::HourglassTalents::Initialize();
   Features::InfiniteSand::Initialize();
   Features::FastTimeLine::Initialize();
 }
@@ -38,6 +40,7 @@ void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
   Features::HourglassBypass::Uninitialize();
+  Features::HourglassTalents::Uninitialize();
   Features::InfiniteSand::Uninitialize();
   Features::FastTimeLine::Uninitialize();
   Features::GodMode::Uninitialize();
