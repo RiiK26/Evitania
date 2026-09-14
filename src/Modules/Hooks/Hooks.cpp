@@ -9,15 +9,20 @@
 #include "../../Features/Economy/FreeStore.hpp"
 #include "../../Features/Combat/SpeedHack.hpp"
 #include "../../Features/AntiCheat/AntiCheat.hpp"
-#include "../../Features/Combat/FastMobSpawn.hpp"
-#include "../../Features/Economy/FastGathering.hpp"
 #include "../../Features/Economy/HourglassBypass.hpp"
-#include "../../Features/Economy/HourglassTalents.hpp"
-#include "../../Features/Economy/InfiniteSand.hpp"
-#include "../../Features/Economy/FastTimeLine.hpp"
+
+#include "MinHook.h"
+
+bool Hooks::bHooksFailed = false;
 
 void Hooks::Initialize()
 {
+  int mhStatus = MH_Initialize();
+  if (mhStatus != MH_OK && mhStatus != MH_ERROR_ALREADY_INITIALIZED) {
+    Menu::Logger::Log("[Hooks] MH_Initialize failed: %d\n", mhStatus);
+    Hooks::bHooksFailed = true;
+  }
+
   // Initialize modular features
   Features::GodMode::Initialize();
   Features::AuraKill::Initialize();
@@ -28,21 +33,18 @@ void Hooks::Initialize()
   Features::FreeStore::Initialize();
   Features::SpeedHack::Initialize();
   Features::AntiCheat::Initialize();
-  Features::FastMobSpawn::Initialize();
-  Features::FastGathering::Initialize();
   Features::HourglassBypass::Initialize();
-  Features::HourglassTalents::Initialize();
-  Features::InfiniteSand::Initialize();
-  Features::FastTimeLine::Initialize();
+
+
+  if (!Hooks::bHooksFailed) {
+    Menu::Logger::Log("[Hooks] All features initialized successfully!\n");
+  }
 }
 
 void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
   Features::HourglassBypass::Uninitialize();
-  Features::HourglassTalents::Uninitialize();
-  Features::InfiniteSand::Uninitialize();
-  Features::FastTimeLine::Uninitialize();
   Features::GodMode::Uninitialize();
   Features::AuraKill::Uninitialize();
   Features::ExpMultiplier::Uninitialize();
@@ -52,4 +54,8 @@ void Hooks::Uninitialize()
   Features::FreeStore::Uninitialize();
   Features::SpeedHack::Uninitialize();
   Features::AntiCheat::Uninitialize();
+
+  // Disable/uninitialize MinHook here
+  MH_DisableHook(MH_ALL_HOOKS);
+  MH_Uninitialize();
 }

@@ -2,6 +2,15 @@
 
 namespace Signatures
 {
+  // 0x896D30
+  constexpr const char* EnemyNpcController_TakeDamage = "40 53 48 83 EC 20 80 79 3C 00 48 8B D9 74 4C";
+
+  // 0x896FF0
+  constexpr const char* EnemyNpcController_Update = "40 53 48 83 EC 40 80 79 20 00 48 8B D9 74 4D";
+
+  // 0x915930
+  constexpr const char* AttackReceiver_Recieve = "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00";
+
   // 0x6EAFB0
   constexpr const char* CurrencyService_Subtract = "40 53 48 83 EC 30 48 8B D9 0F 29 74 24 20 48 8B 49 10 0F 28 F2";
 
@@ -24,10 +33,6 @@ namespace Signatures
   constexpr const char* SteamPurchaseService_FindLot =
     "48 83 EC 28 48 8B 49 28 48 85 C9 74 0C 45 33 C0 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 08";
 
-  // 0x749120
-  constexpr const char* MobilePurchaseService_FindLot =
-    "48 83 EC 28 48 8B 49 30 48 85 C9 74 0C 45 33 C0 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 83 EC 28";
-
   // 0x7F3A20
   constexpr const char* IAPRewarder_Reward = "40 53 56 57 41 56 48 83 EC 28 80 3D ? ? ? ? 00 45 0F B6 F1 41 0F B6 F0";
 
@@ -39,43 +44,13 @@ namespace Signatures
   constexpr const char* Time_timeScale =
     "48 83 EC 38 48 8B 05 ? ? ? ? 0F 29 74 24 20 0F 28 F0 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 0F 28 C6 0F 28 74 24 20 48 83 C4 38 48 FF E0 CC CC CC CC CC CC 40 53 48 83 EC 20 80 3D ? ? ? ? 00";
 
-  // 0x89D700
-  constexpr const char* SpawnPortal_CurrentSpawnInterval =
-    "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 48 89 7C 24 40 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? 48 8B 7B 38";
-
-  // 0x6F0BE0
-  constexpr const char* GatheringService_GetSpeed = "48 83 EC 28 48 85 D2 74 42 8B 52 40 85 D2 74 18";
-
   // 0x802F50
   constexpr const char* TimeskipItem_CanUseImpl =
     "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 88 A0 00 00 00 48 8B 09 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 40 57 48 83 EC 20";
 
-  // 0x746CC0
-  constexpr const char* HourglassService_Sand =
-    "48 89 5C 24 08 57 48 83 EC 30 33 D2 0F 29 74 24 20 48 8B D9 E8 ? ? ? ? 80 3D ? ? ? ? 00 48 8B F8 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 0F 57 F6 F2 0F 11 74 24 50 48 85 FF 74 36 33 D2 48 8B CB E8 ? ? ? ? 48 85 C0 74 3A 48 8B 48 18 48 85 C9 74 31 4C 8B 0D ? ? ? ? 4C 8D 44 24 50 48 8B D7 E8 ? ? ? ? 84 C0 74 06 F2 0F 10 74 24 50 48 8B 5C 24 40 0F 28 C6 0F 28 74 24 20 48 83 C4 30 5F C3 E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC CC CC 40 53 48 83 EC 20";
-
-  // 0x740600
-  constexpr const char* HourglassService_GrantReward =
-    "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 0F 29 74 24 30 48 8B D9 0F 29 7C 24 20 0F 28 F2";
-
   // 0x73E4E0
   constexpr const char* HourglassService_CostFactor =
     "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 20 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 03";
-
-  // 0x739B30
-  constexpr const char* HourglassService_AccruePrestige =
-    "40 53 48 83 EC 50 80 3D ? ? ? ? 00 48 8B D9 0F 29 7C 24 30 44 0F 29 44 24 20 44 0F 28 C1";
-
-  // 0x825740
-  constexpr const char* HourglassSimulator_Simulate =
-    "40 55 56 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8 44 0F 29 A4 24 10 01 00 00";
-
-  // 0x742890
-  constexpr const char* HourglassService_PrestigeSpeedMult = "45 33 C9 45 33 C0 BA ? ? ? ? E9 ? ? ? ? 48 83 EC 38";
-
-  // 0x742780
-  constexpr const char* HourglassService_PrestigeCycleIncome =
-    "45 33 C9 45 33 C0 BA ? ? ? ? E9 ? ? ? ? 40 53 48 83 EC 40";
 
   // 0x746090
   constexpr const char* HourglassService_UpgradeCost =
@@ -83,17 +58,6 @@ namespace Signatures
 
   // 0x742000
   constexpr const char* HourglassService_LevelCost = "40 53 48 83 EC 20 48 8B 41 10 48 85 C0 74 2A";
-
-  // 0x745870
-  constexpr const char* HourglassService_TotalRate =
-    "48 8B C4 48 89 58 10 48 89 70 18 57 41 56 41 57 48 81 EC ? ? ? ? 0F 29 70 D8 0F 29 78 C8 44 0F 29 40 B8 48 8B F1 80 3D ? ? ? ? 00";
-
-  // 0x742850
-  constexpr const char* HourglassService_PrestigeRatePerSecond =
-    "40 53 48 83 EC 30 33 D2 0F 29 74 24 20 48 8B D9 E8 ? ? ? ? 45 33 C9 45 33 C0";
-
-  // 0x824250
-  constexpr const char* HourglassTalentConfig_PrestigeCost = "F2 0F 10 41 48 C3 CC CC CC CC CC CC CC CC CC";
 
   // 0x856690
   constexpr const char* HourglassUpgradeItem_GetCost =
@@ -122,24 +86,6 @@ namespace Signatures
   // 0x73CB60
   constexpr const char* HourglassService_BuyUpgradeBlock =
     "48 89 5C 24 18 48 89 54 24 10 48 89 4C 24 08 56 57 41 56 48 83 EC 60 4C 8B F2";
-
-  // 0x73D320
-  constexpr const char* HourglassService_CanBuyTalent =
-    "48 89 5C 24 08 57 48 83 EC 20 45 33 C0 48 8B DA 48 8B F9 E8 ? ? ? ? 84 C0 0F 84 ? ? ? ?";
-
-  // 0x741AD0
-  constexpr const char* HourglassService_IsTalentUnlocked =
-    "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 40 48 8B FA 48 8B F1 80 3D ? ? ? ? 00 75 43 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 58 ? ? ? ? 80 3D ? ? ? ? 00";
-
-  // 0x7428A0
-  constexpr const char* HourglassService_PreviewRemortReward = "48 83 EC 38 80 3D ? ? ? ? 00 48 89 5C 24 30";
-
-  // 0x7404E0
-  constexpr const char* HourglassService_GetTalentLevel =
-    "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 33 D2 C7 44 24 48 ? ? ? ? 48 8B CB E8 ? ? ? ? 48 85 C0 74 33 48 8B 48 58";
-
-  // 0x743FD0
-  constexpr const char* HourglassService_RunEarned = "48 83 EC 28 33 D2 E8 ? ? ? ? 48 85 C0 74 1E 48 8B 80 90 00 00 00";
 
   // 0x753A00
   constexpr const char* AntiCheatService_Initialize =

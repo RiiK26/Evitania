@@ -1,6 +1,6 @@
 #include "AuraKill.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
-#include "../../Modules/Hooks/Offsets.hpp"
+#include "../../Modules/Hooks/Signatures.hpp"
 #include "../../Modules/Menu/Menu.hpp"
 #include <cstdint>
 #include <unordered_map>
@@ -20,20 +20,28 @@ namespace Features
 
     std::unordered_map<void*, ULONGLONG> damageCooldowns;
 
+    static int aliveOffset = -1;
+
     void Hook_EnemyNpcController_Update(void* __this, void* method_info)
     {
       if (Menu::Config.bAuraKill) {
-        bool isAlive = *(bool*) ((uintptr_t) __this + Offsets::Fields::EnemyNpcController::alive);
-        if (isAlive) {
-          ULONGLONG currentTick = GetTickCount64();
-          if (currentTick - damageCooldowns[__this] > 1000) {
-            Orig_EnemyNpcController_TakeDamage(__this, Menu::Config.fGodModeDamage, method_info);
-            damageCooldowns[__this] = currentTick;
-          }
+        if (aliveOffset == -1) {
+          aliveOffset = IL2CPP::Class::Utils::GetFieldOffset("Enemy.EnemyNpcController", "alive");
         }
-        else {
-          // Cleanup if dead to prevent memory leaks from reused pointers
-          damageCooldowns.erase(__this);
+
+        if (aliveOffset > 0) {
+          bool isAlive = *(bool*) ((uintptr_t) __this + aliveOffset);
+          if (isAlive) {
+            ULONGLONG currentTick = GetTickCount64();
+            if (currentTick - damageCooldowns[__this] > 1000) {
+              Orig_EnemyNpcController_TakeDamage(__this, Menu::Config.fGodModeDamage, method_info);
+              damageCooldowns[__this] = currentTick;
+            }
+          }
+          else {
+            // Cleanup if dead to prevent memory leaks from reused pointers
+            damageCooldowns.erase(__this);
+          }
         }
       }
       Orig_EnemyNpcController_Update(__this, method_info);
@@ -41,12 +49,13 @@ namespace Features
 
     void Initialize()
     {
-      HOOK_METHOD(
-        "Enemy.EnemyNpcController", "TakeDamage", 1, Hook_EnemyNpcController_TakeDamage,
+      HOOK_SIGNATURE(
+        "EnemyNpcController::TakeDamage", Signatures::EnemyNpcController_TakeDamage, Hook_EnemyNpcController_TakeDamage,
         Orig_EnemyNpcController_TakeDamage
       );
-      HOOK_METHOD(
-        "Enemy.EnemyNpcController", "Update", 0, Hook_EnemyNpcController_Update, Orig_EnemyNpcController_Update
+      HOOK_SIGNATURE(
+        "EnemyNpcController::Update", Signatures::EnemyNpcController_Update, Hook_EnemyNpcController_Update,
+        Orig_EnemyNpcController_Update
       );
     }
 

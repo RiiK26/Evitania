@@ -1,7 +1,7 @@
 #include "GodMode.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
-#include "../../Modules/Hooks/Offsets.hpp"
+
 #include "../../Modules/Menu/Menu.hpp"
 #include <cstdint>
 
@@ -11,21 +11,35 @@ namespace Features
   {
     void (*Orig_AttackReceiver_Recieve)(void* __this, void* attack, void* method_info);
 
+    static int isPlayerOffset     = -1;
+    static int attackDamageOffset = -1;
+
     void Hook_AttackReceiver_Recieve(void* __this, void* attack, void* method_info)
     {
       if (!Menu::Config.bGodMode) {
         return Orig_AttackReceiver_Recieve(__this, attack, method_info);
       }
 
-      bool isPlayer = *(bool*) ((uintptr_t) __this + Offsets::Fields::AttackReceiver::isPlayer);
-      if (isPlayer && Menu::Config.bGodMode_Nullify) {
-        // Infinite HP: nullify the attack damage by returning early (player takes no damage)
-        return;
+      if (isPlayerOffset == -1) {
+        isPlayerOffset = IL2CPP::Class::Utils::GetFieldOffset("DamageSystem.Damagables.AttackReceiver", "isPlayer");
+      }
+
+      if (isPlayerOffset > 0) {
+        bool isPlayer = *(bool*) ((uintptr_t) __this + isPlayerOffset);
+        if (isPlayer && Menu::Config.bGodMode_Nullify) {
+          // Infinite HP: nullify the attack damage by returning early (player takes no damage)
+          return;
+        }
       }
 
       // High Attack: set the damage of the attack hitting the enemy to a massive amount
       if (attack && Menu::Config.bGodMode_Damage) {
-        *(float*) ((uintptr_t) attack + Offsets::Fields::Attack::AttackDamage) = Menu::Config.fGodModeDamage;
+        if (attackDamageOffset == -1) {
+          attackDamageOffset = IL2CPP::Class::Utils::GetFieldOffset("DamageSystem.Attacks.Attack", "AttackDamage");
+        }
+        if (attackDamageOffset > 0) {
+          *(float*) ((uintptr_t) attack + attackDamageOffset) = Menu::Config.fGodModeDamage;
+        }
       }
 
       Orig_AttackReceiver_Recieve(__this, attack, method_info);
@@ -33,25 +47,38 @@ namespace Features
 
     void (*Orig_MovementControl_Move)(void* __this, float movespeed, void* method_info);
 
+    static int viewOffset              = -1;
+    static int networkPlayerSyncOffset = -1;
+    static int isNetOffset             = -1;
+
     void Hook_MovementControl_Move(void* __this, float movespeed, void* method_info)
     {
       if (Menu::Config.bGodMode && Menu::Config.bGodMode_Speed) {
-        // Check if the MovementControl belongs to a PlayerCharacter
-        void* _view = *(void**) ((uintptr_t) __this + Offsets::Fields::MovementControl::_view);
-        if (_view) {
-          // Check if it's a network player
-          void* networkPlayerSync = *(void**) ((uintptr_t) _view + Offsets::Fields::PlayerCharacter::networkPlayerSync);
-          if (networkPlayerSync) {
-            // _isNet
-            bool _isNet = *(bool*) ((uintptr_t) networkPlayerSync + Offsets::Fields::NetworkPlayerSync::_isNet);
-            if (!_isNet) {
-              // It is the local player!
+        if (viewOffset == -1)
+          viewOffset = IL2CPP::Class::Utils::GetFieldOffset("MovementControl", "_view");
+        if (networkPlayerSyncOffset == -1)
+          networkPlayerSyncOffset = IL2CPP::Class::Utils::GetFieldOffset("Player.PlayerCharacter", "networkPlayerSync");
+        if (isNetOffset == -1)
+          isNetOffset = IL2CPP::Class::Utils::GetFieldOffset("Net.NetworkPlayerSync", "_isNet");
+
+        if (viewOffset > 0 && networkPlayerSyncOffset > 0 && isNetOffset > 0) {
+          // Check if the MovementControl belongs to a PlayerCharacter
+          void* _view = *(void**) ((uintptr_t) __this + viewOffset);
+          if (_view) {
+            // Check if it's a network player
+            void* networkPlayerSync = *(void**) ((uintptr_t) _view + networkPlayerSyncOffset);
+            if (networkPlayerSync) {
+              // _isNet
+              bool _isNet = *(bool*) ((uintptr_t) networkPlayerSync + isNetOffset);
+              if (!_isNet) {
+                // It is the local player!
+                movespeed *= Menu::Config.fGodModeSpeedMultiplier;
+              }
+            }
+            else {
+              // If no network sync is found, assume it's local player (e.g. singleplayer mode)
               movespeed *= Menu::Config.fGodModeSpeedMultiplier;
             }
-          }
-          else {
-            // If no network sync is found, assume it's local player (e.g. singleplayer mode)
-            movespeed *= Menu::Config.fGodModeSpeedMultiplier;
           }
         }
       }
@@ -60,8 +87,9 @@ namespace Features
 
     void Initialize()
     {
-      HOOK_METHOD(
-        "DamageSystem.Damagables.AttackReceiver", "Recieve", 1, Hook_AttackReceiver_Recieve, Orig_AttackReceiver_Recieve
+      HOOK_SIGNATURE(
+        "AttackReceiver::Recieve", Signatures::AttackReceiver_Recieve, Hook_AttackReceiver_Recieve,
+        Orig_AttackReceiver_Recieve
       );
       HOOK_SIGNATURE(
         "MovementControl::Move", Signatures::MovementControl_Move, Hook_MovementControl_Move, Orig_MovementControl_Move
