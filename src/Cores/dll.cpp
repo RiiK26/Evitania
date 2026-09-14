@@ -39,6 +39,24 @@ void MainThread(HMODULE hModule)
   FreeLibraryAndExitThread(hModule, 0);
 }
 
+void NTAPI TlsCallback(PVOID DllHandle, DWORD Reason, PVOID Reserved)
+{
+  if (Reason == DLL_PROCESS_ATTACH) {
+    if (AntiRE::CheckDebugger()) {
+      ExitProcess(1);
+    }
+  }
+}
+
+#ifdef _MSC_VER
+  #pragma section(".CRT$XLB", read)
+__declspec(allocate(".CRT$XLB")) PIMAGE_TLS_CALLBACK pTlsCallback = TlsCallback;
+#else
+extern "C" {
+__attribute__((section(".CRT$XLB"), used)) PIMAGE_TLS_CALLBACK pTlsCallback = TlsCallback;
+}
+#endif
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
   switch (ul_reason_for_call) {

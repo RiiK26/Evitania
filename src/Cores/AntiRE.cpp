@@ -1,5 +1,7 @@
 #include "AntiRE.hpp"
 #include <winternl.h>
+#include <intrin.h>
+#include <string.h>
 
 namespace AntiRE
 {
@@ -63,6 +65,63 @@ namespace AntiRE
       return true;
     }
 
+    // 5. Checking PEB NtGlobalFlag
+#ifdef _WIN64
+    PDWORD pNtGlobalFlag = (PDWORD) ((PBYTE) pPEB + 0xBC);
+#else
+    PDWORD pNtGlobalFlag = (PDWORD) ((PBYTE) pPEB + 0x68);
+#endif
+    if (*pNtGlobalFlag & 0x70) {
+      return true;
+    }
+
+    if (CheckTiming()) {
+      return true;
+    }
+
+    if (CheckVM()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool CheckVM()
+  {
+    int cpuInfo[4] = {0};
+    __cpuid(cpuInfo, 1);
+    if ((cpuInfo[2] & (1 << 31)) != 0) {  // Hypervisor present bit
+      return true;
+    }
+
+    __cpuid(cpuInfo, 0x40000000);
+    char hypervisorVendor[13];
+    memcpy(hypervisorVendor, &cpuInfo[1], 4);
+    memcpy(hypervisorVendor + 4, &cpuInfo[2], 4);
+    memcpy(hypervisorVendor + 8, &cpuInfo[3], 4);
+    hypervisorVendor[12] = '\0';
+
+    const char* knownVMs[] = {"VMwareVMware", "VBoxVBoxVBox", "KVMKVMKVM\0\0\0", "Microsoft Hv", "prl hyperv  "};
+
+    for (const char* vm : knownVMs) {
+      if (strcmp(hypervisorVendor, vm) == 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool CheckTiming()
+  {
+    unsigned __int64 tsc1 = __rdtsc();
+    for (int i = 0; i < 0x10000; i++) {
+      volatile int dummy = i;
+    }
+    unsigned __int64 tsc2 = __rdtsc();
+
+    if ((tsc2 - tsc1) > 0xFFFFFF) {
+      return true;
+    }
     return false;
   }
 }  // namespace AntiRE
