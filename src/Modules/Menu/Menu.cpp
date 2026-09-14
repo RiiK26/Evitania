@@ -9,6 +9,7 @@
 #include <sstream>
 #include "../../Cores/skCrypter.h"
 #include "../../Features/Combat/SpeedHack.hpp"
+#include "Logger.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -59,10 +60,6 @@ namespace Menu
           }
           else if (key == "god_mode_speed_multiplier")
             fGodModeSpeedMultiplier = std::stof(value);
-          else if (key == "fast_mob_spawn")
-            bFastMobSpawn = (value == "1");
-          else if (key == "fast_gathering")
-            bFastGathering = (value == "1");
           else if (key == "aura_kill")
             bAuraKill = (value == "1");
           else if (key == "exp_multiplier")
@@ -83,18 +80,6 @@ namespace Menu
             fSpeedMultiplier = std::stof(value);
           else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
-          else if (key == "hourglass_free_talents")
-            bHourglassFreeTalents = (value == "1");
-          else if (key == "hourglass_unlock_all_talents")
-            bHourglassUnlockAllTalents = (value == "1");
-          else if (key == "hourglass_massive_remort")
-            bHourglassMassiveRemort = (value == "1");
-          else if (key == "infinite_sand")
-            bInfiniteSand = (value == "1");
-          else if (key == "fast_timeline")
-            bFastTimeLine = (value == "1");
-          else if (key == "timeline_multiplier")
-            fTimeLineMultiplier = std::stof(value);
         }
       }
     }
@@ -113,8 +98,6 @@ namespace Menu
     out << "god_mode_speed_toggle=" << (bGodMode_Speed ? "1" : "0") << "\n";
     out << "god_mode_damage=" << fGodModeDamage << "\n";
     out << "god_mode_speed_multiplier=" << fGodModeSpeedMultiplier << "\n";
-    out << "fast_mob_spawn=" << (bFastMobSpawn ? "1" : "0") << "\n";
-    out << "fast_gathering=" << (bFastGathering ? "1" : "0") << "\n";
     out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
     out << "exp_multiplier=" << (bExpMultiplier ? "1" : "0") << "\n";
     out << "exp_multiplier_value=" << (long long) fExpMultiplierValue << "\n";
@@ -125,12 +108,6 @@ namespace Menu
     out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
     out << "speed_multiplier=" << fSpeedMultiplier << "\n";
     out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
-    out << "hourglass_free_talents=" << (bHourglassFreeTalents ? "1" : "0") << "\n";
-    out << "hourglass_unlock_all_talents=" << (bHourglassUnlockAllTalents ? "1" : "0") << "\n";
-    out << "hourglass_massive_remort=" << (bHourglassMassiveRemort ? "1" : "0") << "\n";
-    out << "infinite_sand=" << (bInfiniteSand ? "1" : "0") << "\n";
-    out << "fast_timeline=" << (bFastTimeLine ? "1" : "0") << "\n";
-    out << "timeline_multiplier=" << fTimeLineMultiplier << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -280,68 +257,69 @@ namespace Menu
       ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
       ImGui::Begin("Evitania Online v" PROJECT_VERSION, nullptr, ImGuiWindowFlags_NoCollapse);
 
-      if (ImGui::CollapsingHeader("Combat", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::Checkbox("God Mode", &Config.bGodMode);
-        ImGui::SameLine();
-        ImGui::TextDisabled("(?)");
-        if (ImGui::IsItemHovered()) {
-          ImGui::SetTooltip("Enable to use the granular God Mode settings below.");
-        }
+      if (ImGui::BeginTabBar("CheatTabs")) {
+        if (ImGui::BeginTabItem("Features")) {
+          if (ImGui::CollapsingHeader("Combat", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::Checkbox("God Mode", &Config.bGodMode);
+            ImGui::SameLine();
+            ImGui::TextDisabled("(?)");
+            if (ImGui::IsItemHovered()) {
+              ImGui::SetTooltip("Enable to use the granular God Mode settings below.");
+            }
 
-        if (ImGui::TreeNode("God Mode Settings")) {
-          // Disable individual toggles if master God Mode is off, but still show them
-          ImGui::BeginDisabled(!Config.bGodMode);
+            if (ImGui::TreeNode("God Mode Settings")) {
+              // Disable individual toggles if master God Mode is off, but still show them
+              ImGui::BeginDisabled(!Config.bGodMode);
 
-          ImGui::Checkbox("Nullify Damage (Infinite HP)", &Config.bGodMode_Nullify);
+              ImGui::Checkbox("Nullify Damage (Infinite HP)", &Config.bGodMode_Nullify);
 
-          ImGui::Checkbox("High Damage", &Config.bGodMode_Damage);
-          if (Config.bGodMode_Damage) {
-            ImGui::InputFloat("Damage Value", &Config.fGodModeDamage);
-            if (Config.fGodModeDamage < 0.0f)
-              Config.fGodModeDamage = 0.0f;
+              ImGui::Checkbox("High Damage", &Config.bGodMode_Damage);
+              if (Config.bGodMode_Damage) {
+                ImGui::InputFloat("Damage Value", &Config.fGodModeDamage);
+                if (Config.fGodModeDamage < 0.0f)
+                  Config.fGodModeDamage = 0.0f;
+              }
+
+              ImGui::Checkbox("Movement Speed", &Config.bGodMode_Speed);
+              if (Config.bGodMode_Speed) {
+                ImGui::SliderFloat("Speed Multiplier##GodMode", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+              }
+
+              ImGui::EndDisabled();
+              ImGui::TreePop();
+            }
+            ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
+            ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
+            if (Config.bExpMultiplier) {
+              ImGui::InputFloat("Exp Multiplier Amount", &Config.fExpMultiplierValue);
+              if (Config.fExpMultiplierValue < 1.0f)
+                Config.fExpMultiplierValue = 1.0f;
+            }
+            if (ImGui::Checkbox("Speed Hack (Global time scale)", &Config.bSpeedHack)) {
+              Features::SpeedHack::ApplySpeedHack();
+            }
+            if (Config.bSpeedHack) {
+              if (ImGui::SliderFloat("Speed Multiplier##SpeedHack", &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
+                Features::SpeedHack::ApplySpeedHack();
+              }
+            }
           }
 
-          ImGui::Checkbox("Movement Speed", &Config.bGodMode_Speed);
-          if (Config.bGodMode_Speed) {
-            ImGui::SliderFloat("Speed Multiplier##GodMode", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+          if (ImGui::CollapsingHeader("Economy")) {
+            ImGui::Checkbox("Infinite items on inventory", &Config.bInfiniteItems);
+            ImGui::Checkbox("100% Success enhance Item", &Config.bEnhanceItem100);
+            ImGui::Checkbox("Infinite currency (Diamonds, Golds, Sands, etc)", &Config.bInfiniteCurrency);
+            ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
+            ImGui::Checkbox("Use Hourglass (Timeskip) anywhere", &Config.bHourglassBypass);
           }
+          ImGui::EndTabItem();
+        }
 
-          ImGui::EndDisabled();
-          ImGui::TreePop();
+        if (ImGui::BeginTabItem("Logs")) {
+          Menu::Logger::Draw();
+          ImGui::EndTabItem();
         }
-        ImGui::Checkbox("Fast Mob Spawn", &Config.bFastMobSpawn);
-        ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
-        ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
-        if (Config.bExpMultiplier) {
-          ImGui::InputFloat("Exp Multiplier Amount", &Config.fExpMultiplierValue);
-          if (Config.fExpMultiplierValue < 1.0f)
-            Config.fExpMultiplierValue = 1.0f;
-        }
-        if (ImGui::Checkbox("Speed Hack (Global TimeScale)", &Config.bSpeedHack)) {
-          Features::SpeedHack::ApplySpeedHack();
-        }
-        if (Config.bSpeedHack) {
-          if (ImGui::SliderFloat("Speed Multiplier##SpeedHack", &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
-            Features::SpeedHack::ApplySpeedHack();
-          }
-        }
-      }
-
-      if (ImGui::CollapsingHeader("Economy")) {
-        ImGui::Checkbox("Fast Gathering (Mining/Woodcutting)", &Config.bFastGathering);
-        ImGui::Checkbox("Infinite Items", &Config.bInfiniteItems);
-        ImGui::Checkbox("100% Enhance Item", &Config.bEnhanceItem100);
-        ImGui::Checkbox("Infinite Currency (Diamonds, etc.)", &Config.bInfiniteCurrency);
-        ImGui::Checkbox("Infinite Sand (Hourglass)", &Config.bInfiniteSand);
-        ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
-        ImGui::Checkbox(skCrypt("Hourglass Use Anywhere"), &Config.bHourglassBypass);
-        ImGui::Checkbox("Free Hourglass Talents", &Config.bHourglassFreeTalents);
-        ImGui::Checkbox("Unlock All Hourglass Talents", &Config.bHourglassUnlockAllTalents);
-        ImGui::Checkbox("Massive Prestige on Remort", &Config.bHourglassMassiveRemort);
-        ImGui::Checkbox("Timeline engine modifier", &Config.bFastTimeLine);
-        if (Config.bFastTimeLine) {
-          ImGui::SliderFloat("Timeline Multiplier", &Config.fTimeLineMultiplier, 1.0f, 1000.0f);
-        }
+        ImGui::EndTabBar();
       }
 
       ImGui::Separator();
