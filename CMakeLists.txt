@@ -27,43 +27,18 @@ add_compile_definitions(
 add_compile_options(-fpermissive -ffunction-sections -fdata-sections)
 add_link_options(-Wl,--gc-sections)
 
-if(POLICY CMP0169)
-  cmake_policy(SET CMP0169 OLD)
-endif()
-include(FetchContent)
-
-# Fetch MinHook
-FetchContent_Declare(
-    minhook
-    GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
-    GIT_TAG        master
-    GIT_SHALLOW    ON
-)
-FetchContent_Populate(minhook)
-
-# Fetch ImGui
-FetchContent_Declare(
-    imgui
-    GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG        docking
-    GIT_SHALLOW    ON
-)
-FetchContent_Populate(imgui)
-
-file(GLOB MINHOOK_SRC "${minhook_SOURCE_DIR}/src/*.c" "${minhook_SOURCE_DIR}/src/hde/*.c")
-file(GLOB SRC_FILES "src/Cores/AntiRE.cpp" "src/Cores/dll.cpp" "src/Cores/Scanner.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp"
-    src/Features/Combat/FastMobSpawn.cpp
-    src/Features/Economy/FastGathering.cpp)
+file(GLOB MINHOOK_SRC "src/Modules/MinHook/*.c" "src/Modules/MinHook/hde/*.c")
+file(GLOB SRC_FILES "src/Cores/AntiRE.cpp" "src/Cores/dll.cpp" "src/Cores/Scanner.cpp" "src/Modules/Hooks/*.cpp" "src/Modules/Menu/*.cpp" "src/Features/*/*.cpp")
 
 add_library(Evitania MODULE
     ${SRC_FILES}
     ${MINHOOK_SRC}
-    ${imgui_SOURCE_DIR}/imgui.cpp
-    ${imgui_SOURCE_DIR}/imgui_draw.cpp
-    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    ${imgui_SOURCE_DIR}/imgui_tables.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
+    src/Modules/ImGui/imgui.cpp
+    src/Modules/ImGui/imgui_draw.cpp
+    src/Modules/ImGui/imgui_widgets.cpp
+    src/Modules/ImGui/imgui_tables.cpp
+    src/Modules/ImGui/imgui_impl_win32.cpp
+    src/Modules/ImGui/imgui_impl_dx11.cpp
 )
 
 # Build the injector separately
@@ -72,9 +47,9 @@ set_target_properties(injector PROPERTIES SUFFIX ".exe")
 target_link_options(injector PRIVATE "-static" "-static-libgcc" "-static-libstdc++")
 
 target_include_directories(Evitania PRIVATE
-    ${imgui_SOURCE_DIR}
-    ${imgui_SOURCE_DIR}/backends
-    ${minhook_SOURCE_DIR}/include
+    src/Modules/ImGui
+    src/Modules/MinHook
+    src/Modules/MinHook/include
     src
     src/Modules
     src/Features

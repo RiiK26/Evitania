@@ -15,7 +15,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Menu
 {
-  ConfigData Config;
+  ConfigData         Config;
+  static std::string g_IniPath;
 
   std::string GetConfigPath()
   {
@@ -205,6 +206,17 @@ namespace Menu
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+        char    path[MAX_PATH];
+        HMODULE hMod = GetModuleHandleA(skCrypt("Evitania.dll"));
+        if (hMod && GetModuleFileNameA(hMod, path, MAX_PATH)) {
+          std::string fullPath(path);
+          size_t      lastSlash = fullPath.find_last_of("\\/");
+          if (lastSlash != std::string::npos) {
+            g_IniPath      = fullPath.substr(0, lastSlash) + skCrypt("\\imgui.ini");
+            io.IniFilename = g_IniPath.c_str();
+          }
+        }
 
         ImGui_ImplWin32_Init(window);
         ImGui_ImplDX11_Init(pDevice, pContext);
