@@ -54,10 +54,6 @@ namespace Menu
     ImGui::SameLine();
     bool copy = ImGui::Button("Copy");
     ImGui::SameLine();
-    bool filter_changed = Filter.Draw("Filter", -100.0f);
-    if (filter_changed)
-      FilterDirty = true;
-    ImGui::SameLine();
     ImGui::Checkbox("Auto-scroll", &AutoScroll);
 
     ImGui::Separator();

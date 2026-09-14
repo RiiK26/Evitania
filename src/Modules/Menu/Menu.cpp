@@ -10,6 +10,7 @@
 #include "../../Cores/skCrypter.h"
 #include "../../Features/Combat/SpeedHack.hpp"
 #include "Logger.hpp"
+#include <shellapi.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -271,11 +272,15 @@ namespace Menu
     ImGui::NewFrame();
 
     if (Config.bMenuOpen) {
-      ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
-      ImGui::Begin("Evitania Online v" PROJECT_VERSION, nullptr, ImGuiWindowFlags_NoCollapse);
+      ImGui::SetNextWindowSize(ImVec2(650, 650), ImGuiCond_FirstUseEver);
+      ImGui::Begin(
+        "Evitania Online v" PROJECT_VERSION, nullptr,
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
+      );
 
       if (ImGui::BeginTabBar("CheatTabs")) {
         if (ImGui::BeginTabItem("Features")) {
+          ImGui::BeginChild("FeaturesChild", ImVec2(0, -30), false, 0);
           if (ImGui::CollapsingHeader("Combat", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Checkbox("God Mode", &Config.bGodMode);
             ImGui::SameLine();
@@ -329,23 +334,105 @@ namespace Menu
             ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
             ImGui::Checkbox("Use Hourglass (Timeskip) anywhere", &Config.bHourglassBypass);
           }
+
+          ImGui::Spacing();
+          ImGui::Separator();
+          if (ImGui::Button("Save Config", ImVec2(-1, 0))) {
+            Config.SaveConfig();
+          }
+          ImGui::Spacing();
+
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Logs")) {
+          ImGui::BeginChild("LogsChild", ImVec2(0, -30), false, 0);
           Menu::Logger::Draw();
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem(skCrypt("Donate"))) {
+          ImGui::BeginChild("DonateChild", ImVec2(0, -30), false, ImGuiWindowFlags_HorizontalScrollbar);
+          ImGui::TextWrapped("%s", skCrypt("Support the development! Your contributions help keep the project alive."));
+          ImGui::Spacing();
+
+          float halfWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+          if (ImGui::Button(skCrypt("GitHub Sponsor"), ImVec2(halfWidth, 0))) {
+            ShellExecuteA(
+              NULL, skCrypt("open"), skCrypt("https://github.com/sponsors/RiiK26"), NULL, NULL, SW_SHOWNORMAL
+            );
+          }
+          ImGui::SameLine();
+          if (ImGui::Button(skCrypt("Donate via PayPal"), ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            ShellExecuteA(
+              NULL, skCrypt("open"), skCrypt("https://www.paypal.com/paypalme/MuhamadSyakir"), NULL, NULL, SW_SHOWNORMAL
+            );
+          }
+
+          ImGui::Spacing();
+          ImGui::Separator();
+          ImGui::Spacing();
+          ImGui::TextUnformatted(skCrypt("Crypto Addresses"));
+          ImGui::Spacing();
+
+          if (
+            ImGui::BeginTable(
+              skCrypt("CryptoTable"), 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollX
+            )
+          ) {
+            ImGui::TableSetupColumn(skCrypt("Currency"), ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn(skCrypt("Address (Click to Copy)"), ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableHeadersRow();
+
+            auto drawCryptoRow = [](const char* name, const char* address) {
+              ImGui::TableNextRow();
+              ImGui::TableSetColumnIndex(0);
+              ImGui::TextUnformatted(name);
+              ImGui::TableSetColumnIndex(1);
+
+              ImGui::PushID(name);
+              if (ImGui::Button(skCrypt("Copy"))) {
+                ImGui::SetClipboardText(address);
+              }
+              ImGui::PopID();
+              ImGui::SameLine();
+              ImGui::TextUnformatted(address);
+            };
+
+            drawCryptoRow(skCrypt("Bitcoin"), skCrypt("bc1qpp50c2wuz5n2rq9jy3fxdmte7smcwu5rnegu6q"));
+            drawCryptoRow(skCrypt("Ethereum"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
+            drawCryptoRow(skCrypt("Tether (USDT)"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
+            drawCryptoRow(skCrypt("BNB"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
+            drawCryptoRow(skCrypt("XRP"), skCrypt("rnDnG9QBce7sbmY86HXqBUpcCq6LN3xfXg"));
+            drawCryptoRow(skCrypt("USDC"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
+            drawCryptoRow(skCrypt("Solana"), skCrypt("FLFVbCaYQWoPrm9rH1WLuoYmiVnC5CFWoCPzkNk2vzy2"));
+            drawCryptoRow(skCrypt("Tron"), skCrypt("TYNLxxQWERit64uNo8dSQX3CxdLmomtAq7"));
+            drawCryptoRow(skCrypt("Dogecoin"), skCrypt("DFwJXDQsqPEdpnWhXCMmBWMru9iqYqWhDn"));
+            drawCryptoRow(
+              skCrypt("Cardano"),
+              skCrypt(
+                "addr1qyhapduj2uvu8x4ct75hujtsx63uq375cxda8m25xgn7wep06zmey4cecwdtshaf0eyhqd4rcprafsvm60k4gv38uajq2z2l6a"
+              )
+            );
+            drawCryptoRow(skCrypt("Litecoin"), skCrypt("LMNbzEJ3M4qtAxsYyxMBkT4rzjSBJvUc2M"));
+            drawCryptoRow(skCrypt("Avalanche"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
+            drawCryptoRow(skCrypt("Polkadot"), skCrypt("15FtRzNuwpbNAjvMzRCegqDwN7cgw2a44ogfobdS7UmNACFr"));
+            drawCryptoRow(skCrypt("Polygon"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
+            drawCryptoRow(skCrypt("Cosmos"), skCrypt("cosmos1ashcczkgj884t9gert2se4m4zw5ea7t2fa4qh9"));
+            drawCryptoRow(skCrypt("X0 Cash"), skCrypt("FLFVbCaYQWoPrm9rH1WLuoYmiVnC5CFWoCPzkNk2vzy2"));
+
+            ImGui::EndTable();
+          }
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
       }
 
       ImGui::Separator();
-      if (ImGui::Button("Save Config", ImVec2(-1, 0))) {
-        Config.SaveConfig();
-      }
-
-      ImGui::Separator();
-      ImGui::TextDisabled("[INSERT] to show/hide menu");
+      ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "%s", skCrypt("[INSERT] show/hide menu"));
 
       ImGui::End();
     }
