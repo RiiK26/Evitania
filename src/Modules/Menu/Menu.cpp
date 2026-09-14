@@ -32,6 +32,15 @@ namespace Menu
     return skCrypt("config.txt");
   }
 
+  static float SafeParseFloat(const std::string& value, float defaultValue)
+  {
+    try {
+      return std::stof(value);
+    } catch (...) {
+      return defaultValue;
+    }
+  }
+
   void ConfigData::LoadConfig()
   {
     std::ifstream f(GetConfigPath());
@@ -53,20 +62,16 @@ namespace Menu
             bGodMode_Damage = (value == "1");
           else if (key == "god_mode_speed_toggle")
             bGodMode_Speed = (value == "1");
-          else if (key == "god_mode_damage") {
-            try {
-              fGodModeDamage = std::stof(value);
-            } catch (...) {
-            }
-          }
+          else if (key == "god_mode_damage")
+            fGodModeDamage = SafeParseFloat(value, fGodModeDamage);
           else if (key == "god_mode_speed_multiplier")
-            fGodModeSpeedMultiplier = std::stof(value);
+            fGodModeSpeedMultiplier = SafeParseFloat(value, fGodModeSpeedMultiplier);
           else if (key == "aura_kill")
             bAuraKill = (value == "1");
           else if (key == "exp_multiplier")
             bExpMultiplier = (value == "1");
           else if (key == "exp_multiplier_value")
-            fExpMultiplierValue = std::stof(value);
+            fExpMultiplierValue = SafeParseFloat(value, fExpMultiplierValue);
           else if (key == "infinite_items")
             bInfiniteItems = (value == "1");
           else if (key == "enhance_item_100")
@@ -78,7 +83,7 @@ namespace Menu
           else if (key == "speed_hack")
             bSpeedHack = (value == "1");
           else if (key == "speed_multiplier")
-            fSpeedMultiplier = std::stof(value);
+            fSpeedMultiplier = SafeParseFloat(value, fSpeedMultiplier);
           else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
         }

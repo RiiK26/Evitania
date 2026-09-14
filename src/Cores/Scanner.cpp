@@ -46,7 +46,10 @@ namespace Scanner
     size_t patternSize = patternBytes.size();
     int*   pat         = patternBytes.data();
 
-    for (size_t i = 0; i < moduleSize - patternSize; ++i) {
+    if (moduleSize < patternSize)
+      return 0;
+
+    for (size_t i = 0; i <= moduleSize - patternSize; ++i) {
       bool found = true;
       for (size_t j = 0; j < patternSize; ++j) {
         if (pat[j] != -1 && pat[j] != ((uint8_t*) moduleBase)[i + j]) {
