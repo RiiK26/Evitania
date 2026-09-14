@@ -10,6 +10,13 @@ A high-performance, modular internal client for **Evitania Online (PC Build)**. 
 
 The architecture is strictly modularized into distinct feature categories located within the `src/Features/` directory.
 
+<details>
+<summary> Image Preview </summary>
+
+![image](resources/images/Preview.png)
+
+</details>
+
 ### Combat
 
 | Feature | Description |
