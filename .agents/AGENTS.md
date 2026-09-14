@@ -28,3 +28,43 @@
 - `dump.cs` is no longer required for maintaining updates. `GameAssembly.dll` is the only requirement for `aobgenerator.py` to regenerate offsets.
 - Do not commit large compiled binaries (`.dll`, `.exe`) to version control.
 - Avoid using `.hpp` to define logic; use `.hpp` for declarations and `.cpp` for implementations.
+
+## Patterns
+
+### Feature Implementation Pattern
+Every feature should be modular and follow this structure (e.g. `src/Features/Combat/SpeedHack.cpp`). It defines the original function pointer, the hook function, and registers it in `Initialize()`:
+
+```cpp
+#include "SpeedHack.hpp"
+#include "../../Modules/Hooks/Hooks.hpp"
+#include "../../Modules/Hooks/Signatures.hpp"
+#include "../../Modules/Menu/Menu.hpp"
+
+namespace Features
+{
+  namespace SpeedHack
+  {
+    // 1. Declare original function pointer
+    void (*Orig_Time_set_timeScale)(float value, void* method_info);
+
+    // 2. Define the hook overriding the behavior
+    void Hook_Time_set_timeScale(float value, void* method_info)
+    {
+      if (Menu::Config.bSpeedHack) {
+        value = Menu::Config.fSpeedMultiplier;
+      }
+      Orig_Time_set_timeScale(value, method_info);
+    }
+
+    // 3. Register the hook in Initialize()
+    void Initialize()
+    {
+      HOOK_SIGNATURE(
+        "Time::set_timeScale", Signatures::Time_set_timeScale, Hook_Time_set_timeScale, Orig_Time_set_timeScale
+      );
+    }
+
+    void Uninitialize() { }
+  }  // namespace SpeedHack
+}  // namespace Features
+```
