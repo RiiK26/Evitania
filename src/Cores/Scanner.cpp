@@ -1,6 +1,7 @@
 #include "Scanner.hpp"
 #include <vector>
 #include <cstdint>
+#include <cstring>
 
 namespace Scanner
 {
@@ -49,16 +50,41 @@ namespace Scanner
     if (moduleSize < patternSize)
       return 0;
 
-    for (size_t i = 0; i <= moduleSize - patternSize; ++i) {
-      bool found = true;
-      for (size_t j = 0; j < patternSize; ++j) {
-        if (pat[j] != -1 && pat[j] != ((uint8_t*) moduleBase)[i + j]) {
-          found = false;
-          break;
+    uint8_t* start = (uint8_t*) moduleBase;
+    uint8_t* end   = start + moduleSize - patternSize;
+
+    if (pat[0] != -1) {
+      uint8_t firstByte = (uint8_t) pat[0];
+      while (start <= end) {
+        start = (uint8_t*) memchr(start, firstByte, end - start + 1);
+        if (!start)
+          return 0;
+
+        bool found = true;
+        for (size_t j = 1; j < patternSize; ++j) {
+          if (pat[j] != -1 && pat[j] != start[j]) {
+            found = false;
+            break;
+          }
         }
+        if (found) {
+          return (uintptr_t) start;
+        }
+        start++;
       }
-      if (found) {
-        return moduleBase + i;
+    }
+    else {
+      for (uint8_t* curr = start; curr <= end; ++curr) {
+        bool found = true;
+        for (size_t j = 0; j < patternSize; ++j) {
+          if (pat[j] != -1 && pat[j] != curr[j]) {
+            found = false;
+            break;
+          }
+        }
+        if (found) {
+          return (uintptr_t) curr;
+        }
       }
     }
     return 0;
