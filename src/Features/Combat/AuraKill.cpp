@@ -1,6 +1,7 @@
 #include "AuraKill.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
+#include "../../Modules/Hooks/Offsets.hpp"
 #include "../../Modules/Menu/Menu.hpp"
 #include <cstdint>
 #include <unordered_map>
@@ -20,17 +21,11 @@ namespace Features
 
     std::unordered_map<void*, ULONGLONG> damageCooldowns;
 
-    static int aliveOffset = -1;
-
     void Hook_EnemyNpcController_Update(void* __this, void* method_info)
     {
       if (Menu::Config.bAuraKill) {
-        if (aliveOffset == -1) {
-          aliveOffset = IL2CPP::Class::Utils::GetFieldOffset("Enemy.EnemyNpcController", "alive");
-        }
-
-        if (aliveOffset > 0) {
-          bool isAlive = *(bool*) ((uintptr_t) __this + aliveOffset);
+        if (Offsets::alive > 0) {
+          bool isAlive = *(bool*) ((uintptr_t) __this + Offsets::alive);
           if (isAlive) {
             ULONGLONG currentTick = GetTickCount64();
             if (currentTick - damageCooldowns[__this] > 1000) {

@@ -41,11 +41,11 @@ namespace Signatures
     "40 53 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B D9 0F 29 BC 24 E0 00 00 00";
 
   // 0x363CE80
-  constexpr const char* Time_timeScale =
+  constexpr const char* Time_set_timeScale =
     "48 83 EC 38 48 8B 05 ? ? ? ? 0F 29 74 24 20 0F 28 F0 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 0F 28 C6 0F 28 74 24 20 48 83 C4 38 48 FF E0 CC CC CC CC CC CC 40 53 48 83 EC 20 80 3D ? ? ? ? 00";
 
   // 0x802F50
-  constexpr const char* TimeskipItem_CanUseImpl =
+  constexpr const char* TimeskipItem_get_CanUseImpl =
     "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 88 A0 00 00 00 48 8B 09 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 40 57 48 83 EC 20";
 
   // 0x73E4E0

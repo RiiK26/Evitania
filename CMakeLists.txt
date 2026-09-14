@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.json" VERSION_JSON_CONTENT)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/config.json" VERSION_JSON_CONTENT)
 string(JSON PARSED_VERSION GET "${VERSION_JSON_CONTENT}" "version")
 
 project(

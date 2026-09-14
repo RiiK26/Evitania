@@ -1,54 +1,11 @@
 import os
-import sys
 import re
+import json
 import pefile
-from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM
+from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
 
-DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
 DLL_PATH = os.path.join(os.path.dirname(__file__), "../dumped/GameAssembly.dll")
-
-def get_offsets():
-    print("Parsing dump.cs...")
-    class_data = {}
-    current_class = None
-
-    if not os.path.exists(DUMP_PATH):
-        print(f"Error: Could not find dump.cs at {DUMP_PATH}")
-        return None
-
-    with open(DUMP_PATH, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    class_regex = re.compile(r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract)\s+)*(?:class|struct|interface|enum)\s+(\w+)")
-    rva_regex = re.compile(r"// RVA: 0x([0-9A-Fa-f]+)")
-    method_regex = re.compile(r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract|override|virtual)\s+)*.*?\s+(\w+|[a-zA-Z0-9_]+)\s*\(")
-    field_regex = re.compile(r"^\s*(?:(?:public|private|protected|internal|static|readonly|const|volatile)\s+)*.*?\s+(\w+|[a-zA-Z0-9_]+);\s*//\s*0x([0-9A-Fa-f]+)")
-
-    for i, line in enumerate(lines):
-        c_match = class_regex.search(line)
-        if c_match:
-            current_class = c_match.group(1)
-            if current_class not in class_data:
-                class_data[current_class] = {'methods': {}, 'fields': {}}
-            continue
-
-        if current_class:
-            f_match = field_regex.search(line)
-            if f_match:
-                class_data[current_class]['fields'][f_match.group(1)] = f_match.group(2)
-                continue
-
-            rva_match = rva_regex.search(line)
-            if rva_match and i + 1 < len(lines):
-                m_match = method_regex.search(lines[i+1])
-                if m_match:
-                    method_name = m_match.group(1)
-                    rva_val = rva_match.group(1)
-                    if method_name not in class_data[current_class]['methods']:
-                        class_data[current_class]['methods'][method_name] = []
-                    class_data[current_class]['methods'][method_name].append(rva_val)
-
-    return class_data
+SIG_DB_PATH = os.path.join(os.path.dirname(__file__), "../../config.json") # Root Folder of Project
 
 def parse_pattern_to_regex(pattern):
     regex_str = b""
@@ -59,123 +16,38 @@ def parse_pattern_to_regex(pattern):
             regex_str += re.escape(bytes([int(b, 16)]))
     return regex_str
 
-def is_unique_signature(pe_data, pattern):
-    regex_str = parse_pattern_to_regex(pattern)
-    regex = re.compile(regex_str, re.DOTALL)
-    matches = 0
-    for _ in regex.finditer(pe_data):
-        matches += 1
-        if matches > 1:
-            return False
-    return matches == 1
-
-def generate_signature(pe, md, pe_data, rva, initial_min_length=15):
-    offset = pe.get_offset_from_rva(rva)
-    if offset == 0:
-        return None
-
-    code = pe_data[rva:rva+400]
-
-    current_min_length = initial_min_length
-    while current_min_length < 300:
-        sig_bytes = []
-        for i in md.disasm(code, rva):
-            instr_bytes = i.bytes
-
-            # Heuristic: Wildcard relative offsets and hardcoded absolute addresses
-            # CALL / JMP rel32
-            if i.mnemonic in ["call", "jmp"] and len(instr_bytes) == 5:
-                sig_bytes.extend([f"{instr_bytes[0]:02X}", "?", "?", "?", "?"])
-            else:
-                wildcards = [False] * len(instr_bytes)
-
-                has_rel_or_abs = False
-                for op in i.operands:
-                    if op.type == CS_OP_MEM and op.mem.base in (0, 41): # 0 = absolute, 41 = X86_REG_RIP
-                        has_rel_or_abs = True
-
-                if has_rel_or_abs and getattr(i, "disp_size", 0) >= 4:
-                    disp_off = getattr(i, "disp_offset", 0)
-                    for j in range(disp_off, disp_off + i.disp_size):
-                        if j < len(wildcards):
-                            wildcards[j] = True
-
-                if getattr(i, "imm_size", 0) >= 4:
-                    imm_off = getattr(i, "imm_offset", 0)
-                    for j in range(imm_off, imm_off + i.imm_size):
-                        if j < len(wildcards):
-                            wildcards[j] = True
-
-                for j, b in enumerate(instr_bytes):
-                    if wildcards[j]:
-                        sig_bytes.append("?")
-                    else:
-                        sig_bytes.append(f"{b:02X}")
-
-            if len(sig_bytes) >= current_min_length:
-                # We must end on a full instruction boundary, so we can stop here
-                break
-
-        sig = " ".join(sig_bytes)
-        if is_unique_signature(pe_data, sig):
-            return sig
-
-        # If not unique, increase length and try again
-        current_min_length += 5
-
+def extract_offset_from_instruction(pe_data, rva, md, instr_idx, op_idx):
+    code = pe_data[rva:rva+800]
+    for i, instr in enumerate(md.disasm(code, rva)):
+        if i == instr_idx:
+            if op_idx < len(instr.operands):
+                op = instr.operands[op_idx]
+                if op.type == CS_OP_MEM:
+                    return op.mem.disp
+                elif op.type == CS_OP_IMM:
+                    return op.imm
     return None
 
 def main():
     if not os.path.exists(DLL_PATH):
-        print(f"Error: GameAssembly.dll not found at {DLL_PATH}")
-        print("Please copy GameAssembly.dll to the resources/dumped folder.")
+        print(f"[-] Error: GameAssembly.dll not found at {DLL_PATH}")
         return
 
-    class_data = get_offsets()
-    if not class_data:
+    if not os.path.exists(SIG_DB_PATH):
+        print(f"[-] Error: config.json not found at {SIG_DB_PATH}")
         return
 
-    print("Loading GameAssembly.dll...")
+    print("[*] Loading config.json...")
+    with open(SIG_DB_PATH, "r") as f:
+        config = json.load(f)
+        sig_db = config.get("signatures", {})
+
+    print("[*] Loading GameAssembly.dll...")
     pe = pefile.PE(DLL_PATH)
-    pe.parse_data_directories()
     pe_data = pe.get_memory_mapped_image()
 
     md = Cs(CS_ARCH_X86, CS_MODE_64)
     md.detail = True
-
-    targets = [
-        ("EnemyNpcController", "TakeDamage", 0),
-        ("EnemyNpcController", "Update", 0),
-        ("AttackReceiver", "Recieve", 0),
-        ("CurrencyService", "Subtract", 0),
-        ("CurrencyService", "Subtract", 1),
-        ("Skill", "AddExperience", 0),
-        ("SteamPurchaseService", "InitiatePurchase", 0),
-        ("MobilePurchaseService", "InitiatePurchase", 0),
-        ("SteamPurchaseService", "FindLot", 0),
-        ("IAPRewarder", "Reward", 0),
-        ("MovementControl", "Move", 0),
-        ("Time", "set_timeScale", 0),
-        ("TimeskipItem", "get_CanUseImpl", 0),
-        ("HourglassService", "CostFactor", 0),
-        ("HourglassService", "UpgradeCost", 0),
-        ("HourglassService", "LevelCost", 0),
-        ("HourglassUpgradeItem", "GetCost", 0),
-        ("HourglassHardUUpgrade", "GetCostAmount", 0),
-        ("HourglassService", "BuyUpgrade", 0),
-        ("HourglassService", "BuyHardUpgrade", 0),
-        ("HourglassService", "BuyTalent", 0),
-        ("HourglassService", "BuyGenerator", 0),
-        ("HourglassService", "BuyUpgradeBlock", 0),
-        ("AntiCheatService", "Initialize", 0),
-        ("AntiCheatService", "OnSpeedHackDetected", 0),
-        ("AntiCheatService", "OnObscuredCheatingDetected", 0),
-        ("AntiCheatService", "Handle", 0),
-        ("AntiCheatService", "Apply", 0),
-        ("AntiCheatService", "ReportCheatToAnalytics", 0),
-    ]
-
-    print("\n--- Generated AOB Signatures ---")
 
     signatures_content = [
         "#pragma once",
@@ -184,37 +56,65 @@ def main():
         "{",
     ]
 
-    for cls, method, overload_idx in targets:
-        if cls in class_data and method in class_data[cls]['methods']:
-            if overload_idx < len(class_data[cls]['methods'][method]):
-                rva_hex = class_data[cls]['methods'][method][overload_idx]
-                rva = int(rva_hex, 16)
+    offsets_content = [
+        "#pragma once",
+        "",
+        "namespace Offsets",
+        "{",
+    ]
 
-                sig = generate_signature(pe, md, pe_data, rva)
-            if sig:
-                print(f"[+] {cls}::{method} -> {sig}")
+    extracted_offsets = {}
 
-                # Format for C++ header
-                safe_cls = cls
-                safe_method = method.replace("set_", "").replace("get_", "")
-                if overload_idx > 0:
-                    safe_method = f"{safe_method}_{overload_idx}"
+    print("\n--- Scanning & Extracting ---")
+    for method_key, data in sig_db.items():
+        pattern = data["signature"]
+        extract_rules = data.get("extract", {})
 
-                signatures_content.append(f"  // 0x{rva_hex}")
-                signatures_content.append(f"  constexpr const char* {safe_cls}_{safe_method} = \"{sig}\";")
-                signatures_content.append("")
-            else:
-                print(f"[-] Failed to generate signature for {cls}::{method}")
+        regex_str = parse_pattern_to_regex(pattern)
+        regex = re.compile(regex_str, re.DOTALL)
+
+        matches = list(regex.finditer(pe_data))
+        if len(matches) == 1:
+            rva = matches[0].start()
+            print(f"[+] Found {method_key} at RVA: 0x{rva:X}")
+
+            signatures_content.append(f"  // 0x{rva:X}")
+            signatures_content.append(f"  constexpr const char* {method_key} = \"{pattern}\";")
+            signatures_content.append("")
+
+            for field_name, rule in extract_rules.items():
+                if "hardcoded" in rule:
+                    extracted_offsets[field_name] = rule["hardcoded"]
+                    print(f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)")
+                else:
+                    instr_idx = rule["instr_idx"]
+                    op_idx = rule["op_idx"]
+                    val = extract_offset_from_instruction(pe_data, rva, md, instr_idx, op_idx)
+                    if val is not None:
+                        extracted_offsets[field_name] = val
+                        print(f"    -> Extracted {field_name}: 0x{val:X}")
+                    else:
+                        print(f"    [-] Failed to extract {field_name}")
         else:
-            print(f"[-] Could not find {cls}::{method} in dump")
+            print(f"[-] Could not find unique match for {method_key} (Matches: {len(matches)})")
 
     signatures_content.append("}  // namespace Signatures")
 
+    for field_name, val in extracted_offsets.items():
+        offsets_content.append(f"  constexpr int {field_name} = 0x{val:X};")
+    offsets_content.append("}  // namespace Offsets")
+
     sig_path = os.path.join(os.path.dirname(__file__), "../../src/Modules/Hooks/Signatures.hpp")
+    off_path = os.path.join(os.path.dirname(__file__), "../../src/Modules/Hooks/Offsets.hpp")
+
     with open(sig_path, "w") as f:
         f.write("\n".join(signatures_content))
 
-    print(f"\nSignatures saved to {sig_path}")
+    with open(off_path, "w") as f:
+        f.write("\n".join(offsets_content))
+
+    print(f"\n[+] Generated {sig_path}")
+    print(f"[+] Generated {off_path}")
 
 if __name__ == "__main__":
     main()

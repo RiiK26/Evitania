@@ -1,6 +1,7 @@
 #include "FreeStore.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
+#include "../../Modules/Hooks/Offsets.hpp"
 
 #include "../../Modules/Menu/Menu.hpp"
 #include "../../Cores/Scanner.hpp"
@@ -15,8 +16,6 @@ namespace Features
     void* (*FindLot)(void*, void*, void*)           = nullptr;
     bool (*Reward)(void*, void*, bool, bool, void*) = nullptr;
 
-    static int rewarderOffset = -1;
-
     void Hook_SteamPurchaseService_InitiatePurchase(void* __this, void* productId, void* method_info)
     {
       if (Menu::Config.bFreeStore) {
@@ -26,13 +25,9 @@ namespace Features
         void* lot = FindLot(__this, productId, nullptr);
 
         if (__this) {
-          if (rewarderOffset == -1) {
-            rewarderOffset =
-              IL2CPP::Class::Utils::GetFieldOffset("Services.GemShopServices.SteamPurchaseService", "_rewarder");
-          }
-          if (rewarderOffset > 0) {
+          if (Offsets::_rewarder > 0) {
             // get the IAPRewarder
-            void* rewarder = *(void**) ((uintptr_t) __this + rewarderOffset);
+            void* rewarder = *(void**) ((uintptr_t) __this + Offsets::_rewarder);
             if (rewarder) {
               if (!Reward)
                 return;
@@ -55,12 +50,8 @@ namespace Features
         void* lot = FindLot(__this, productId, nullptr);
 
         if (__this) {
-          if (rewarderOffset == -1) {
-            rewarderOffset =
-              IL2CPP::Class::Utils::GetFieldOffset("Services.GemShopServices.SteamPurchaseService", "_rewarder");
-          }
-          if (rewarderOffset > 0) {
-            void* rewarder = *(void**) ((uintptr_t) __this + rewarderOffset);
+          if (Offsets::_rewarder > 0) {
+            void* rewarder = *(void**) ((uintptr_t) __this + Offsets::_rewarder);
             if (rewarder) {
               if (!Reward)
                 return;

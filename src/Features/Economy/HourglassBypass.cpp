@@ -20,7 +20,7 @@ namespace Features
     void Initialize()
     {
       HOOK_SIGNATURE(
-        "TimeskipItem::get_CanUseImpl", Signatures::TimeskipItem_CanUseImpl, Hook_TimeskipItem_get_CanUseImpl,
+        "TimeskipItem::get_CanUseImpl", Signatures::TimeskipItem_get_CanUseImpl, Hook_TimeskipItem_get_CanUseImpl,
         Orig_TimeskipItem_get_CanUseImpl
       );
     }

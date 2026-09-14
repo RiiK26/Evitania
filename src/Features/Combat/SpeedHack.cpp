@@ -28,7 +28,7 @@ namespace Features
     void Initialize()
     {
       HOOK_SIGNATURE(
-        "Time::set_timeScale", Signatures::Time_timeScale, Hook_Time_set_timeScale, Orig_Time_set_timeScale
+        "Time::set_timeScale", Signatures::Time_set_timeScale, Hook_Time_set_timeScale, Orig_Time_set_timeScale
       );
     }
 
