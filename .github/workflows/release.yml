@@ -33,8 +33,7 @@ jobs:
           mkdir -p release_pkg
           cp build/release/Evitania.dll release_pkg/
           cp build/release/injector.exe release_pkg/
-          cp scripts/run.sh release_pkg/
-          cp scripts/run.bat release_pkg/
+          cp scripts/run release_pkg/
           cp resources/template/README.md release_pkg/README.md
           cd release_pkg
           zip -r ../Evitania-v${{ steps.get_version.outputs.version }}.zip .

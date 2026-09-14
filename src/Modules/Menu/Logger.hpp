@@ -15,6 +15,8 @@ namespace Menu
     static ImGuiTextBuffer Buf;
     static ImGuiTextFilter Filter;
     static ImVector<int>   LineOffsets;
+    static ImVector<int>   FilteredLineOffsets;
+    static bool            FilterDirty;
     static bool            AutoScroll;
     static std::mutex      LogMutex;
     static bool            Initialized;

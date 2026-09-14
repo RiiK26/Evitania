@@ -6,7 +6,9 @@ namespace Menu
   ImGuiTextBuffer Logger::Buf;
   ImGuiTextFilter Logger::Filter;
   ImVector<int>   Logger::LineOffsets;
-  bool            Logger::AutoScroll = true;
+  ImVector<int>   Logger::FilteredLineOffsets;
+  bool            Logger::FilterDirty = true;
+  bool            Logger::AutoScroll  = true;
   std::mutex      Logger::LogMutex;
   bool            Logger::Initialized = false;
 
@@ -16,6 +18,7 @@ namespace Menu
     Buf.clear();
     LineOffsets.clear();
     LineOffsets.push_back(0);
+    FilterDirty = true;
   }
 
   void Logger::Log(const char* fmt, ...)
@@ -40,6 +43,8 @@ namespace Menu
     for (int new_size = Buf.size(); old_size < new_size; old_size++)
       if (Buf[old_size] == '\n')
         LineOffsets.push_back(old_size + 1);
+
+    FilterDirty = true;
   }
 
   void Logger::Draw()
@@ -49,7 +54,9 @@ namespace Menu
     ImGui::SameLine();
     bool copy = ImGui::Button("Copy");
     ImGui::SameLine();
-    Filter.Draw("Filter", -100.0f);
+    bool filter_changed = Filter.Draw("Filter", -100.0f);
+    if (filter_changed)
+      FilterDirty = true;
     ImGui::SameLine();
     ImGui::Checkbox("Auto-scroll", &AutoScroll);
 
@@ -66,12 +73,29 @@ namespace Menu
     const char* buf     = Buf.begin();
     const char* buf_end = Buf.end();
     if (Filter.IsActive()) {
-      for (int line_no = 0; line_no < LineOffsets.Size; line_no++) {
-        const char* line_start = buf + LineOffsets[line_no];
-        const char* line_end   = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-        if (Filter.PassFilter(line_start, line_end))
-          ImGui::TextUnformatted(line_start, line_end);
+      if (FilterDirty) {
+        FilteredLineOffsets.clear();
+        for (int line_no = 0; line_no < LineOffsets.Size; line_no++) {
+          const char* line_start = buf + LineOffsets[line_no];
+          const char* line_end   = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+          if (Filter.PassFilter(line_start, line_end)) {
+            FilteredLineOffsets.push_back(line_no);
+          }
+        }
+        FilterDirty = false;
       }
+
+      ImGuiListClipper clipper;
+      clipper.Begin(FilteredLineOffsets.Size);
+      while (clipper.Step()) {
+        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+          int         line_no    = FilteredLineOffsets[i];
+          const char* line_start = buf + LineOffsets[line_no];
+          const char* line_end   = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+          ImGui::TextUnformatted(line_start, line_end);
+        }
+      }
+      clipper.End();
     }
     else {
       ImGuiListClipper clipper;
