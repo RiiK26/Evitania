@@ -126,7 +126,7 @@ namespace Menu
   ResizeBuffers_t oResizeBuffers = nullptr;
 
   typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
-  WNDPROC oWndProc = nullptr;
+  WNDPROC oWndProc                             = nullptr;
 
   HWND                    window               = nullptr;
   ID3D11Device*           pDevice              = nullptr;
@@ -238,10 +238,10 @@ namespace Menu
         style.GrabRounding      = 6.0f;
         style.TabRounding       = 6.0f;
 
-        style.WindowPadding    = ImVec2(12, 12);
-        style.FramePadding     = ImVec2(8, 4);
-        style.ItemSpacing      = ImVec2(8, 8);
-        style.ItemInnerSpacing = ImVec2(6, 6);
+        style.WindowPadding     = ImVec2(12, 12);
+        style.FramePadding      = ImVec2(8, 4);
+        style.ItemSpacing       = ImVec2(8, 8);
+        style.ItemInnerSpacing  = ImVec2(6, 6);
 
         // Custom Dark/Vibrant Palette
         ImVec4* colors                    = style.Colors;
@@ -261,7 +261,7 @@ namespace Menu
         colors[ImGuiCol_TitleBg]          = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
         colors[ImGuiCol_TitleBgActive]    = ImVec4(0.15f, 0.15f, 0.18f, 1.00f);
 
-        init = true;
+        init                              = true;
       }
       else
         return oPresent(pSwapChain, SyncInterval, Flags);
@@ -411,10 +411,10 @@ namespace Menu
             drawCryptoRow(skCrypt("Tron"), skCrypt("TYNLxxQWERit64uNo8dSQX3CxdLmomtAq7"));
             drawCryptoRow(skCrypt("Dogecoin"), skCrypt("DFwJXDQsqPEdpnWhXCMmBWMru9iqYqWhDn"));
             drawCryptoRow(
-              skCrypt("Cardano"),
-              skCrypt(
-                "addr1qyhapduj2uvu8x4ct75hujtsx63uq375cxda8m25xgn7wep06zmey4cecwdtshaf0eyhqd4rcprafsvm60k4gv38uajq2z2l6a"
-              )
+              skCrypt("Cardano"), skCrypt(
+                                    "addr1qyhapduj2uvu8x4ct75hujtsx63uq375cxda8m25xgn7wep06zmey4cecwdtshaf0eyhqd4rcpraf"
+                                    "svm60k4gv38uajq2z2l6a"
+                                  )
             );
             drawCryptoRow(skCrypt("Litecoin"), skCrypt("LMNbzEJ3M4qtAxsYyxMBkT4rzjSBJvUc2M"));
             drawCryptoRow(skCrypt("Avalanche"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
@@ -484,15 +484,15 @@ namespace Menu
     ID3D11Device*        pDummyDevice    = nullptr;
     ID3D11DeviceContext* pDummyContext   = nullptr;
 
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(
+    HRESULT hr                           = D3D11CreateDeviceAndSwapChain(
       NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &sd, &pDummySwapChain,
       &pDummyDevice, NULL, &pDummyContext
     );
 
     if (SUCCEEDED(hr) && pDummySwapChain) {
 
-      void** pVTable  = *reinterpret_cast<void***>(pDummySwapChain);
-      void*  pPresent = pVTable[8];
+      void** pVTable         = *reinterpret_cast<void***>(pDummySwapChain);
+      void*  pPresent        = pVTable[8];
 
       MH_STATUS createStatus = MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent);
       if (createStatus != MH_OK) {

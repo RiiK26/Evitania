@@ -99,7 +99,7 @@ namespace AntiRE
     memcpy(hypervisorVendor, &cpuInfo[1], 4);
     memcpy(hypervisorVendor + 4, &cpuInfo[2], 4);
     memcpy(hypervisorVendor + 8, &cpuInfo[3], 4);
-    hypervisorVendor[12] = '\0';
+    hypervisorVendor[12]   = '\0';
 
     const char* knownVMs[] = {"VMwareVMware", "VBoxVBoxVBox", "KVMKVMKVM\0\0\0", "Microsoft Hv", "prl hyperv  "};
 

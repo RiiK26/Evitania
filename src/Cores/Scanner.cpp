@@ -37,8 +37,8 @@ namespace Scanner
     if (ntHeaders->Signature != IMAGE_NT_SIGNATURE)
       return 0;
 
-    uintptr_t moduleBase = (uintptr_t) hModule;
-    size_t    moduleSize = ntHeaders->OptionalHeader.SizeOfImage;
+    uintptr_t moduleBase          = (uintptr_t) hModule;
+    size_t    moduleSize          = ntHeaders->OptionalHeader.SizeOfImage;
 
     std::vector<int> patternBytes = ParsePattern(pattern);
     if (patternBytes.empty())
