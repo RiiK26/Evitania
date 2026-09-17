@@ -1,6 +1,9 @@
-name: Build
+name: Build binary without AntiRE
 
 on:
+  push:
+    branches:
+      - withoutAntiRE
   workflow_dispatch:
 
 jobs:
@@ -8,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Install MinGW-w64
-        run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake zip jq
 
       - name: Build Evitania
         run: ./scripts/build
@@ -22,17 +25,15 @@ jobs:
           VERSION=$(jq -r .version config.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Prepare Build Artifacts
+      - name: Prepare Artifacts
         run: |
           mkdir -p release_pkg
           cp build/release/Evitania.dll release_pkg/
-          cp build/release/injector.exe release_pkg/
-          cp scripts/run.sh release_pkg/
-          cp scripts/run.bat release_pkg/
-          cp resources/template/README.md release_pkg/README.md
+          cd release_pkg
+          zip -r ../Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip .
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: Evitania-v${{ steps.get_version.outputs.version }}
-          path: release_pkg/
+          name: Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}
+          path: Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip

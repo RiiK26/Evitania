@@ -1,8 +1,6 @@
 name: Release
 
 on:
-  workflow_dispatch:
-
   push:
     tags:
       - 'v*'
@@ -45,5 +43,6 @@ jobs:
           files: Evitania-v${{ steps.get_version.outputs.version }}.zip
           name: v${{ steps.get_version.outputs.version }}
           tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
