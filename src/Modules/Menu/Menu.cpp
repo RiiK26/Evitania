@@ -8,8 +8,7 @@
 #include <string>
 #include <sstream>
 #include "../../Cores/skCrypter.h"
-#include "../../Features/Combat/SpeedHack.hpp"
-#include "Logger.hpp"
+#include "../../Features/Player/SpeedHack.hpp"
 #include <shellapi.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -55,38 +54,42 @@ namespace Menu
       if (std::getline(is_line, key, '=')) {
         std::string value;
         if (std::getline(is_line, value)) {
-          if (key == "god_mode")
+          if (key == skCrypt("god_mode"))
             bGodMode = (value == "1");
-          else if (key == "god_mode_nullify")
+          else if (key == skCrypt("god_mode_nullify"))
             bGodMode_Nullify = (value == "1");
-          else if (key == "god_mode_damage_toggle")
+          else if (key == skCrypt("god_mode_damage_toggle"))
             bGodMode_Damage = (value == "1");
-          else if (key == "god_mode_speed_toggle")
+          else if (key == skCrypt("god_mode_speed_toggle"))
             bGodMode_Speed = (value == "1");
-          else if (key == "god_mode_damage")
+          else if (key == skCrypt("god_mode_damage"))
             fGodModeDamage = SafeParseFloat(value, fGodModeDamage);
-          else if (key == "god_mode_speed_multiplier")
+          else if (key == skCrypt("god_mode_speed_multiplier"))
             fGodModeSpeedMultiplier = SafeParseFloat(value, fGodModeSpeedMultiplier);
-          else if (key == "aura_kill")
+          else if (key == skCrypt("aura_kill"))
             bAuraKill = (value == "1");
-          else if (key == "exp_multiplier")
+          else if (key == skCrypt("exp_multiplier"))
             bExpMultiplier = (value == "1");
-          else if (key == "exp_multiplier_value")
+          else if (key == skCrypt("exp_multiplier_value"))
             fExpMultiplierValue = SafeParseFloat(value, fExpMultiplierValue);
-          else if (key == "infinite_items")
+          else if (key == skCrypt("infinite_items"))
             bInfiniteItems = (value == "1");
-          else if (key == "enhance_item_100")
+          else if (key == skCrypt("enhance_item_100"))
             bEnhanceItem100 = (value == "1");
-          else if (key == "infinite_currency")
+          else if (key == skCrypt("infinite_currency"))
             bInfiniteCurrency = (value == "1");
-          else if (key == "free_store")
+          else if (key == skCrypt("free_store"))
             bFreeStore = (value == "1");
-          else if (key == "speed_hack")
+          else if (key == skCrypt("speed_hack"))
             bSpeedHack = (value == "1");
-          else if (key == "speed_multiplier")
+          else if (key == skCrypt("speed_multiplier"))
             fSpeedMultiplier = SafeParseFloat(value, fSpeedMultiplier);
-          else if (key == "hourglass_bypass")
+          else if (key == skCrypt("hourglass_bypass"))
             bHourglassBypass = (value == "1");
+          else if (key == skCrypt("free_engineer_upgrades"))
+            bFreeEngineerUpgrades = (value == "1");
+          else if (key == skCrypt("free_hunter_upgrades"))
+            bFreeHunterUpgrades = (value == "1");
         }
       }
     }
@@ -98,23 +101,25 @@ namespace Menu
     if (!out.is_open())
       return;
 
-    out << "menu_open=" << (bMenuOpen ? "1" : "0") << "\n";
-    out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
-    out << "god_mode_nullify=" << (bGodMode_Nullify ? "1" : "0") << "\n";
-    out << "god_mode_damage_toggle=" << (bGodMode_Damage ? "1" : "0") << "\n";
-    out << "god_mode_speed_toggle=" << (bGodMode_Speed ? "1" : "0") << "\n";
-    out << "god_mode_damage=" << fGodModeDamage << "\n";
-    out << "god_mode_speed_multiplier=" << fGodModeSpeedMultiplier << "\n";
-    out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
-    out << "exp_multiplier=" << (bExpMultiplier ? "1" : "0") << "\n";
-    out << "exp_multiplier_value=" << (long long) fExpMultiplierValue << "\n";
-    out << "infinite_items=" << (bInfiniteItems ? "1" : "0") << "\n";
-    out << "enhance_item_100=" << (bEnhanceItem100 ? "1" : "0") << "\n";
-    out << "infinite_currency=" << (bInfiniteCurrency ? "1" : "0") << "\n";
-    out << "free_store=" << (bFreeStore ? "1" : "0") << "\n";
-    out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
-    out << "speed_multiplier=" << fSpeedMultiplier << "\n";
-    out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
+    out << skCrypt("menu_open=") << (bMenuOpen ? "1" : "0") << "\n";
+    out << skCrypt("god_mode=") << (bGodMode ? "1" : "0") << "\n";
+    out << skCrypt("god_mode_nullify=") << (bGodMode_Nullify ? "1" : "0") << "\n";
+    out << skCrypt("god_mode_damage_toggle=") << (bGodMode_Damage ? "1" : "0") << "\n";
+    out << skCrypt("god_mode_speed_toggle=") << (bGodMode_Speed ? "1" : "0") << "\n";
+    out << skCrypt("god_mode_damage=") << fGodModeDamage << "\n";
+    out << skCrypt("god_mode_speed_multiplier=") << fGodModeSpeedMultiplier << "\n";
+    out << skCrypt("aura_kill=") << (bAuraKill ? "1" : "0") << "\n";
+    out << skCrypt("exp_multiplier=") << (bExpMultiplier ? "1" : "0") << "\n";
+    out << skCrypt("exp_multiplier_value=") << (long long) fExpMultiplierValue << "\n";
+    out << skCrypt("infinite_items=") << (bInfiniteItems ? "1" : "0") << "\n";
+    out << skCrypt("enhance_item_100=") << (bEnhanceItem100 ? "1" : "0") << "\n";
+    out << skCrypt("infinite_currency=") << (bInfiniteCurrency ? "1" : "0") << "\n";
+    out << skCrypt("free_store=") << (bFreeStore ? "1" : "0") << "\n";
+    out << skCrypt("speed_hack=") << (bSpeedHack ? "1" : "0") << "\n";
+    out << skCrypt("speed_multiplier=") << fSpeedMultiplier << "\n";
+    out << skCrypt("hourglass_bypass=") << (bHourglassBypass ? "1" : "0") << "\n";
+    out << skCrypt("free_engineer_upgrades=") << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
+    out << skCrypt("free_hunter_upgrades=") << (bFreeHunterUpgrades ? "1" : "0") << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -274,163 +279,143 @@ namespace Menu
     if (Config.bMenuOpen) {
       ImGui::SetNextWindowSize(ImVec2(650, 650), ImGuiCond_FirstUseEver);
       ImGui::Begin(
-        "Evitania Online v" PROJECT_VERSION, nullptr,
+        skCrypt("Evitania Online v" PROJECT_VERSION), nullptr,
         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
       );
 
-      if (ImGui::BeginTabBar("CheatTabs")) {
-        if (ImGui::BeginTabItem("Features")) {
-          ImGui::BeginChild("FeaturesChild", ImVec2(0, -30), false, 0);
-          if (ImGui::CollapsingHeader("Combat", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::Checkbox("God Mode", &Config.bGodMode);
-            ImGui::SameLine();
-            ImGui::TextDisabled("(?)");
-            if (ImGui::IsItemHovered()) {
-              ImGui::SetTooltip("Enable to use the granular God Mode settings below.");
-            }
+      if (ImGui::BeginTabBar(skCrypt("CheatTabs"), ImGuiTabBarFlags_FittingPolicyScroll)) {
+        // Combat Tab menu
+        if (ImGui::BeginTabItem(skCrypt("Combat"))) {
+          ImGui::BeginChild(skCrypt("CombatChild"), ImVec2(0, -65), false, 0);
 
-            if (ImGui::TreeNode("God Mode Settings")) {
-              // Disable individual toggles if master God Mode is off, but still show them
-              ImGui::BeginDisabled(!Config.bGodMode);
-
-              ImGui::Checkbox("Nullify Damage (Infinite HP)", &Config.bGodMode_Nullify);
-
-              ImGui::Checkbox("High Damage", &Config.bGodMode_Damage);
-              if (Config.bGodMode_Damage) {
-                ImGui::InputFloat("Damage Value", &Config.fGodModeDamage);
-                if (Config.fGodModeDamage < 0.0f)
-                  Config.fGodModeDamage = 0.0f;
-              }
-
-              ImGui::Checkbox("Movement Speed", &Config.bGodMode_Speed);
-              if (Config.bGodMode_Speed) {
-                ImGui::SliderFloat("Speed Multiplier##GodMode", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
-              }
-
-              ImGui::EndDisabled();
-              ImGui::TreePop();
-            }
-            ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
-            ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
-            if (Config.bExpMultiplier) {
-              ImGui::InputFloat("Exp Multiplier Amount", &Config.fExpMultiplierValue);
-              if (Config.fExpMultiplierValue < 1.0f)
-                Config.fExpMultiplierValue = 1.0f;
-            }
-            if (ImGui::Checkbox("Speed Hack (Global time scale)", &Config.bSpeedHack)) {
-              Features::SpeedHack::ApplySpeedHack();
-            }
-            if (Config.bSpeedHack) {
-              if (ImGui::SliderFloat("Speed Multiplier##SpeedHack", &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
-                Features::SpeedHack::ApplySpeedHack();
-              }
-            }
-          }
-
-          if (ImGui::CollapsingHeader("Economy")) {
-            ImGui::Checkbox("Infinite items on inventory", &Config.bInfiniteItems);
-            ImGui::Checkbox("100% Success enhance Item", &Config.bEnhanceItem100);
-            ImGui::Checkbox("Infinite currency (Diamonds, Golds, Sands, etc)", &Config.bInfiniteCurrency);
-            ImGui::Checkbox("Free Store (IAP Bypass)", &Config.bFreeStore);
-            ImGui::Checkbox("Use Hourglass (Timeskip) anywhere", &Config.bHourglassBypass);
-          }
-
-          ImGui::Spacing();
-          ImGui::Separator();
-          if (ImGui::Button("Save Config", ImVec2(-1, 0))) {
-            Config.SaveConfig();
-          }
-          ImGui::Spacing();
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        if (ImGui::BeginTabItem("Logs")) {
-          ImGui::BeginChild("LogsChild", ImVec2(0, -30), false, 0);
-          Menu::Logger::Draw();
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        if (ImGui::BeginTabItem(skCrypt("Donate"))) {
-          ImGui::BeginChild("DonateChild", ImVec2(0, -30), false, ImGuiWindowFlags_HorizontalScrollbar);
-          ImGui::TextWrapped("%s", skCrypt("Support the development! Your contributions help keep the project alive."));
-          ImGui::Spacing();
-
-          float halfWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
-          if (ImGui::Button(skCrypt("GitHub Sponsor"), ImVec2(halfWidth, 0))) {
-            ShellExecuteA(
-              NULL, skCrypt("open"), skCrypt("https://github.com/sponsors/RiiK26"), NULL, NULL, SW_SHOWNORMAL
-            );
-          }
+          ImGui::Checkbox(skCrypt("God Mode"), &Config.bGodMode);
           ImGui::SameLine();
-          if (ImGui::Button(skCrypt("Donate via PayPal"), ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-            ShellExecuteA(
-              NULL, skCrypt("open"), skCrypt("https://www.paypal.com/paypalme/MuhamadSyakir"), NULL, NULL, SW_SHOWNORMAL
-            );
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%s", skCrypt("Master God Mode toggle"));
           }
 
-          ImGui::Spacing();
-          ImGui::Separator();
-          ImGui::Spacing();
-          ImGui::TextUnformatted(skCrypt("Crypto Addresses"));
-          ImGui::Spacing();
+          if (ImGui::TreeNode(skCrypt("God Mode Settings"))) {
+            ImGui::Checkbox(skCrypt("Infinite HP"), &Config.bGodMode_Nullify);
+            ImGui::Checkbox(skCrypt("High Damage"), &Config.bGodMode_Damage);
+            ImGui::TextWrapped("%s", skCrypt("Damage Value"));
+            ImGui::InputFloat(skCrypt("##GodModeDamage"), &Config.fGodModeDamage);
+            if (Config.fGodModeDamage < 0.0f)
+              Config.fGodModeDamage = 0.0f;
 
-          if (
-            ImGui::BeginTable(
-              skCrypt("CryptoTable"), 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollX
-            )
-          ) {
-            ImGui::TableSetupColumn(skCrypt("Currency"), ImGuiTableColumnFlags_WidthFixed, 100.0f);
-            ImGui::TableSetupColumn(skCrypt("Address (Click to Copy)"), ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableHeadersRow();
-
-            auto drawCryptoRow = [](const char* name, const char* address) {
-              ImGui::TableNextRow();
-              ImGui::TableSetColumnIndex(0);
-              ImGui::TextUnformatted(name);
-              ImGui::TableSetColumnIndex(1);
-
-              ImGui::PushID(name);
-              if (ImGui::Button(skCrypt("Copy"))) {
-                ImGui::SetClipboardText(address);
-              }
-              ImGui::PopID();
-              ImGui::SameLine();
-              ImGui::TextUnformatted(address);
-            };
-
-            drawCryptoRow(skCrypt("Bitcoin"), skCrypt("bc1qpp50c2wuz5n2rq9jy3fxdmte7smcwu5rnegu6q"));
-            drawCryptoRow(skCrypt("Ethereum"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
-            drawCryptoRow(skCrypt("Tether (USDT)"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
-            drawCryptoRow(skCrypt("BNB"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
-            drawCryptoRow(skCrypt("XRP"), skCrypt("rnDnG9QBce7sbmY86HXqBUpcCq6LN3xfXg"));
-            drawCryptoRow(skCrypt("USDC"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
-            drawCryptoRow(skCrypt("Solana"), skCrypt("FLFVbCaYQWoPrm9rH1WLuoYmiVnC5CFWoCPzkNk2vzy2"));
-            drawCryptoRow(skCrypt("Tron"), skCrypt("TYNLxxQWERit64uNo8dSQX3CxdLmomtAq7"));
-            drawCryptoRow(skCrypt("Dogecoin"), skCrypt("DFwJXDQsqPEdpnWhXCMmBWMru9iqYqWhDn"));
-            drawCryptoRow(
-              skCrypt("Cardano"), skCrypt(
-                                    "addr1qyhapduj2uvu8x4ct75hujtsx63uq375cxda8m25xgn7wep06zmey4cecwdtshaf0eyhqd4rcpraf"
-                                    "svm60k4gv38uajq2z2l6a"
-                                  )
-            );
-            drawCryptoRow(skCrypt("Litecoin"), skCrypt("LMNbzEJ3M4qtAxsYyxMBkT4rzjSBJvUc2M"));
-            drawCryptoRow(skCrypt("Avalanche"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
-            drawCryptoRow(skCrypt("Polkadot"), skCrypt("15FtRzNuwpbNAjvMzRCegqDwN7cgw2a44ogfobdS7UmNACFr"));
-            drawCryptoRow(skCrypt("Polygon"), skCrypt("0xbF16e9cC4F75Dcd5c1DaD4443b9d8348eC196592"));
-            drawCryptoRow(skCrypt("Cosmos"), skCrypt("cosmos1ashcczkgj884t9gert2se4m4zw5ea7t2fa4qh9"));
-            drawCryptoRow(skCrypt("X0 Cash"), skCrypt("FLFVbCaYQWoPrm9rH1WLuoYmiVnC5CFWoCPzkNk2vzy2"));
-
-            ImGui::EndTable();
+            ImGui::Checkbox(skCrypt("Movement Speed"), &Config.bGodMode_Speed);
+            ImGui::TextWrapped("%s", skCrypt("Speed Multiplier"));
+            ImGui::SliderFloat(skCrypt("##GodModeSpeed"), &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+            ImGui::TreePop();
           }
+          ImGui::Checkbox(skCrypt("Aura Kill"), &Config.bAuraKill);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%s", skCrypt("The Damage taken from GodMode high damage value"));
+          }
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        // Player Tab menu
+        if (ImGui::BeginTabItem(skCrypt("Player"))) {
+          ImGui::BeginChild(skCrypt("PlayerChild"), ImVec2(0, -65), false, 0);
+
+          ImGui::Checkbox(skCrypt("Exp Multiplier"), &Config.bExpMultiplier);
+          ImGui::TextWrapped("%s", skCrypt("Multiplier Value"));
+          ImGui::InputFloat(skCrypt("##ExpMultiplier"), &Config.fExpMultiplierValue);
+          if (Config.fExpMultiplierValue < 1.0f)
+            Config.fExpMultiplierValue = 1.0f;
+
+          if (ImGui::Checkbox(skCrypt("Speed Hack"), &Config.bSpeedHack)) {
+            Features::SpeedHack::ApplySpeedHack();
+          }
+          ImGui::TextWrapped("%s", skCrypt("Speed Value"));
+          if (ImGui::SliderFloat(skCrypt("##SpeedHack"), &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
+            Features::SpeedHack::ApplySpeedHack();
+          }
+
+          ImGui::Checkbox(skCrypt("100% Success enhance Item"), &Config.bEnhanceItem100);
+          ImGui::Checkbox(skCrypt("Use Timeskip hourglass anywhere"), &Config.bHourglassBypass);
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        // Economy Tab menu
+        if (ImGui::BeginTabItem(skCrypt("Economy"))) {
+          ImGui::BeginChild(skCrypt("EconomyChild"), ImVec2(0, -65), false, 0);
+
+          ImGui::Checkbox(skCrypt("Infinite items on inventory"), &Config.bInfiniteItems);
+
+          ImGui::Checkbox(skCrypt("Infinite currency"), &Config.bInfiniteCurrency);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%s", skCrypt("Diamonds, Gold, Sands, etc"));
+          }
+
+          ImGui::Checkbox(skCrypt("Free Store"), &Config.bFreeStore);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%s", skCrypt("Bypass InAppPurchases"));
+          }
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        // Curio Tab menu
+        if (ImGui::BeginTabItem(skCrypt("Curio"))) {
+          ImGui::BeginChild(skCrypt("CurioChild"), ImVec2(0, -65), false, 0);
+
+          ImGui::Checkbox(skCrypt("Always Legendary Curio"), &Menu::Config.bAlwaysLegendaryCurio);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%s", skCrypt("Forces every gacha pull to drop a Legendary rarity Curio"));
+          }
+
+          ImGui::Checkbox(skCrypt("Free Curio Upgrades"), &Menu::Config.bFreeCurioUpgrades);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("%s", skCrypt("Upgrading curio levels costs 0"));
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        // Engineer Tab menu
+        if (ImGui::BeginTabItem(skCrypt("Engineer"))) {
+          ImGui::BeginChild(skCrypt("EngineerChild"), ImVec2(0, -65), false, 0);
+
+          ImGui::Checkbox(skCrypt("Free Engineer Upgrades"), &Menu::Config.bFreeEngineerUpgrades);
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        // Hunter Tab menu
+        if (ImGui::BeginTabItem(skCrypt("Hunter"))) {
+          ImGui::BeginChild(skCrypt("HunterChild"), ImVec2(0, -65), false, 0);
+
+          ImGui::Checkbox(skCrypt("Free Hunter Upgrades"), &Menu::Config.bFreeHunterUpgrades);
+
           ImGui::EndChild();
           ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
       }
 
+      // Save Config button
+      ImGui::Separator();
+      if (ImGui::Button(skCrypt("Save Config"), ImVec2(-1, 0))) {
+        Config.SaveConfig();
+      }
       ImGui::Separator();
       ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "%s", skCrypt("[INSERT] show/hide menu"));
 
@@ -443,7 +428,7 @@ namespace Menu
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     return oPresent(pSwapChain, SyncInterval, Flags);
-  }
+  }  // namespace Menu
 
   void Initialize()
   {

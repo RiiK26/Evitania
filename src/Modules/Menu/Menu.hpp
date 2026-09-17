@@ -23,8 +23,11 @@ namespace Menu
     bool  bFreeStore              = false;
     bool  bSpeedHack              = false;
     float fSpeedMultiplier        = 2.0f;
+    bool  bAlwaysLegendaryCurio   = false;
+    bool  bFreeCurioUpgrades      = false;
     bool  bHourglassBypass        = false;
-
+    bool  bFreeEngineerUpgrades   = false;
+    bool  bFreeHunterUpgrades     = false;
 
     void LoadConfig();
     void SaveConfig();
