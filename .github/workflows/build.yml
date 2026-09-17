@@ -1,9 +1,9 @@
-name: Build binary without AntiRE
+name: Build clean binary
 
 on:
   push:
     branches:
-      - withoutAntiRE
+      - clean
   workflow_dispatch:
 
 jobs:
