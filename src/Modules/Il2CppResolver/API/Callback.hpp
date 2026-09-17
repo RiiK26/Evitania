@@ -56,8 +56,8 @@ namespace IL2CPP
       if (m_MonoBehaviourVTable) {
 #ifdef _WIN64
         // Unity versions may slightly change thunk prologues; use masked patterns + scan a wider range.
-        const unsigned char upd_pat1[] = {0x33, 0xD2, 0xE9};  // xor edx, edx | jmp
-        const unsigned char upd_msk1[] = {0xFF, 0xFF, 0xFF};
+        const unsigned char upd_pat1[]  = {0x33, 0xD2, 0xE9};  // xor edx, edx | jmp
+        const unsigned char upd_msk1[]  = {0xFF, 0xFF, 0xFF};
 
         const unsigned char late_pat1[] = {0xBA, 0x01, 0x00, 0x00, 0x00, 0xE9};  // mov edx,1 | jmp
         const unsigned char late_msk1[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};

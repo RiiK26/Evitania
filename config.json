@@ -1,5 +1,5 @@
 {
-	"version": "0.319.1",
+	"version": "0.319.2",
 	"signatures": {
 		"EnemyNpcController_TakeDamage": {
 			"signature": "40 53 48 83 EC 20 80 79 3C 00 48 8B D9 74 4C",
@@ -183,10 +183,6 @@
 		},
 		"PlayerCharacter_TakeDamage": {
 			"signature": "48 83 EC 38 80 3D ? ? ? ? 00 0F 29 74 24 20 0F 28 F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ?",
-			"extract": {}
-		},
-		"PlayerAnimation_SetAnimatorsSpeed": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 0F 29 74 24 20 0F 28 F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? 48 8B 7B 38",
 			"extract": {}
 		}
 	}
