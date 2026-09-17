@@ -28,14 +28,16 @@ jobs:
 
       - name: Prepare Release Artifacts
         run: |
-          mkdir -p release_pkg
-          cp build/release/Evitania.dll release_pkg/
-          cp build/release/injector.exe release_pkg/
-          cp scripts/run.sh release_pkg/
-          cp scripts/run.bat release_pkg/
-          cp resources/template/README.md release_pkg/README.md
+          VERSION="${{ steps.get_version.outputs.version }}"
+          FOLDER_NAME="Evitania v$VERSION"
+          mkdir -p "release_pkg/$FOLDER_NAME"
+          cp build/release/Evitania.dll "release_pkg/$FOLDER_NAME/"
+          cp build/release/injector.exe "release_pkg/$FOLDER_NAME/"
+          cp scripts/run.sh "release_pkg/$FOLDER_NAME/"
+          cp scripts/run.bat "release_pkg/$FOLDER_NAME/"
+          cp resources/template/README.md "release_pkg/$FOLDER_NAME/README.md"
           cd release_pkg
-          zip -r ../Evitania-v${{ steps.get_version.outputs.version }}.zip .
+          zip -r ../Evitania-v$VERSION.zip .
 
       - name: Create Release
         uses: softprops/action-gh-release@v3

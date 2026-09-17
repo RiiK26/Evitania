@@ -21,7 +21,11 @@ namespace Menu
   std::string GetConfigPath()
   {
     char    path[MAX_PATH];
-    HMODULE hMod = GetModuleHandleA(skCrypt("Evitania.dll"));
+    HMODULE hMod = NULL;
+    GetModuleHandleExA(
+      GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR) &GetConfigPath,
+      &hMod
+    );
     if (hMod && GetModuleFileNameA(hMod, path, MAX_PATH)) {
       std::string fullPath(path);
       size_t      lastSlash = fullPath.find_last_of("\\/");
@@ -219,7 +223,11 @@ namespace Menu
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
         char    path[MAX_PATH];
-        HMODULE hMod = GetModuleHandleA(skCrypt("Evitania.dll"));
+        HMODULE hMod = NULL;
+        GetModuleHandleExA(
+          GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+          (LPCSTR) &GetConfigPath, &hMod
+        );
         if (hMod && GetModuleFileNameA(hMod, path, MAX_PATH)) {
           std::string fullPath(path);
           size_t      lastSlash = fullPath.find_last_of("\\/");
