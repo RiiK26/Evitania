@@ -11,32 +11,8 @@ namespace Features
   namespace GodMode
   {
     void (*Orig_AttackReceiver_Recieve)(void* __this, void* attack, void* method_info);
-
-    void Hook_AttackReceiver_Recieve(void* __this, void* attack, void* method_info)
-    {
-      if (!Menu::Config.bGodMode) {
-        return Orig_AttackReceiver_Recieve(__this, attack, method_info);
-      }
-
-      if (Offsets::isPlayer > 0) {
-        bool isPlayer = *(bool*) ((uintptr_t) __this + Offsets::isPlayer);
-        if (isPlayer && Menu::Config.bGodMode_Nullify) {
-          // Infinite HP: nullify the attack damage by returning early (player takes no damage)
-          return;
-        }
-      }
-
-      // High Attack: set the damage of the attack hitting the enemy to a massive amount
-      if (attack && Menu::Config.bGodMode_Damage) {
-        if (Offsets::AttackDamage > 0) {
-          *(float*) ((uintptr_t) attack + Offsets::AttackDamage) = Menu::Config.fGodModeDamage;
-        }
-      }
-
-      Orig_AttackReceiver_Recieve(__this, attack, method_info);
-    }
-
     void (*Orig_MovementControl_Move)(void* __this, float movespeed, void* method_info);
+    void (*Orig_PlayerCharacter_TakeDamage)(void* __this, float damage, void* method_info);
 
     void Hook_MovementControl_Move(void* __this, float movespeed, void* method_info)
     {
@@ -65,6 +41,49 @@ namespace Features
       Orig_MovementControl_Move(__this, movespeed, method_info);
     }
 
+    void Hook_AttackReceiver_Recieve(void* __this, void* attack, void* method_info)
+    {
+      if (!Menu::Config.bGodMode) {
+        return Orig_AttackReceiver_Recieve(__this, attack, method_info);
+      }
+
+      if (Offsets::isPlayer > 0) {
+        bool isPlayer = *(bool*) ((uintptr_t) __this + Offsets::isPlayer);
+        if (isPlayer && Menu::Config.bGodMode_Nullify) {
+          // Infinite HP: nullify the attack damage by returning early (player takes no damage)
+          return;
+        }
+      }
+
+      // High Attack: set the damage of the attack hitting the enemy to a massive amount
+      if (attack && Menu::Config.bGodMode_Damage) {
+        if (Offsets::AttackDamage > 0) {
+          *(float*) ((uintptr_t) attack + Offsets::AttackDamage) = Menu::Config.fGodModeDamage;
+        }
+      }
+
+      Orig_AttackReceiver_Recieve(__this, attack, method_info);
+    }
+
+    void Hook_PlayerCharacter_TakeDamage(void* __this, float damage, void* method_info)
+    {
+      if (Menu::Config.bGodMode && Menu::Config.bGodMode_Nullify) {
+        if (Offsets::networkPlayerSync > 0 && Offsets::_isNet > 0) {
+          void* networkPlayerSync = *(void**) ((uintptr_t) __this + Offsets::networkPlayerSync);
+          if (networkPlayerSync) {
+            bool _isNet = *(bool*) ((uintptr_t) networkPlayerSync + Offsets::_isNet);
+            if (!_isNet) {
+              return;  // nullify damage for local player
+            }
+          }
+          else {
+            return;  // nullify damage for local player in singleplayer
+          }
+        }
+      }
+      Orig_PlayerCharacter_TakeDamage(__this, damage, method_info);
+    }
+
     void Initialize()
     {
       HOOK_SIGNATURE(
@@ -73,6 +92,10 @@ namespace Features
       );
       HOOK_SIGNATURE(
         "MovementControl::Move", Signatures::MovementControl_Move, Hook_MovementControl_Move, Orig_MovementControl_Move
+      );
+      HOOK_SIGNATURE(
+        "PlayerCharacter::TakeDamage", Signatures::PlayerCharacter_TakeDamage, Hook_PlayerCharacter_TakeDamage,
+        Orig_PlayerCharacter_TakeDamage
       );
     }
 
