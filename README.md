@@ -80,8 +80,12 @@ scripts\run.bat
 Evitania maintains strict resilience across patches by utilizing Capstone to disassemble the application's machine code, dynamically extracting requisite offsets and signatures.
 
 Following an application update:
-1. Extract the latest `GameAssembly.dll` from the updated application and place it into `resources/dumped/`.
-2. Execute the signature extraction script:
+1. Extract the latest `GameAssembly.dll` and generate a new `dump.cs` using Il2CppDumper. Place both files into the `resources/dumped/` directory.
+2. Generate the new baseline signature database (`config.json`):
+   ```bash
+   python3 resources/Tools/build_sig_db.py
+   ```
+3. Execute the offset extraction script to generate `Offsets.hpp` and `Signatures.hpp`:
    **On Linux / macOS:**
    ```bash
    ./scripts/update_offsets.sh
@@ -91,7 +95,7 @@ Following an application update:
    ```bat
    scripts\update_offsets.bat
    ```
-3. Recompile the project to integrate the newly generated `Offsets.hpp` and `Signatures.hpp`.
+4. Recompile the project to integrate the newly generated headers.
 
 ## License
 This project is licensed under the [MIT License](license).
