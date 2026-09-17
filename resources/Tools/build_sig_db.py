@@ -166,7 +166,14 @@ def main():
         ("AntiCheatService", "Apply", 0, []),
         ("AntiCheatService", "ReportCheatToAnalytics", 0, []),
         ("Attack", ".ctor", 0, [("AttackDamage", "Attack")]),
-        ("PlayerCharacter", ".ctor", 0, [("networkPlayerSync", "PlayerCharacter")])
+        ("PlayerCharacter", ".ctor", 0, [("networkPlayerSync", "PlayerCharacter")]),
+        ("CurioGachaService", "RollRarity", 0, []),
+        ("CurioPowerService", "GetLevelUpCost", 0, []),
+        ("EngineerService", "TryGetUpgradeCost", 0, []),
+        ("EngineerUpgradeConfig", "GetPrice", 0, []),
+        ("MarketLotScriptableObject", "CurrentPrice", 0, []),
+        ("MarketLot", "GetCurrentPrice", 0, []),
+        ("PlayerCharacter", "TakeDamage", 0, [])
     ]
 
     sig_db = {}

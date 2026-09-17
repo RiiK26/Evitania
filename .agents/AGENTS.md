@@ -16,6 +16,7 @@
 
 ## Code Conventions
 - **Modular Architecture**: 1 Feature = 1 `.hpp`/`.cpp` pair located inside `src/Features/<Domain>/` (e.g. `src/Features/Combat/GodMode.cpp`). **No god files.**
+- **UI/Feature Sync**: The `src/Features/<Domain>/` directory structure MUST map exactly 1:1 with the ImGui Tab names defined in `Menu.cpp` (e.g., `Combat`, `Player`, `Economy`, `Curio`, `Engineer`, `Hunter`). If a feature is displayed in the "Player" tab, its source code MUST reside in `src/Features/Player/`.
 - **Hooking**: Always prefer `HOOK_SIGNATURE` (AOB pattern scanning) or `HOOK_METHOD` over static `HOOK_OFFSET` where possible. Dynamic resolving and signatures are resilient to game updates and obfuscation, whereas hardcoded offsets break immediately.
 - **Offset Extraction**: NEVER use `IL2CPP::Class::Utils::GetFieldOffset` in C++ for field offsets, as it breaks when games are obfuscated. Instead, rely on `aobgenerator.py` which dynamically extracts offsets via Capstone machine-code analysis. Use the generated `Offsets.hpp` variables (e.g. `Offsets::alive`).
 - **Signature Database**: `config.json` at the root of the project serves as the baseline signature and extraction rule database.
@@ -25,9 +26,16 @@
 
 ## Boundaries
 - Do not dump game assemblies into the Git tree unless they are strictly inside `resources/dumped/`.
-- `dump.cs` is no longer required for maintaining updates. `GameAssembly.dll` is the only requirement for `aobgenerator.py` to regenerate offsets.
+- Both `dump.cs` and `GameAssembly.dll` are required for maintaining updates. `build_sig_db.py` relies on `dump.cs` to generate the signature database (`config.json`), which `aobgenerator.py` then uses against `GameAssembly.dll`.
 - Do not commit large compiled binaries (`.dll`, `.exe`) to version control.
 - Avoid using `.hpp` to define logic; use `.hpp` for declarations and `.cpp` for implementations.
+
+## Branch Workflow
+
+The project uses a strict 2-branch strategy for stable releases (that contain anti-RE protections) and clean builds (that do not contain anti-RE protections):
+
+- **`main`**: The default branch for stable releases. Contains advanced anti-reverse engineering protections
+- **`withoutAntiRE`**: Used for producing clean, unobfuscated builds that include PDB debug symbols. Contains no anti-RE protections
 
 ## Patterns
 
