@@ -2,14 +2,17 @@
 
 #include "../../Features/Combat/GodMode.hpp"
 #include "../../Features/Combat/AuraKill.hpp"
-#include "../../Features/Combat/ExpMultiplier.hpp"
+#include "../../Features/Player/ExpMultiplier.hpp"
 #include "../../Features/Economy/InfiniteItems.hpp"
-#include "../../Features/Economy/Enhancement.hpp"
+#include "../../Features/Player/Enhancement.hpp"
 #include "../../Features/Economy/InfiniteCurrency.hpp"
 #include "../../Features/Economy/FreeStore.hpp"
-#include "../../Features/Combat/SpeedHack.hpp"
+#include "../../Features/Player/SpeedHack.hpp"
 #include "../../Features/AntiCheat/AntiCheat.hpp"
-#include "../../Features/Economy/HourglassBypass.hpp"
+#include "../../Features/Player/HourglassBypass.hpp"
+#include "../../Features/Curio/CurioHacks.hpp"
+#include "../../Features/Engineer/EngineerHacks.hpp"
+#include "../../Features/Hunter/HunterHacks.hpp"
 
 #include "MinHook.h"
 
@@ -34,6 +37,9 @@ void Hooks::Initialize()
   Features::SpeedHack::Initialize();
   Features::AntiCheat::Initialize();
   Features::HourglassBypass::Initialize();
+  Features::CurioHacks::Initialize();
+  Features::EngineerHacks::Initialize();
+  Features::HunterHacks::Initialize();
 
 
   if (!Hooks::bHooksFailed) {
@@ -44,6 +50,8 @@ void Hooks::Initialize()
 void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
+  Features::EngineerHacks::Uninitialize();
+  Features::CurioHacks::Uninitialize();
   Features::HourglassBypass::Uninitialize();
   Features::GodMode::Uninitialize();
   Features::AuraKill::Uninitialize();
