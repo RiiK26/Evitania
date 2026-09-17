@@ -35,7 +35,15 @@
 The project uses a strict 2-branch strategy for stable releases (that contain anti-RE protections) and clean builds (that do not contain anti-RE protections):
 
 - **`main`**: The default branch for stable releases. Contains advanced anti-reverse engineering protections
-- **`withoutAntiRE`**: Used for producing clean, unobfuscated builds that include PDB debug symbols. Contains no anti-RE protections
+- **`clean`**: Used for producing clean, unobfuscated builds that include PDB debug symbols. Contains no anti-RE protections
+
+## Anti-RE & VMProtect Configuration
+
+- **C++ Anti-RE**: The `main` branch includes basic, lightweight Anti-RE measures (e.g., `skCrypt` for strings, `CheckDebugger`, `ErasePEHeaders` in `src/Cores/AntiRE.cpp`). These are fast and should not impact performance.
+- **VMProtect Rules (`resources/template/Evitania.dll.vmp`)**:
+  - **`CompilationType="2"` (Virtualization)**: Use ONLY for one-time initialization functions (e.g., `DllMain`, `Hooks::Initialize`, `Menu::Initialize`). Never use this for recurring functions, as it severely degrades performance (up to 100x slower).
+  - **`CompilationType="1"` (Mutation)**: Use for event-driven cheat hooks (e.g., `TakeDamage`, `AddExperience`, `InitiatePurchase`). Provides adequate protection with minimal overhead.
+  - **`CompilationType="0"` (None)**: Use explicitly for all real-time/per-frame functions (e.g., `Menu::hkPresent`, `Menu::WndProc`, `Hook_MovementControl_Move`). Protecting these functions will cause massive CPU spikes and stuttering. Do NOT protect them.
 
 ## Patterns
 

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Document Version="2">
+    <Protection InputFileName="Evitania.dll" Options="464640" VMCodeSectionName=".MeRiK_?" VMComplexity="20" OutputFileName="Evitania_protected.dll" VMInstances="2">
+        <Procedures>
+            <Procedure MapAddress="Scanner::ParsePattern(char const*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Scanner::FindPattern(HINSTANCE__*, char const*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress=".text$_ZN5Unity11PlayerPrefs10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity14RenderSettings10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity9Resources10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity9RigidBody10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity12SceneManager10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity6Screen10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity4Time10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Unity::Transform::Initialize()::{lambda(void*&amp;, bool&amp;, char const*, int, char const*, int, std::initializer_list&lt;char const*&gt;, std::initializer_list&lt;char const*&gt;)#1}::operator()(void*&amp;, bool&amp;, char const*, int, char const*, int, std::initializer_list&lt;char const*&gt;, std::initializer_list&lt;char const*&gt;) const [clone .isra.0]" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity9Transform10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity6Object10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity11Application10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity9Behaviour10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity6Camera10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity9Component10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity6Cursor10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity5Debug10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity10GameObject10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity5Input10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity9LayerMask10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity11Obfuscators10ROT_StringB5cxx11EPKci" Options="0" CompilationType="2" />
+            <Procedure MapAddress="DllMainCRTStartup" Options="0" CompilationType="2" />
+            <Procedure MapAddress="mark_section_writable" Options="0" CompilationType="2" />
+            <Procedure MapAddress="DllEntryPoint" Options="0" CompilationType="2" />
+            <Procedure MapAddress="DllMain" Options="0" CompilationType="2" />
+            <Procedure MapAddress="ProcessThreadIPs" Options="0" CompilationType="2" />
+            <Procedure MapAddress="EnableHookLL" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Freeze" Options="0" CompilationType="2" />
+            <Procedure MapAddress="EnableAllHooksLL" Options="0" CompilationType="2" />
+            <Procedure MapAddress="EnableHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_Initialize" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_Uninitialize" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_CreateHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_RemoveHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_EnableHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_DisableHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_QueueEnableHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_QueueDisableHook" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_ApplyQueued" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_CreateHookApiEx" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_CreateHookApi" Options="0" CompilationType="2" />
+            <Procedure MapAddress="MH_StatusToString" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::Logger::Clear()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::Logger::Log(char const*, ...)" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::Logger::Draw()" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Menu::ConfigData::LoadConfig()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::ConfigData::SaveConfig()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::WndProc(HWND__*, unsigned int, unsigned long long, long long)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::Initialize()::{lambda(HWND__*, long long)#1}::_FUN(HWND__*, long long)" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::SafeParseFloat(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, float) [clone .isra.0]" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::hkResizeBuffers(IDXGISwapChain*, unsigned int, unsigned int, unsigned int, DXGI_FORMAT, unsigned int)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::CleanupRenderTarget()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::CreateRenderTarget(IDXGISwapChain*)" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::Uninitialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::GetConfigPath[abi:cxx11]()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::hkPresent(IDXGISwapChain*, unsigned int, unsigned int)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Hooks::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Hooks::Uninitialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::SpeedHack::Hook_Time_set_timeScale(float, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::SpeedHack::ApplySpeedHack()" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::SpeedHack::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::SpeedHack::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_CostFactor(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_UpgradeCost(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_LevelCost(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassTalentConfig_get_PrestigeCost(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassUpgradeItem_GetCost(void*, int, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassHardUUpgrade_GetCostAmount(void*, int, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyUpgrade(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyHardUpgrade(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyTalent(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyGenerator(void*, void*, long, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyUpgradeBlock(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_CurrencyService_Subtract(void*, unsigned int, float, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_CurrencyService_Subtract_1(void*, void*, float, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::InfiniteItems::Hook_BaseStorageService_Remove(void*, void*, long, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteItems::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::InfiniteItems::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::ExpMultiplier::Hook_Skill_AddExperience(void*, float, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::ExpMultiplier::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::ExpMultiplier::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::FreeStore::Hook_SteamPurchaseService_InitiatePurchase(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::FreeStore::Hook_MobilePurchaseService_InitiatePurchase(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::FreeStore::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::FreeStore::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::GodMode::Hook_MovementControl_Move(void*, float, void*)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Features::GodMode::Hook_PlayerCharacter_TakeDamage(void*, float, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::GodMode::Hook_AttackReceiver_Recieve(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::GodMode::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::HourglassBypass::Hook_TimeskipItem_get_CanUseImpl(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::HourglassBypass::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::HunterHacks::Hook_MarketLot_GetCurrentPrice(void*, float, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::HunterHacks::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::EngineerHacks::Hook_EngineerService_TryGetUpgradeCost(void*, int, void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::EngineerHacks::Hook_EngineerUpgradeConfig_GetPrice(void*, int, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::EngineerHacks::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::Enhancement::Hook_EnhanceStationService_GetSuccessChance(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::Enhancement::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::AntiCheat::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::CurioHacks::Hook_CurioGachaService_RollRarity(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::CurioHacks::Hook_CurioPowerService_GetLevelUpCost(void*, int, int, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::CurioHacks::Initialize()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="IL2CPP::UnityAPI::Initialize()::{lambda(void**, char const*, std::initializer_list&lt;char const*&gt;)#1}::operator()(void**, char const*, std::initializer_list&lt;char const*&gt;) const [clone .isra.0]" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZZN6IL2CPP8UnityAPI10InitializeEvENKUlPPvSt16initializer_listIPKcEE_clES2_S6_" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI10InitializeEv" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI13ResolveExportEPKc" Options="0" CompilationType="2" />
+        </Procedures>
+    </Protection>
+</Document>
