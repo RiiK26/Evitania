@@ -45,8 +45,8 @@
             <Procedure MapAddress="MH_CreateHookApiEx" Options="0" CompilationType="0" />
             <Procedure MapAddress="MH_CreateHookApi" Options="0" CompilationType="0" />
             <Procedure MapAddress="MH_StatusToString" Options="0" CompilationType="0" />
-            <Procedure MapAddress="Menu::ConfigData::LoadConfig()" Options="0" CompilationType="0" />
-            <Procedure MapAddress="Menu::ConfigData::SaveConfig()" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::ConfigData::LoadConfig()" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Menu::ConfigData::SaveConfig()" Options="0" CompilationType="1" />
             <Procedure MapAddress="Menu::WndProc(HWND__*, unsigned int, unsigned long long, long long)" Options="0" CompilationType="0" />
             <Procedure MapAddress="Menu::Initialize()::{lambda(HWND__*, long long)#1}::_FUN(HWND__*, long long)" Options="0" CompilationType="2" />
             <Procedure MapAddress="Menu::SafeParseFloat(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, float) [clone .isra.0]" Options="0" CompilationType="2" />
