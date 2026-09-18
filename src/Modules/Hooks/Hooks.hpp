@@ -7,7 +7,6 @@ HOOK_OFFSET:    using Offset Scanner from @src/Modules/Offsets.hpp (Not used for
 #pragma once
 #include "../Il2CppResolver/IL2CPP_Resolver.hpp"  // IWYU pragma: keep
 #include "MinHook.h"                              // IWYU pragma: keep
-#include "../Menu/Logger.hpp"                     // IWYU pragma: keep
 
 namespace Hooks
 {
@@ -20,23 +19,16 @@ namespace Hooks
     if (target) { \
       int createStatus = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
       if (createStatus != MH_OK) { \
-        Menu::Logger::Log( \
-          "[HOOK_METHOD] MH_CreateHook failed (%d) for %s::%s\n", createStatus, ClassName, MethodName \
-        ); \
         Hooks::bHooksFailed = true; \
       } \
       else { \
         int enableStatus = MH_EnableHook(target); \
         if (enableStatus != MH_OK) { \
-          Menu::Logger::Log( \
-            "[HOOK_METHOD] MH_EnableHook failed (%d) for %s::%s\n", enableStatus, ClassName, MethodName \
-          ); \
           Hooks::bHooksFailed = true; \
         } \
       } \
     } \
     else { \
-      Menu::Logger::Log("[HOOK_METHOD] method not found: %s::%s\n", ClassName, MethodName); \
       Hooks::bHooksFailed = true; \
     } \
   } while (0)
@@ -48,19 +40,16 @@ namespace Hooks
     if (target) { \
       int createStatus = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
       if (createStatus != MH_OK) { \
-        Menu::Logger::Log("[HOOK_SIGNATURE] MH_CreateHook failed (%d) for pattern %s\n", createStatus, OffsetName); \
         Hooks::bHooksFailed = true; \
       } \
       else { \
         int enableStatus = MH_EnableHook(target); \
         if (enableStatus != MH_OK) { \
-          Menu::Logger::Log("[HOOK_SIGNATURE] MH_EnableHook failed (%d) for pattern %s\n", enableStatus, OffsetName); \
           Hooks::bHooksFailed = true; \
         } \
       } \
     } \
     else { \
-      Menu::Logger::Log("[HOOK_SIGNATURE] pattern not found: %s\n", OffsetName); \
       Hooks::bHooksFailed = true; \
     } \
   } while (0)
@@ -71,19 +60,16 @@ namespace Hooks
     if (target) { \
       int createStatus = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
       if (createStatus != MH_OK) { \
-        Menu::Logger::Log("[HOOK_OFFSET] MH_CreateHook failed (%d) for %s\n", createStatus, OffsetName); \
         Hooks::bHooksFailed = true; \
       } \
       else { \
         int enableStatus = MH_EnableHook(target); \
         if (enableStatus != MH_OK) { \
-          Menu::Logger::Log("[HOOK_OFFSET] MH_EnableHook failed (%d) for %s\n", enableStatus, OffsetName); \
           Hooks::bHooksFailed = true; \
         } \
       } \
     } \
     else { \
-      Menu::Logger::Log("[HOOK_OFFSET] target address invalid for %s\n", OffsetName); \
       Hooks::bHooksFailed = true; \
     } \
   } while (0)

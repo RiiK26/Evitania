@@ -22,7 +22,6 @@ void Hooks::Initialize()
 {
   int mhStatus = MH_Initialize();
   if (mhStatus != MH_OK && mhStatus != MH_ERROR_ALREADY_INITIALIZED) {
-    Menu::Logger::Log("[Hooks] MH_Initialize failed: %d\n", mhStatus);
     Hooks::bHooksFailed = true;
   }
 
@@ -40,11 +39,6 @@ void Hooks::Initialize()
   Features::CurioHacks::Initialize();
   Features::EngineerHacks::Initialize();
   Features::HunterHacks::Initialize();
-
-
-  if (!Hooks::bHooksFailed) {
-    Menu::Logger::Log("[Hooks] All features initialized successfully!\n");
-  }
 }
 
 void Hooks::Uninitialize()

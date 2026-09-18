@@ -4,52 +4,49 @@
         <Procedures>
             <Procedure MapAddress="Scanner::ParsePattern(char const*)" Options="0" CompilationType="1" />
             <Procedure MapAddress="Scanner::FindPattern(HINSTANCE__*, char const*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress=".text$_ZN5Unity11PlayerPrefs10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity14RenderSettings10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity9Resources10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity9RigidBody10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity12SceneManager10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity6Screen10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity4Time10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Unity::Transform::Initialize()::{lambda(void*&amp;, bool&amp;, char const*, int, char const*, int, std::initializer_list&lt;char const*&gt;, std::initializer_list&lt;char const*&gt;)#1}::operator()(void*&amp;, bool&amp;, char const*, int, char const*, int, std::initializer_list&lt;char const*&gt;, std::initializer_list&lt;char const*&gt;) const [clone .isra.0]" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity9Transform10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity6Object10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity11Application10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity9Behaviour10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity6Camera10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity9Component10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity6Cursor10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity5Debug10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity10GameObject10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity5Input10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity9LayerMask10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN5Unity11Obfuscators10ROT_StringB5cxx11EPKci" Options="0" CompilationType="2" />
+            <Procedure MapAddress=".text$_ZN5Unity11PlayerPrefs10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity14RenderSettings10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity9Resources10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity9RigidBody10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity12SceneManager10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity6Screen10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity4Time10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Unity::Transform::Initialize()::{lambda(void*&amp;, bool&amp;, char const*, int, char const*, int, std::initializer_list&lt;char const*&gt;, std::initializer_list&lt;char const*&gt;)#1}::operator()(void*&amp;, bool&amp;, char const*, int, char const*, int, std::initializer_list&lt;char const*&gt;, std::initializer_list&lt;char const*&gt;) const [clone .isra.0]" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity9Transform10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity6Object10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity11Application10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity9Behaviour10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity6Camera10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity9Component10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity6Cursor10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity5Debug10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity10GameObject10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity5Input10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity9LayerMask10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN5Unity11Obfuscators10ROT_StringB5cxx11EPKci" Options="0" CompilationType="0" />
             <Procedure MapAddress="DllMainCRTStartup" Options="0" CompilationType="2" />
             <Procedure MapAddress="mark_section_writable" Options="0" CompilationType="2" />
             <Procedure MapAddress="DllEntryPoint" Options="0" CompilationType="2" />
             <Procedure MapAddress="DllMain" Options="0" CompilationType="2" />
-            <Procedure MapAddress="ProcessThreadIPs" Options="0" CompilationType="2" />
-            <Procedure MapAddress="EnableHookLL" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Freeze" Options="0" CompilationType="2" />
-            <Procedure MapAddress="EnableAllHooksLL" Options="0" CompilationType="2" />
-            <Procedure MapAddress="EnableHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_Initialize" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_Uninitialize" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_CreateHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_RemoveHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_EnableHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_DisableHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_QueueEnableHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_QueueDisableHook" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_ApplyQueued" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_CreateHookApiEx" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_CreateHookApi" Options="0" CompilationType="2" />
-            <Procedure MapAddress="MH_StatusToString" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Menu::Logger::Clear()" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Menu::Logger::Log(char const*, ...)" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Menu::Logger::Draw()" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Menu::ConfigData::LoadConfig()" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Menu::ConfigData::SaveConfig()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="ProcessThreadIPs" Options="0" CompilationType="0" />
+            <Procedure MapAddress="EnableHookLL" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Freeze" Options="0" CompilationType="0" />
+            <Procedure MapAddress="EnableAllHooksLL" Options="0" CompilationType="0" />
+            <Procedure MapAddress="EnableHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_Initialize" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_Uninitialize" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_CreateHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_RemoveHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_EnableHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_DisableHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_QueueEnableHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_QueueDisableHook" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_ApplyQueued" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_CreateHookApiEx" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_CreateHookApi" Options="0" CompilationType="0" />
+            <Procedure MapAddress="MH_StatusToString" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::ConfigData::LoadConfig()" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::ConfigData::SaveConfig()" Options="0" CompilationType="0" />
             <Procedure MapAddress="Menu::WndProc(HWND__*, unsigned int, unsigned long long, long long)" Options="0" CompilationType="0" />
             <Procedure MapAddress="Menu::Initialize()::{lambda(HWND__*, long long)#1}::_FUN(HWND__*, long long)" Options="0" CompilationType="2" />
             <Procedure MapAddress="Menu::SafeParseFloat(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, float) [clone .isra.0]" Options="0" CompilationType="2" />
@@ -108,10 +105,10 @@
             <Procedure MapAddress="Features::CurioHacks::Hook_CurioGachaService_RollRarity(void*, void*, void*)" Options="0" CompilationType="1" />
             <Procedure MapAddress="Features::CurioHacks::Hook_CurioPowerService_GetLevelUpCost(void*, int, int, void*)" Options="0" CompilationType="1" />
             <Procedure MapAddress="Features::CurioHacks::Initialize()" Options="0" CompilationType="2" />
-            <Procedure MapAddress="IL2CPP::UnityAPI::Initialize()::{lambda(void**, char const*, std::initializer_list&lt;char const*&gt;)#1}::operator()(void**, char const*, std::initializer_list&lt;char const*&gt;) const [clone .isra.0]" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZZN6IL2CPP8UnityAPI10InitializeEvENKUlPPvSt16initializer_listIPKcEE_clES2_S6_" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI10InitializeEv" Options="0" CompilationType="2" />
-            <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI13ResolveExportEPKc" Options="0" CompilationType="2" />
+            <Procedure MapAddress="IL2CPP::UnityAPI::Initialize()::{lambda(void**, char const*, std::initializer_list&lt;char const*&gt;)#1}::operator()(void**, char const*, std::initializer_list&lt;char const*&gt;) const [clone .isra.0]" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZZN6IL2CPP8UnityAPI10InitializeEvENKUlPPvSt16initializer_listIPKcEE_clES2_S6_" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI10InitializeEv" Options="0" CompilationType="0" />
+            <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI13ResolveExportEPKc" Options="0" CompilationType="0" />
         </Procedures>
     </Protection>
 </Document>
