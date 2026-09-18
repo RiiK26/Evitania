@@ -443,44 +443,41 @@ namespace Menu
     Config.LoadConfig();
 
     // Dummy DX11 swap chain creation to get the vtable address of Present
-    D3D_FEATURE_LEVEL    featureLevel = D3D_FEATURE_LEVEL_11_0;
+    WNDCLASSEXA wc = {sizeof(WNDCLASSEXA),    CS_CLASSDC, DefWindowProcA, 0L,   0L,
+                      GetModuleHandleA(NULL), NULL,       NULL,           NULL, NULL,
+                      "EvitaniaDummy",        NULL};
+    RegisterClassExA(&wc);
+    HWND dummyWindow =
+      CreateWindowA("EvitaniaDummy", "", WS_OVERLAPPEDWINDOW, 100, 100, 300, 300, NULL, NULL, wc.hInstance, NULL);
+
     DXGI_SWAP_CHAIN_DESC sd;
     ZeroMemory(&sd, sizeof(sd));
-    sd.BufferCount       = 1;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferUsage       = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    // Find the game's actual window instead of relying on Foreground (which might be the terminal)
-    HWND gameWindow = nullptr;
-    EnumWindows(
-      [](HWND hwnd, LPARAM lParam) -> BOOL {
-        DWORD pid = 0;
-        GetWindowThreadProcessId(hwnd, &pid);
-        if (pid == GetCurrentProcessId()) {
-          if (GetWindow(hwnd, GW_OWNER) == (HWND) 0 && IsWindowVisible(hwnd)) {
-            *(HWND*) lParam = hwnd;
-            return FALSE;
-          }
-        }
-        return TRUE;
-      },
-      (LPARAM) &gameWindow
-    );
+    sd.BufferCount                    = 1;
+    sd.BufferDesc.Format              = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferUsage                    = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.OutputWindow                   = dummyWindow;
+    sd.SampleDesc.Count               = 1;
+    sd.Windowed                       = TRUE;
+    sd.SwapEffect                     = DXGI_SWAP_EFFECT_DISCARD;
 
-    sd.OutputWindow     = gameWindow ? gameWindow : GetForegroundWindow();
-    sd.SampleDesc.Count = 1;
-    sd.Windowed         = TRUE;
-    sd.SwapEffect       = DXGI_SWAP_EFFECT_DISCARD;
-
-    if (!sd.OutputWindow) { }
+    D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
+    D3D_FEATURE_LEVEL featureLevel;
 
     IDXGISwapChain*      pDummySwapChain = nullptr;
     ID3D11Device*        pDummyDevice    = nullptr;
     ID3D11DeviceContext* pDummyContext   = nullptr;
 
     HRESULT hr                           = D3D11CreateDeviceAndSwapChain(
-      NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &sd, &pDummySwapChain,
+      NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, featureLevels, 3, D3D11_SDK_VERSION, &sd, &pDummySwapChain,
       &pDummyDevice, NULL, &pDummyContext
     );
+
+    if (FAILED(hr)) {
+      hr = D3D11CreateDeviceAndSwapChain(
+        NULL, D3D_DRIVER_TYPE_WARP, NULL, 0, featureLevels, 3, D3D11_SDK_VERSION, &sd, &pDummySwapChain, &pDummyDevice,
+        NULL, &pDummyContext
+      );
+    }
 
     if (SUCCEEDED(hr) && pDummySwapChain) {
 
@@ -511,6 +508,14 @@ namespace Menu
       pDummyDevice->Release();
       pDummyContext->Release();
     }
+    else {
+      MessageBoxA(
+        NULL, skCrypt("Failed to create D3D11 Device (Menu might not show)"), skCrypt("Evitania Error"), MB_OK
+      );
+    }
+
+    DestroyWindow(dummyWindow);
+    UnregisterClassA("EvitaniaDummy", wc.hInstance);
   }
 
   void Uninitialize()
