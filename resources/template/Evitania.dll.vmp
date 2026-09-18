@@ -57,6 +57,12 @@
             <Procedure MapAddress="Menu::GetConfigPath[abi:cxx11]()" Options="0" CompilationType="2" />
             <Procedure MapAddress="Menu::Initialize()" Options="0" CompilationType="2" />
             <Procedure MapAddress="Menu::hkPresent(IDXGISwapChain*, unsigned int, unsigned int)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::hkExecuteCommandLists(ID3D12CommandQueue*, unsigned int, ID3D12CommandList* const*)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::RenderImGui_DX12(IDXGISwapChain*, ID3D12Device*)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::RenderImGui_DX11(IDXGISwapChain*, ID3D11Device*)" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Menu::CreateRenderTargetDX12(IDXGISwapChain*, ID3D12Device*)" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::CleanupRenderTargetDX12()" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Menu::DrawMenuUI()" Options="0" CompilationType="0" />
             <Procedure MapAddress="Hooks::Initialize()" Options="0" CompilationType="2" />
             <Procedure MapAddress="Hooks::Uninitialize()" Options="0" CompilationType="2" />
             <Procedure MapAddress="Features::SpeedHack::Hook_Time_set_timeScale(float, void*)" Options="0" CompilationType="1" />

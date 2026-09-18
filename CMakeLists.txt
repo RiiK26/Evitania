@@ -39,6 +39,7 @@ add_library(Evitania MODULE
     src/Modules/ImGui/imgui_tables.cpp
     src/Modules/ImGui/imgui_impl_win32.cpp
     src/Modules/ImGui/imgui_impl_dx11.cpp
+    src/Modules/ImGui/imgui_impl_dx12.cpp
 )
 
 # Build the injector separately
@@ -57,4 +58,4 @@ target_include_directories(Evitania PRIVATE
 
 set_target_properties(Evitania PROPERTIES PREFIX "" SUFFIX ".dll")
 target_link_options(Evitania PRIVATE "-static" "-static-libgcc" "-static-libstdc++")
-target_link_libraries(Evitania PRIVATE d3d11 d3dcompiler dxgi gdi32 dwmapi)
+target_link_libraries(Evitania PRIVATE d3d11 d3d12 d3dcompiler dxgi gdi32 dwmapi)
