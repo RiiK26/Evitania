@@ -9,11 +9,8 @@ When the game updates, the internal offsets and pointers will change, but the co
 Follow these steps to update the cheat after a game patch:
 
 1. **Get the new `GameAssembly.dll`**
-   Extract the updated `GameAssembly.dll` from the game's directory.
-2. **Replace the old DLL**
-   Place the new `GameAssembly.dll` into the `resources/dumped/` folder, overwriting the old one.
-   *(Note: You do NOT need `dump.cs` anymore!)*
-3. **Run the Generator**
+   Whenever the game updated, newer `GameAssembly.dll` will always tracked down by the python script.
+2. **Run the Generator**
    Navigate to the `resources/Tools/` directory and run the extraction script:
    ```bash
    python3 aobgenerator.py
@@ -23,7 +20,7 @@ Follow these steps to update the cheat after a game patch:
    - Scan the new `GameAssembly.dll` to find the target methods.
    - Use the Capstone engine to disassemble the methods and dynamically extract the new offsets.
    - Automatically rewrite `src/Modules/Hooks/Signatures.hpp` and `src/Modules/Hooks/Offsets.hpp` with the updated values.
-4. **Recompile**
+3. **Recompile**
    Run the build script (`scripts/build` on Linux or `scripts/build.bat` on Windows) to recompile your updated `Evitania.dll`.
 
 ## How it Works
