@@ -10,7 +10,6 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "../../Cores/skCrypter.h"
 #include "../../Features/Player/SpeedHack.hpp"
 #include <shellapi.h>
 
@@ -33,10 +32,10 @@ namespace Menu
       std::string fullPath(path);
       size_t      lastSlash = fullPath.find_last_of("\\/");
       if (lastSlash != std::string::npos) {
-        return fullPath.substr(0, lastSlash) + skCrypt("\\config.txt");
+        return fullPath.substr(0, lastSlash) + "\\config.txt";
       }
     }
-    return skCrypt("config.txt");
+    return "config.txt";
   }
 
   static float SafeParseFloat(const std::string& value, float defaultValue)
@@ -61,41 +60,41 @@ namespace Menu
       if (std::getline(is_line, key, '=')) {
         std::string value;
         if (std::getline(is_line, value)) {
-          if (key == skCrypt("god_mode"))
+          if (key == "god_mode")
             bGodMode = (value == "1");
-          else if (key == skCrypt("god_mode_nullify"))
+          else if (key == "god_mode_nullify")
             bGodMode_Nullify = (value == "1");
-          else if (key == skCrypt("god_mode_damage_toggle"))
+          else if (key == "god_mode_damage_toggle")
             bGodMode_Damage = (value == "1");
-          else if (key == skCrypt("god_mode_speed_toggle"))
+          else if (key == "god_mode_speed_toggle")
             bGodMode_Speed = (value == "1");
-          else if (key == skCrypt("god_mode_damage"))
+          else if (key == "god_mode_damage")
             fGodModeDamage = SafeParseFloat(value, fGodModeDamage);
-          else if (key == skCrypt("god_mode_speed_multiplier"))
+          else if (key == "god_mode_speed_multiplier")
             fGodModeSpeedMultiplier = SafeParseFloat(value, fGodModeSpeedMultiplier);
-          else if (key == skCrypt("aura_kill"))
+          else if (key == "aura_kill")
             bAuraKill = (value == "1");
-          else if (key == skCrypt("exp_multiplier"))
+          else if (key == "exp_multiplier")
             bExpMultiplier = (value == "1");
-          else if (key == skCrypt("exp_multiplier_value"))
+          else if (key == "exp_multiplier_value")
             fExpMultiplierValue = SafeParseFloat(value, fExpMultiplierValue);
-          else if (key == skCrypt("infinite_items"))
+          else if (key == "infinite_items")
             bInfiniteItems = (value == "1");
-          else if (key == skCrypt("enhance_item_100"))
+          else if (key == "enhance_item_100")
             bEnhanceItem100 = (value == "1");
-          else if (key == skCrypt("infinite_currency"))
+          else if (key == "infinite_currency")
             bInfiniteCurrency = (value == "1");
-          else if (key == skCrypt("free_store"))
+          else if (key == "free_store")
             bFreeStore = (value == "1");
-          else if (key == skCrypt("speed_hack"))
+          else if (key == "speed_hack")
             bSpeedHack = (value == "1");
-          else if (key == skCrypt("speed_multiplier"))
+          else if (key == "speed_multiplier")
             fSpeedMultiplier = SafeParseFloat(value, fSpeedMultiplier);
-          else if (key == skCrypt("hourglass_bypass"))
+          else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
-          else if (key == skCrypt("free_engineer_upgrades"))
+          else if (key == "free_engineer_upgrades")
             bFreeEngineerUpgrades = (value == "1");
-          else if (key == skCrypt("free_hunter_upgrades"))
+          else if (key == "free_hunter_upgrades")
             bFreeHunterUpgrades = (value == "1");
         }
       }
@@ -108,25 +107,25 @@ namespace Menu
     if (!out.is_open())
       return;
 
-    out << skCrypt("menu_open=") << (bMenuOpen ? "1" : "0") << "\n";
-    out << skCrypt("god_mode=") << (bGodMode ? "1" : "0") << "\n";
-    out << skCrypt("god_mode_nullify=") << (bGodMode_Nullify ? "1" : "0") << "\n";
-    out << skCrypt("god_mode_damage_toggle=") << (bGodMode_Damage ? "1" : "0") << "\n";
-    out << skCrypt("god_mode_speed_toggle=") << (bGodMode_Speed ? "1" : "0") << "\n";
-    out << skCrypt("god_mode_damage=") << fGodModeDamage << "\n";
-    out << skCrypt("god_mode_speed_multiplier=") << fGodModeSpeedMultiplier << "\n";
-    out << skCrypt("aura_kill=") << (bAuraKill ? "1" : "0") << "\n";
-    out << skCrypt("exp_multiplier=") << (bExpMultiplier ? "1" : "0") << "\n";
-    out << skCrypt("exp_multiplier_value=") << (long long) fExpMultiplierValue << "\n";
-    out << skCrypt("infinite_items=") << (bInfiniteItems ? "1" : "0") << "\n";
-    out << skCrypt("enhance_item_100=") << (bEnhanceItem100 ? "1" : "0") << "\n";
-    out << skCrypt("infinite_currency=") << (bInfiniteCurrency ? "1" : "0") << "\n";
-    out << skCrypt("free_store=") << (bFreeStore ? "1" : "0") << "\n";
-    out << skCrypt("speed_hack=") << (bSpeedHack ? "1" : "0") << "\n";
-    out << skCrypt("speed_multiplier=") << fSpeedMultiplier << "\n";
-    out << skCrypt("hourglass_bypass=") << (bHourglassBypass ? "1" : "0") << "\n";
-    out << skCrypt("free_engineer_upgrades=") << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
-    out << skCrypt("free_hunter_upgrades=") << (bFreeHunterUpgrades ? "1" : "0") << "\n";
+    out << "menu_open=" << (bMenuOpen ? "1" : "0") << "\n";
+    out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
+    out << "god_mode_nullify=" << (bGodMode_Nullify ? "1" : "0") << "\n";
+    out << "god_mode_damage_toggle=" << (bGodMode_Damage ? "1" : "0") << "\n";
+    out << "god_mode_speed_toggle=" << (bGodMode_Speed ? "1" : "0") << "\n";
+    out << "god_mode_damage=" << fGodModeDamage << "\n";
+    out << "god_mode_speed_multiplier=" << fGodModeSpeedMultiplier << "\n";
+    out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
+    out << "exp_multiplier=" << (bExpMultiplier ? "1" : "0") << "\n";
+    out << "exp_multiplier_value=" << (long long) fExpMultiplierValue << "\n";
+    out << "infinite_items=" << (bInfiniteItems ? "1" : "0") << "\n";
+    out << "enhance_item_100=" << (bEnhanceItem100 ? "1" : "0") << "\n";
+    out << "infinite_currency=" << (bInfiniteCurrency ? "1" : "0") << "\n";
+    out << "free_store=" << (bFreeStore ? "1" : "0") << "\n";
+    out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
+    out << "speed_multiplier=" << fSpeedMultiplier << "\n";
+    out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
+    out << "free_engineer_upgrades=" << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
+    out << "free_hunter_upgrades=" << (bFreeHunterUpgrades ? "1" : "0") << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -293,40 +292,40 @@ namespace Menu
     if (Config.bMenuOpen) {
       ImGui::SetNextWindowSize(ImVec2(650, 650), ImGuiCond_FirstUseEver);
       ImGui::Begin(
-        skCrypt("Evitania Online v" PROJECT_VERSION), nullptr,
+        "Evitania Online v" PROJECT_VERSION, nullptr,
         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
       );
 
-      if (ImGui::BeginTabBar(skCrypt("CheatTabs"), ImGuiTabBarFlags_FittingPolicyScroll)) {
+      if (ImGui::BeginTabBar("CheatTabs", ImGuiTabBarFlags_FittingPolicyScroll)) {
         // Combat Tab menu
-        if (ImGui::BeginTabItem(skCrypt("Combat"))) {
-          ImGui::BeginChild(skCrypt("CombatChild"), ImVec2(0, -65), false, 0);
+        if (ImGui::BeginTabItem("Combat")) {
+          ImGui::BeginChild("CombatChild"), ImVec2(0, -65), 0;
 
-          ImGui::Checkbox(skCrypt("God Mode"), &Config.bGodMode);
+          ImGui::Checkbox("God Mode", &Config.bGodMode);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("%s", skCrypt("Master God Mode toggle"));
+            ImGui::SetTooltip("Master God Mode toggle");
           }
 
-          if (ImGui::TreeNode(skCrypt("God Mode Settings"))) {
-            ImGui::Checkbox(skCrypt("Infinite HP"), &Config.bGodMode_Nullify);
-            ImGui::Checkbox(skCrypt("High Damage"), &Config.bGodMode_Damage);
-            ImGui::TextWrapped("%s", skCrypt("Damage Value"));
-            ImGui::InputFloat(skCrypt("##GodModeDamage"), &Config.fGodModeDamage);
+          if (ImGui::TreeNode("God Mode Settings")) {
+            ImGui::Checkbox("Infinite HP", &Config.bGodMode_Nullify);
+            ImGui::Checkbox("High Damage", &Config.bGodMode_Damage);
+            ImGui::TextWrapped("Damage Value");
+            ImGui::InputFloat("##GodModeDamage", &Config.fGodModeDamage);
             if (Config.fGodModeDamage < 0.0f)
               Config.fGodModeDamage = 0.0f;
 
-            ImGui::Checkbox(skCrypt("Movement Speed"), &Config.bGodMode_Speed);
-            ImGui::TextWrapped("%s", skCrypt("Speed Multiplier"));
-            ImGui::SliderFloat(skCrypt("##GodModeSpeed"), &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
+            ImGui::Checkbox("Movement Speed", &Config.bGodMode_Speed);
+            ImGui::TextWrapped("Speed Multiplier");
+            ImGui::SliderFloat("##GodModeSpeed", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
             ImGui::TreePop();
           }
-          ImGui::Checkbox(skCrypt("Aura Kill"), &Config.bAuraKill);
+          ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("%s", skCrypt("The Damage taken from GodMode high damage value"));
+            ImGui::SetTooltip("The Damage taken from GodMode high damage value");
           }
 
           ImGui::EndChild();
@@ -334,48 +333,48 @@ namespace Menu
         }
 
         // Player Tab menu
-        if (ImGui::BeginTabItem(skCrypt("Player"))) {
-          ImGui::BeginChild(skCrypt("PlayerChild"), ImVec2(0, -65), false, 0);
+        if (ImGui::BeginTabItem("Player")) {
+          ImGui::BeginChild("PlayerChild"), ImVec2(0, -65), 0;
 
-          ImGui::Checkbox(skCrypt("Exp Multiplier"), &Config.bExpMultiplier);
-          ImGui::TextWrapped("%s", skCrypt("Multiplier Value"));
-          ImGui::InputFloat(skCrypt("##ExpMultiplier"), &Config.fExpMultiplierValue);
+          ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
+          ImGui::TextWrapped("Multiplier Value");
+          ImGui::InputFloat("##ExpMultiplier", &Config.fExpMultiplierValue);
           if (Config.fExpMultiplierValue < 1.0f)
             Config.fExpMultiplierValue = 1.0f;
 
-          if (ImGui::Checkbox(skCrypt("Speed Hack"), &Config.bSpeedHack)) {
+          if (ImGui::Checkbox("Speed Hack", &Config.bSpeedHack)) {
             Features::SpeedHack::ApplySpeedHack();
           }
-          ImGui::TextWrapped("%s", skCrypt("Speed Value"));
-          if (ImGui::SliderFloat(skCrypt("##SpeedHack"), &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
+          ImGui::TextWrapped("Speed Value");
+          if (ImGui::SliderFloat("##SpeedHack", &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
             Features::SpeedHack::ApplySpeedHack();
           }
 
-          ImGui::Checkbox(skCrypt("100% Success enhance Item"), &Config.bEnhanceItem100);
-          ImGui::Checkbox(skCrypt("Use Timeskip hourglass anywhere"), &Config.bHourglassBypass);
+          ImGui::Checkbox("100% Success enhance Item", &Config.bEnhanceItem100);
+          ImGui::Checkbox("Use Timeskip hourglass anywhere", &Config.bHourglassBypass);
 
           ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
         // Economy Tab menu
-        if (ImGui::BeginTabItem(skCrypt("Economy"))) {
-          ImGui::BeginChild(skCrypt("EconomyChild"), ImVec2(0, -65), false, 0);
+        if (ImGui::BeginTabItem("Economy")) {
+          ImGui::BeginChild("EconomyChild"), ImVec2(0, -65), 0;
 
-          ImGui::Checkbox(skCrypt("Infinite items on inventory"), &Config.bInfiniteItems);
+          ImGui::Checkbox("Infinite items on inventory", &Config.bInfiniteItems);
 
-          ImGui::Checkbox(skCrypt("Infinite currency"), &Config.bInfiniteCurrency);
+          ImGui::Checkbox("Infinite currency", &Config.bInfiniteCurrency);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("%s", skCrypt("Diamonds, Gold, Sands, etc"));
+            ImGui::SetTooltip("Diamonds, Gold, Sands, etc");
           }
 
-          ImGui::Checkbox(skCrypt("Free Store"), &Config.bFreeStore);
+          ImGui::Checkbox("Free Store", &Config.bFreeStore);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("%s", skCrypt("Bypass InAppPurchases"));
+            ImGui::SetTooltip("Bypass InAppPurchases");
           }
 
           ImGui::EndChild();
@@ -383,41 +382,41 @@ namespace Menu
         }
 
         // Curio Tab menu
-        if (ImGui::BeginTabItem(skCrypt("Curio"))) {
-          ImGui::BeginChild(skCrypt("CurioChild"), ImVec2(0, -65), false, 0);
+        if (ImGui::BeginTabItem("Curio")) {
+          ImGui::BeginChild("CurioChild"), ImVec2(0, -65), 0;
 
-          ImGui::Checkbox(skCrypt("Always Legendary Curio"), &Menu::Config.bAlwaysLegendaryCurio);
+          ImGui::Checkbox("Always Legendary Curio", &Menu::Config.bAlwaysLegendaryCurio);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("%s", skCrypt("Forces every gacha pull to drop a Legendary rarity Curio"));
+            ImGui::SetTooltip("Forces every gacha pull to drop a Legendary rarity Curio");
           }
 
-          ImGui::Checkbox(skCrypt("Free Curio Upgrades"), &Menu::Config.bFreeCurioUpgrades);
+          ImGui::Checkbox("Free Curio Upgrades", &Menu::Config.bFreeCurioUpgrades);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("%s", skCrypt("Upgrading curio levels costs 0"));
+            ImGui::SetTooltip("Upgrading curio levels costs 0");
 
           ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
         // Engineer Tab menu
-        if (ImGui::BeginTabItem(skCrypt("Engineer"))) {
-          ImGui::BeginChild(skCrypt("EngineerChild"), ImVec2(0, -65), false, 0);
+        if (ImGui::BeginTabItem("Engineer")) {
+          ImGui::BeginChild("EngineerChild"), ImVec2(0, -65), 0;
 
-          ImGui::Checkbox(skCrypt("Free Engineer Upgrades"), &Menu::Config.bFreeEngineerUpgrades);
+          ImGui::Checkbox("Free Engineer Upgrades", &Menu::Config.bFreeEngineerUpgrades);
 
           ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
         // Hunter Tab menu
-        if (ImGui::BeginTabItem(skCrypt("Hunter"))) {
-          ImGui::BeginChild(skCrypt("HunterChild"), ImVec2(0, -65), false, 0);
+        if (ImGui::BeginTabItem("Hunter")) {
+          ImGui::BeginChild("HunterChild"), ImVec2(0, -65), 0;
 
-          ImGui::Checkbox(skCrypt("Free Hunter Upgrades"), &Menu::Config.bFreeHunterUpgrades);
+          ImGui::Checkbox("Free Hunter Upgrades", &Menu::Config.bFreeHunterUpgrades);
 
           ImGui::EndChild();
           ImGui::EndTabItem();
@@ -427,11 +426,11 @@ namespace Menu
 
       // Save Config button
       ImGui::Separator();
-      if (ImGui::Button(skCrypt("Save Config"), ImVec2(-1, 0))) {
+      if (ImGui::Button("Save Config", ImVec2(-1, 0))) {
         Config.SaveConfig();
       }
       ImGui::Separator();
-      ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "%s", skCrypt("[INSERT] show/hide menu"));
+      ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "%s", "[INSERT] show/hide menu");
 
       ImGui::End();
     }
@@ -464,7 +463,7 @@ namespace Menu
           std::string fullPath(path);
           size_t      lastSlash = fullPath.find_last_of("\\/");
           if (lastSlash != std::string::npos) {
-            g_IniPath      = fullPath.substr(0, lastSlash) + skCrypt("\\imgui.ini");
+            g_IniPath      = fullPath.substr(0, lastSlash) + "\\imgui.ini";
             io.IniFilename = g_IniPath.c_str();
           }
         }
@@ -556,7 +555,7 @@ namespace Menu
         std::string fullPath(path);
         size_t      lastSlash = fullPath.find_last_of("\\/");
         if (lastSlash != std::string::npos) {
-          g_IniPath      = fullPath.substr(0, lastSlash) + skCrypt("\\imgui.ini");
+          g_IniPath      = fullPath.substr(0, lastSlash) + "\\imgui.ini";
           io.IniFilename = g_IniPath.c_str();
         }
       }
@@ -690,22 +689,11 @@ namespace Menu
 
     if (SUCCEEDED(hr) && pDummySwapChain) {
 
-      void** pVTable         = *reinterpret_cast<void***>(pDummySwapChain);
-      void*  pPresent        = pVTable[8];
+      void** pVTable           = *reinterpret_cast<void***>(pDummySwapChain);
+      void*  pPresent          = pVTable[8];
 
-      MH_STATUS createStatus = MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent);
-      if (createStatus != MH_OK) {
-        char buf[64];
-        snprintf(buf, sizeof(buf), skCrypt("MH_CreateHook for Present failed: %d"), (int) createStatus);
-        MessageBoxA(NULL, buf, skCrypt("Evitania Error"), MB_OK);
-      }
-
-      MH_STATUS enableStatus = MH_EnableHook(pPresent);
-      if (enableStatus != MH_OK) {
-        char buf[64];
-        snprintf(buf, sizeof(buf), skCrypt("MH_EnableHook for Present failed: %d"), (int) enableStatus);
-        MessageBoxA(NULL, buf, skCrypt("Evitania Error"), MB_OK);
-      }
+      MH_STATUS createStatus   = MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent);
+      MH_STATUS enableStatus   = MH_EnableHook(pPresent);
 
       void*     pResizeBuffers = pVTable[13];
       MH_STATUS createStatusRB = MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers);
@@ -718,9 +706,7 @@ namespace Menu
       pDummyContext->Release();
     }
     else {
-      MessageBoxA(
-        NULL, skCrypt("Failed to create D3D11 Device (Menu might not show)"), skCrypt("Evitania Error"), MB_OK
-      );
+      MessageBoxA(NULL, "Failed to create D3D11 Device (Menu might not show)", "Evitania Error", MB_OK);
     }
 
     // Dummy DX12 device creation to get the vtable address of ExecuteCommandLists

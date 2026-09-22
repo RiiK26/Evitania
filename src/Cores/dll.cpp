@@ -4,16 +4,9 @@
 #include "Modules/Hooks/Hooks.hpp"
 #include "Modules/Menu/Menu.hpp"
 #include "MinHook.h"
-#include "AntiRE.hpp"
 
 void MainThread(HMODULE hModule)
 {
-  if (AntiRE::CheckDebugger()) {
-    FreeLibraryAndExitThread(hModule, 0);
-    return;
-  }
-  AntiRE::ErasePEHeaders(hModule);
-
   if (MH_Initialize() != MH_OK) {
     return;
   }
@@ -41,11 +34,7 @@ void MainThread(HMODULE hModule)
 
 void NTAPI TlsCallback(PVOID DllHandle, DWORD Reason, PVOID Reserved)
 {
-  if (Reason == DLL_PROCESS_ATTACH) {
-    if (AntiRE::CheckDebugger()) {
-      ExitProcess(1);
-    }
-  }
+  if (Reason == DLL_PROCESS_ATTACH) { }
 }
 
 #ifdef _MSC_VER

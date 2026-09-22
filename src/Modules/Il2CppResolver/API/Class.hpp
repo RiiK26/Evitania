@@ -406,7 +406,7 @@ namespace IL2CPP
         const int    m_iNamesCount = static_cast<int>(m_vNames.size());
         const char** m_pNames      = const_cast<const char**>(m_vNames.begin());
 
-        void* m_pMethodIterator = nullptr;
+        void* m_pMethodIterator    = nullptr;
         while (true) {
           Unity::il2cppMethodInfo* m_pMethod = GetMethods(m_pClass, &m_pMethodIterator);
           if (!m_pMethod)
@@ -486,7 +486,7 @@ namespace IL2CPP
 
         Unity::il2cppClass* m_pReturn = nullptr;
         for (size_t c = 0; c < m_pClasses->size(); ++c) {
-          int m_iFoundCountNow = 0;
+          int m_iFoundCountNow         = 0;
 
           Unity::il2cppClass* m_pClass = m_pClasses->operator[](c);
           if (!m_pClass)
