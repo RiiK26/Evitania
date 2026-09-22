@@ -1,6 +1,7 @@
 #include "EngineerHacks.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
+#include "../../Modules/Hooks/Utils.hpp"
 #include "../../Modules/Menu/Menu.hpp"
 
 namespace Features
@@ -29,9 +30,7 @@ namespace Features
     {
       void* dict = Orig_EngineerUpgradeConfig_GetPrice(__this, nextTier, method_info);
       if (Menu::Config.bFreeEngineerUpgrades && dict) {
-        // Clear the dictionary by setting its 'count' property to 0
-        // In Unity's Il2Cpp Dictionary<K, V> implementation, the count is located at offset 0x20.
-        *(int*) ((uintptr_t) dict + 0x20) = 0;
+        Utils::Il2Cpp::ClearDictionary(dict);
       }
       return dict;
     }

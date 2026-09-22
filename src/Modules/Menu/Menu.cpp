@@ -254,6 +254,40 @@ namespace Menu
     return hr;
   }
 
+  void ApplyStyle()
+  {
+    ImGuiStyle& style       = ImGui::GetStyle();
+    style.WindowRounding    = 8.0f;
+    style.FrameRounding     = 6.0f;
+    style.PopupRounding     = 6.0f;
+    style.ScrollbarRounding = 6.0f;
+    style.GrabRounding      = 6.0f;
+    style.TabRounding       = 6.0f;
+
+    style.WindowPadding     = ImVec2(12, 12);
+    style.FramePadding      = ImVec2(8, 4);
+    style.ItemSpacing       = ImVec2(8, 8);
+    style.ItemInnerSpacing  = ImVec2(6, 6);
+
+    // Custom Dark/Vibrant Palette
+    ImVec4* colors                    = style.Colors;
+    colors[ImGuiCol_WindowBg]         = ImVec4(0.08f, 0.08f, 0.09f, 0.96f);
+    colors[ImGuiCol_Header]           = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
+    colors[ImGuiCol_HeaderHovered]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
+    colors[ImGuiCol_HeaderActive]     = ImVec4(0.30f, 0.30f, 0.32f, 1.00f);
+    colors[ImGuiCol_Button]           = ImVec4(0.20f, 0.25f, 0.30f, 1.00f);
+    colors[ImGuiCol_ButtonHovered]    = ImVec4(0.26f, 0.35f, 0.44f, 1.00f);
+    colors[ImGuiCol_ButtonActive]     = ImVec4(0.36f, 0.45f, 0.54f, 1.00f);
+    colors[ImGuiCol_FrameBg]          = ImVec4(0.12f, 0.12f, 0.14f, 1.00f);
+    colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
+    colors[ImGuiCol_FrameBgActive]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
+    colors[ImGuiCol_CheckMark]        = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
+    colors[ImGuiCol_SliderGrab]       = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.38f, 0.73f, 1.00f, 1.00f);
+    colors[ImGuiCol_TitleBg]          = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
+    colors[ImGuiCol_TitleBgActive]    = ImVec4(0.15f, 0.15f, 0.18f, 1.00f);
+  }
+
   void DrawMenuUI()
   {
     if (Config.bMenuOpen) {
@@ -439,40 +473,9 @@ namespace Menu
         ImGui_ImplDX11_Init(pDevice, pContext);
 
         ImGui::StyleColorsDark();
+        ApplyStyle();
 
-        // --- Apply Styling ---
-        ImGuiStyle& style       = ImGui::GetStyle();
-        style.WindowRounding    = 8.0f;
-        style.FrameRounding     = 6.0f;
-        style.PopupRounding     = 6.0f;
-        style.ScrollbarRounding = 6.0f;
-        style.GrabRounding      = 6.0f;
-        style.TabRounding       = 6.0f;
-
-        style.WindowPadding     = ImVec2(12, 12);
-        style.FramePadding      = ImVec2(8, 4);
-        style.ItemSpacing       = ImVec2(8, 8);
-        style.ItemInnerSpacing  = ImVec2(6, 6);
-
-        // Custom Dark/Vibrant Palette
-        ImVec4* colors                    = style.Colors;
-        colors[ImGuiCol_WindowBg]         = ImVec4(0.08f, 0.08f, 0.09f, 0.96f);
-        colors[ImGuiCol_Header]           = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
-        colors[ImGuiCol_HeaderHovered]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
-        colors[ImGuiCol_HeaderActive]     = ImVec4(0.30f, 0.30f, 0.32f, 1.00f);
-        colors[ImGuiCol_Button]           = ImVec4(0.20f, 0.25f, 0.30f, 1.00f);
-        colors[ImGuiCol_ButtonHovered]    = ImVec4(0.26f, 0.35f, 0.44f, 1.00f);
-        colors[ImGuiCol_ButtonActive]     = ImVec4(0.36f, 0.45f, 0.54f, 1.00f);
-        colors[ImGuiCol_FrameBg]          = ImVec4(0.12f, 0.12f, 0.14f, 1.00f);
-        colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
-        colors[ImGuiCol_FrameBgActive]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
-        colors[ImGuiCol_CheckMark]        = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
-        colors[ImGuiCol_SliderGrab]       = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
-        colors[ImGuiCol_SliderGrabActive] = ImVec4(0.38f, 0.73f, 1.00f, 1.00f);
-        colors[ImGuiCol_TitleBg]          = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
-        colors[ImGuiCol_TitleBgActive]    = ImVec4(0.15f, 0.15f, 0.18f, 1.00f);
-
-        init                              = true;
+        init = true;
       }
     }
 
@@ -571,38 +574,9 @@ namespace Menu
       ImGui_ImplDX12_Init(&info);
 
       ImGui::StyleColorsDark();
+      ApplyStyle();
 
-      ImGuiStyle& style                 = ImGui::GetStyle();
-      style.WindowRounding              = 8.0f;
-      style.FrameRounding               = 6.0f;
-      style.PopupRounding               = 6.0f;
-      style.ScrollbarRounding           = 6.0f;
-      style.GrabRounding                = 6.0f;
-      style.TabRounding                 = 6.0f;
-
-      style.WindowPadding               = ImVec2(12, 12);
-      style.FramePadding                = ImVec2(8, 4);
-      style.ItemSpacing                 = ImVec2(8, 8);
-      style.ItemInnerSpacing            = ImVec2(6, 6);
-
-      ImVec4* colors                    = style.Colors;
-      colors[ImGuiCol_WindowBg]         = ImVec4(0.08f, 0.08f, 0.09f, 0.96f);
-      colors[ImGuiCol_Header]           = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
-      colors[ImGuiCol_HeaderHovered]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
-      colors[ImGuiCol_HeaderActive]     = ImVec4(0.30f, 0.30f, 0.32f, 1.00f);
-      colors[ImGuiCol_Button]           = ImVec4(0.20f, 0.25f, 0.30f, 1.00f);
-      colors[ImGuiCol_ButtonHovered]    = ImVec4(0.26f, 0.35f, 0.44f, 1.00f);
-      colors[ImGuiCol_ButtonActive]     = ImVec4(0.36f, 0.45f, 0.54f, 1.00f);
-      colors[ImGuiCol_FrameBg]          = ImVec4(0.12f, 0.12f, 0.14f, 1.00f);
-      colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
-      colors[ImGuiCol_FrameBgActive]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
-      colors[ImGuiCol_CheckMark]        = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
-      colors[ImGuiCol_SliderGrab]       = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
-      colors[ImGuiCol_SliderGrabActive] = ImVec4(0.38f, 0.73f, 1.00f, 1.00f);
-      colors[ImGuiCol_TitleBg]          = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
-      colors[ImGuiCol_TitleBgActive]    = ImVec4(0.15f, 0.15f, 0.18f, 1.00f);
-
-      initDX12                          = true;
+      initDX12 = true;
     }
 
     ImGui_ImplDX12_NewFrame();

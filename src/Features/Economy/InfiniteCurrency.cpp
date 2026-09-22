@@ -121,6 +121,82 @@ namespace Features
       bIsPurchasing = false;
     }
 
+    double (*Orig_HourglassService_CoinCdCost)(void* __this, void* method_info);
+    double Hook_HourglassService_CoinCdCost(void* __this, void* method_info)
+    {
+      if (Menu::Config.bInfiniteCurrency && bIsPurchasing)
+        return 0.0;
+      return Orig_HourglassService_CoinCdCost(__this, method_info);
+    }
+
+    double (*Orig_HourglassService_CoinRewardCost)(void* __this, void* method_info);
+    double Hook_HourglassService_CoinRewardCost(void* __this, void* method_info)
+    {
+      if (Menu::Config.bInfiniteCurrency && bIsPurchasing)
+        return 0.0;
+      return Orig_HourglassService_CoinRewardCost(__this, method_info);
+    }
+
+    double (*Orig_HourglassService_ShopNextCost)(void* __this, void* entry, void* method_info);
+    double Hook_HourglassService_ShopNextCost(void* __this, void* entry, void* method_info)
+    {
+      if (Menu::Config.bInfiniteCurrency && bIsPurchasing)
+        return 0.0;
+      return Orig_HourglassService_ShopNextCost(__this, entry, method_info);
+    }
+
+    double (*Orig_HourglassLevelConfig_SandCost)(void* __this, int targetLevel, void* method_info);
+    double Hook_HourglassLevelConfig_SandCost(void* __this, int targetLevel, void* method_info)
+    {
+      if (Menu::Config.bInfiniteCurrency && bIsPurchasing)
+        return 0.0;
+      return Orig_HourglassLevelConfig_SandCost(__this, targetLevel, method_info);
+    }
+
+    double (*Orig_HourglassLevelConfig_GoldCost)(void* __this, int targetLevel, void* method_info);
+    double Hook_HourglassLevelConfig_GoldCost(void* __this, int targetLevel, void* method_info)
+    {
+      if (Menu::Config.bInfiniteCurrency && bIsPurchasing)
+        return 0.0;
+      return Orig_HourglassLevelConfig_GoldCost(__this, targetLevel, method_info);
+    }
+
+    bool (*Orig_HourglassService_BuyCoinCdUpgrade)(void* __this, void* method_info);
+    bool Hook_HourglassService_BuyCoinCdUpgrade(void* __this, void* method_info)
+    {
+      bIsPurchasing = true;
+      bool res      = Orig_HourglassService_BuyCoinCdUpgrade(__this, method_info);
+      bIsPurchasing = false;
+      return res;
+    }
+
+    bool (*Orig_HourglassService_BuyCoinRewardUpgrade)(void* __this, void* method_info);
+    bool Hook_HourglassService_BuyCoinRewardUpgrade(void* __this, void* method_info)
+    {
+      bIsPurchasing = true;
+      bool res      = Orig_HourglassService_BuyCoinRewardUpgrade(__this, method_info);
+      bIsPurchasing = false;
+      return res;
+    }
+
+    bool (*Orig_HourglassService_BuyRiftWorker)(void* __this, void* method_info);
+    bool Hook_HourglassService_BuyRiftWorker(void* __this, void* method_info)
+    {
+      bIsPurchasing = true;
+      bool res      = Orig_HourglassService_BuyRiftWorker(__this, method_info);
+      bIsPurchasing = false;
+      return res;
+    }
+
+    bool (*Orig_HourglassService_BuyShopItem)(void* __this, void* entry, void* method_info);
+    bool Hook_HourglassService_BuyShopItem(void* __this, void* entry, void* method_info)
+    {
+      bIsPurchasing = true;
+      bool res      = Orig_HourglassService_BuyShopItem(__this, entry, method_info);
+      bIsPurchasing = false;
+      return res;
+    }
+
     void Initialize()
     {
       HOOK_SIGNATURE(
@@ -175,6 +251,42 @@ namespace Features
       HOOK_SIGNATURE(
         "HourglassService::BuyUpgradeBlock", Signatures::HourglassService_BuyUpgradeBlock,
         Hook_HourglassService_BuyUpgradeBlock, Orig_HourglassService_BuyUpgradeBlock
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::CoinCdCost", Signatures::HourglassService_CoinCdCost, Hook_HourglassService_CoinCdCost,
+        Orig_HourglassService_CoinCdCost
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::CoinRewardCost", Signatures::HourglassService_CoinRewardCost,
+        Hook_HourglassService_CoinRewardCost, Orig_HourglassService_CoinRewardCost
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::ShopNextCost", Signatures::HourglassService_ShopNextCost, Hook_HourglassService_ShopNextCost,
+        Orig_HourglassService_ShopNextCost
+      );
+      HOOK_SIGNATURE(
+        "HourglassLevelConfig::SandCost", Signatures::HourglassLevelConfig_SandCost, Hook_HourglassLevelConfig_SandCost,
+        Orig_HourglassLevelConfig_SandCost
+      );
+      HOOK_SIGNATURE(
+        "HourglassLevelConfig::GoldCost", Signatures::HourglassLevelConfig_GoldCost, Hook_HourglassLevelConfig_GoldCost,
+        Orig_HourglassLevelConfig_GoldCost
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::BuyCoinCdUpgrade", Signatures::HourglassService_BuyCoinCdUpgrade,
+        Hook_HourglassService_BuyCoinCdUpgrade, Orig_HourglassService_BuyCoinCdUpgrade
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::BuyCoinRewardUpgrade", Signatures::HourglassService_BuyCoinRewardUpgrade,
+        Hook_HourglassService_BuyCoinRewardUpgrade, Orig_HourglassService_BuyCoinRewardUpgrade
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::BuyRiftWorker", Signatures::HourglassService_BuyRiftWorker,
+        Hook_HourglassService_BuyRiftWorker, Orig_HourglassService_BuyRiftWorker
+      );
+      HOOK_SIGNATURE(
+        "HourglassService::BuyShopItem", Signatures::HourglassService_BuyShopItem, Hook_HourglassService_BuyShopItem,
+        Orig_HourglassService_BuyShopItem
       );
     }
 
