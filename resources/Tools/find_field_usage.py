@@ -1,10 +1,72 @@
 import os
 import re
 import pefile
+import platform
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
 
 DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
-DLL_PATH = os.path.join(os.path.dirname(__file__), "../dumped/GameAssembly.dll")
+
+def find_game_assembly():
+    steam_paths = []
+    if platform.system() == 'Windows':
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam") as key:
+                steam_path = winreg.QueryValueEx(key, "SteamPath")[0]
+                steam_paths.append(steam_path)
+        except Exception:
+            pass
+        for p in [r"C:\Program Files (x86)\Steam", r"C:\Program Files\Steam"]:
+            if os.path.exists(p) and p not in steam_paths:
+                steam_paths.append(p)
+    elif platform.system() == 'Linux':
+        for p in [os.path.expanduser("~/.steam/steam"), os.path.expanduser("~/.local/share/Steam")]:
+            if os.path.exists(p):
+                steam_paths.append(p)
+    elif platform.system() == 'Darwin':
+        p = os.path.expanduser("~/Library/Application Support/Steam")
+        if os.path.exists(p):
+            steam_paths.append(p)
+
+    library_folders = []
+    for sp in steam_paths:
+        if sp not in library_folders:
+            library_folders.append(sp)
+        vdf_path = os.path.join(sp, "steamapps", "libraryfolders.vdf")
+        if os.path.exists(vdf_path):
+            try:
+                with open(vdf_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    paths = re.findall(r'"path"\s+"([^"]+)"', content)
+                    for p in paths:
+                        clean_path = p.replace('\\\\', '\\')
+                        if clean_path not in library_folders:
+                            library_folders.append(clean_path)
+            except Exception:
+                pass
+
+    app_id = "4119420"
+    for lib in library_folders:
+        manifest_path = os.path.join(lib, "steamapps", f"appmanifest_{app_id}.acf")
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    match = re.search(r'"installdir"\s+"([^"]+)"', content, re.IGNORECASE)
+                    if match:
+                        install_dir = match.group(1)
+                        dll_path = os.path.join(lib, "steamapps", "common", install_dir, "GameAssembly.dll")
+                        if os.path.exists(dll_path):
+                            print(f"[+] Found GameAssembly.dll via AppID {app_id} at: {dll_path}")
+                            return dll_path
+            except Exception:
+                pass
+
+    fallback_path = os.path.join(os.path.dirname(__file__), "../dumped/GameAssembly.dll")
+    print(f"[-] Could not find game in Steam libraries. Falling back to: {fallback_path}")
+    return fallback_path
+
+DLL_PATH = find_game_assembly()
 
 def get_offsets():
     class_data = {}
