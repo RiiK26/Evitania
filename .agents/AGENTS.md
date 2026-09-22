@@ -37,9 +37,8 @@ The project uses a strict 2-branch strategy for stable releases (that contain an
 - **`main`**: The default branch for stable releases. Contains advanced anti-reverse engineering protections
 - **`clean`**: Used for producing clean, unobfuscated builds that include PDB debug symbols. Contains no anti-RE protections
 
-## Anti-RE & VMProtect Configuration (Always based on "Safe from Reverse engineering" and "Performance matter")
+## VMProtect Configuration (performance matters)
 
-- **C++ Anti-RE**: The `main` branch includes basic, lightweight Anti-RE measures (e.g., `skCrypt` for strings, `CheckDebugger`, `ErasePEHeaders` in `src/Cores/AntiRE.cpp`). These are fast and should not impact performance.
 - **VMProtect Rules (`resources/template/Evitania.dll.vmp`)**:
   - **`CompilationType="2"` (Virtualization)**: Use ONLY for one-time initialization functions (e.g., `DllMain`, `Hooks::Initialize`, `Menu::Initialize`). Never use this for recurring functions, as it severely degrades performance (up to 100x slower).
   - **`CompilationType="1"` (Mutation)**: Use for event-driven cheat hooks (e.g., `TakeDamage`, `AddExperience`, `InitiatePurchase`). Provides adequate protection with minimal overhead.
