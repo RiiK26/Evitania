@@ -248,10 +248,6 @@ def main():
         ("HourglassService", "ShopNextCost", 0, []),
         ("HourglassLevelConfig", "SandCost", 0, []),
         ("HourglassLevelConfig", "GoldCost", 0, []),
-        ("Input", "GetMouseButton", 0, []),
-        ("Input", "GetMouseButtonDown", 0, []),
-        ("Input", "GetMouseButtonUp", 0, []),
-        ("EventSystem", "Update", 0, [])
     ]
 
     sig_db = {}
