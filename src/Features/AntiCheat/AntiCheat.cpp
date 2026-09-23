@@ -10,35 +10,54 @@ void (*Orig_AntiCheat_Handle)(void* __this, void* signal);
 void (*Orig_AntiCheat_Apply)(void* __this, void* signal);
 void (*Orig_AntiCheat_ReportCheatToAnalytics)(void* __this, void* signal);
 
+#if defined(_MSC_VER)
+  #include <intrin.h>
+  #define NOP_INSTR() __nop()
+#else
+  #define NOP_INSTR() __asm__ volatile("nop")
+#endif
+
 // Hook implementations
-void Hook_AntiCheat_Initialize(void* __this)
-{
-  // Bypass initialization
-}
+void Hook_AntiCheat_Initialize(void* __this) { NOP_INSTR(); }
 
 void Hook_AntiCheat_OnSpeedHackDetected(void* __this)
 {
-  // Do nothing
+  NOP_INSTR();
+  NOP_INSTR();
 }
 
 void Hook_AntiCheat_OnObscuredCheatingDetected(void* __this)
 {
-  // Do nothing
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
 }
 
 void Hook_AntiCheat_Handle(void* __this, void* signal)
 {
-  // Do nothing
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
 }
 
 void Hook_AntiCheat_Apply(void* __this, void* signal)
 {
-  // Do nothing
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
 }
 
 void Hook_AntiCheat_ReportCheatToAnalytics(void* __this, void* signal)
 {
-  // Do nothing
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
+  NOP_INSTR();
 }
 
 void Features::AntiCheat::Initialize()

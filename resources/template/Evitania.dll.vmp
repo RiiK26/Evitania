@@ -131,13 +131,12 @@
             <Procedure MapAddress="Features::HourglassBypass::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
             <Procedure MapAddress="Features::HunterHacks::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
             <Procedure MapAddress="Features::AntiCheat::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
-            <Procedure MapAddress="Features::GodMode::ApplyHighDamage(void*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_Initialize(void*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_OnSpeedHackDetected(void*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_OnObscuredCheatingDetected(void*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_Handle(void*, void*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_Apply(void*, void*)" Options="0" CompilationType="1" />
-            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_ReportCheatToAnalytics(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Hook_AntiCheat_Initialize(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Hook_AntiCheat_OnSpeedHackDetected(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Hook_AntiCheat_OnObscuredCheatingDetected(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Hook_AntiCheat_Handle(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Hook_AntiCheat_Apply(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Hook_AntiCheat_ReportCheatToAnalytics(void*, void*)" Options="0" CompilationType="1" />
             <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_CoinCdCost(void*, void*)" Options="0" CompilationType="1" />
             <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_CoinRewardCost(void*, void*)" Options="0" CompilationType="1" />
             <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_ShopNextCost(void*, void*, void*)" Options="0" CompilationType="1" />
