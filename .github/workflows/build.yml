@@ -2,8 +2,6 @@ name: Build clean binary
 
 on:
   push:
-    branches:
-      - clean
   workflow_dispatch:
 
 jobs:
@@ -11,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install MinGW-w64
         run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake zip jq
@@ -33,7 +31,7 @@ jobs:
           zip -r ../Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip .
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}
           path: Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip
