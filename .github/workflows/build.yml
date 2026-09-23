@@ -26,11 +26,9 @@ jobs:
         run: |
           mkdir -p release_pkg
           cp build/release/*.dll release_pkg/
-          cd release_pkg
-          zip -r ../Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip .
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}
-          path: Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip
+          path: release_pkg/
