@@ -1,7 +1,7 @@
 :; # Run this script to build the Evitania.dll and injector.exe
 :; set -e
 :; cd "$(dirname "$0")/.."
-:; 
+:;
 :; BUILD_FLAG="-DBUILD_CLEAN=OFF"
 :; INJECTOR_FLAG="-DBUILD_INJECTOR=ON"
 :; for arg in "$@"; do
@@ -11,7 +11,7 @@
 :;     INJECTOR_FLAG="-DBUILD_INJECTOR=OFF"
 :;   fi
 :; done
-:; 
+:;
 :; echo "Building project with CMake (Linux -> Windows MinGW)..."
 :; mkdir -p build
 :; cd build
