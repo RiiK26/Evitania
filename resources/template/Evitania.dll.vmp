@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Document Version="2">
-    <Protection InputFileName="Evitania.dll" Options="464640" VMCodeSectionName=".MeRiK_?" VMComplexity="20" OutputFileName="Evitania_protected.dll" VMInstances="2">
+    <Protection InputFileName="Evitania v0.319.3.dll" Options="464640" VMCodeSectionName=".MeRiK_?" VMComplexity="20" OutputFileName="Evitania_protected.dll" VMInstances="2">
         <Procedures>
             <Procedure MapAddress="Scanner::ParsePattern(char const*)" Options="0" CompilationType="0" />
             <Procedure MapAddress="Scanner::FindPattern(HINSTANCE__*, char const*)" Options="0" CompilationType="0" />
