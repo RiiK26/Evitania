@@ -234,22 +234,6 @@
 		"HourglassLevelConfig_GoldCost": {
 			"signature": "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 41 B1 01",
 			"extract": {}
-		},
-		"Input_GetMouseButton": {
-			"signature": "40 53 48 83 EC 20 48 8B 05 ? ? ? ? 8B D9 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 8B CB 48 83 C4 20 5B 48 FF E0 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 83 EC 28 48 8B 05 ? ? ? ? 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 48 83 C4 28 48 FF E0 CC CC CC CC CC CC 48 83 EC 28 48 8B 05 ? ? ? ? 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 48 83 C4 28 48 FF E0 CC CC CC CC CC CC 48 89 5C 24 08",
-			"extract": {}
-		},
-		"Input_GetMouseButtonDown": {
-			"signature": "40 53 48 83 EC 20 48 8B 05 ? ? ? ? 8B D9 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 8B CB 48 83 C4 20 5B 48 FF E0 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 40 53 48 83 EC 20 48 8B 05 ? ? ? ? 8B D9 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 8B CB 48 83 C4 20 5B 48 FF E0 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 40 53 48 83 EC 20 48 8B 05 ? ? ? ? 8B D9 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 8B CB 48 83 C4 20 5B 48 FF E0 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 83 EC 28 48 8B 05 ? ? ? ?",
-			"extract": {}
-		},
-		"Input_GetMouseButtonUp": {
-			"signature": "40 53 48 83 EC 20 48 8B 05 ? ? ? ? 8B D9 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 8B CB 48 83 C4 20 5B 48 FF E0 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 40 53 48 83 EC 20 48 8B 05 ? ? ? ? 8B D9 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 8B CB 48 83 C4 20 5B 48 FF E0 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 83 EC 28 48 8B 05 ? ? ? ?",
-			"extract": {}
-		},
-		"EventSystem_Update": {
-			"signature": "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 5F 58",
-			"extract": {}
 		}
 	}
 }
