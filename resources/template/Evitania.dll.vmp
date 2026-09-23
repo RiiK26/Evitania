@@ -125,6 +125,28 @@
             <Procedure MapAddress=".text$_ZZN6IL2CPP8UnityAPI10InitializeEvENKUlPPvSt16initializer_listIPKcEE_clES2_S6_" Options="0" CompilationType="0" />
             <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI10InitializeEv" Options="0" CompilationType="0" />
             <Procedure MapAddress=".text$_ZN6IL2CPP8UnityAPI13ResolveExportEPKc" Options="0" CompilationType="0" />
+            <Procedure MapAddress="Features::CurioHacks::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::EngineerHacks::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::Enhancement::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::HourglassBypass::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::HunterHacks::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::AntiCheat::Uninitialize()" IncludedInCompilation="0" Options="0" CompilationType="2" />
+            <Procedure MapAddress="Features::GodMode::ApplyHighDamage(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_Initialize(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_OnSpeedHackDetected(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_OnObscuredCheatingDetected(void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_Handle(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_Apply(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::AntiCheat::Hook_AntiCheat_ReportCheatToAnalytics(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_CoinCdCost(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_CoinRewardCost(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_ShopNextCost(void*, void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassLevelConfig_SandCost(void*, int, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassLevelConfig_GoldCost(void*, int, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyCoinCdUpgrade(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyCoinRewardUpgrade(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyRiftWorker(void*, void*)" Options="0" CompilationType="1" />
+            <Procedure MapAddress="Features::InfiniteCurrency::Hook_HourglassService_BuyShopItem(void*, void*, void*)" Options="0" CompilationType="1" />
         </Procedures>
     </Protection>
 </Document>
