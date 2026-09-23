@@ -1,7 +1,6 @@
 name: Build clean binary
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
@@ -15,7 +14,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake zip jq
 
       - name: Build Evitania
-        run: ./scripts/build
+        run: ./scripts/build clean no-injector
 
       - name: Get Version
         id: get_version
@@ -26,7 +25,7 @@ jobs:
       - name: Prepare Artifacts
         run: |
           mkdir -p release_pkg
-          cp build/release/Evitania.dll release_pkg/
+          cp build/release/*.dll release_pkg/
           cd release_pkg
           zip -r ../Evitania-v${{ steps.get_version.outputs.version }}-${{ github.ref_name }}.zip .
 

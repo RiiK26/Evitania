@@ -7,17 +7,23 @@ set "INJECTOR_EXE="
 set "GAME_EXE=EvitaniaOnline.exe"
 set "APP_ID=4119420"
 
-if exist "%SCRIPT_DIR%Evitania.dll" if exist "%SCRIPT_DIR%injector.exe" (
-    set "DLL_PATH=%SCRIPT_DIR%Evitania.dll"
+for %%F in ("%SCRIPT_DIR%*.dll") do set "DLL_PATH=%%F"
+if defined DLL_PATH if exist "%SCRIPT_DIR%injector.exe" (
     set "INJECTOR_EXE=%SCRIPT_DIR%injector.exe"
-) else if exist "%SCRIPT_DIR%..\build\release\Evitania.dll" if exist "%SCRIPT_DIR%..\build\release\injector.exe" (
-    set "DLL_PATH=%SCRIPT_DIR%..\build\release\Evitania.dll"
-    set "INJECTOR_EXE=%SCRIPT_DIR%..\build\release\injector.exe"
-) else (
-    echo Error: Could not find Evitania.dll and injector.exe
-    pause
-    exit /b 1
+    goto found_dll
 )
+
+for %%F in ("%SCRIPT_DIR%..\build\release\*.dll") do set "DLL_PATH=%%F"
+if defined DLL_PATH if exist "%SCRIPT_DIR%..\build\release\injector.exe" (
+    set "INJECTOR_EXE=%SCRIPT_DIR%..\build\release\injector.exe"
+    goto found_dll
+)
+
+echo Error: Could not find any .dll and injector.exe
+pause
+exit /b 1
+
+:found_dll
 
 echo Starting Evitania Online...
 start steam://rungameid/%APP_ID%

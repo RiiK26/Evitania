@@ -1,10 +1,21 @@
 :; # Run this script to build the Evitania.dll and injector.exe
 :; set -e
 :; cd "$(dirname "$0")/.."
+:; 
+:; BUILD_FLAG="-DBUILD_CLEAN=OFF"
+:; INJECTOR_FLAG="-DBUILD_INJECTOR=ON"
+:; for arg in "$@"; do
+:;   if [ "$arg" = "clean" ]; then
+:;     BUILD_FLAG="-DBUILD_CLEAN=ON"
+:;   elif [ "$arg" = "no-injector" ]; then
+:;     INJECTOR_FLAG="-DBUILD_INJECTOR=OFF"
+:;   fi
+:; done
+:; 
 :; echo "Building project with CMake (Linux -> Windows MinGW)..."
 :; mkdir -p build
 :; cd build
-:; cmake .. -Wno-unused-cli -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DCMAKE_FIND_ROOT_PATH=/usr/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+:; cmake .. -Wno-unused-cli $BUILD_FLAG $INJECTOR_FLAG -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DCMAKE_FIND_ROOT_PATH=/usr/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
 :; cmake --build . -j$(nproc)
 :; echo "Build complete."
 :; exit 0
@@ -12,10 +23,22 @@
 @echo off
 REM Run this script to build the Evitania.dll and injector.exe on Windows
 cd /d "%~dp0.."
+
+set BUILD_FLAG=-DBUILD_CLEAN=OFF
+set INJECTOR_FLAG=-DBUILD_INJECTOR=ON
+
+:parse_args
+if "%~1"=="" goto run_build
+if "%~1"=="clean" set BUILD_FLAG=-DBUILD_CLEAN=ON
+if "%~1"=="no-injector" set INJECTOR_FLAG=-DBUILD_INJECTOR=OFF
+shift
+goto parse_args
+
+:run_build
 echo Building project with CMake (Windows MSVC)...
 if not exist build mkdir build
 cd build
-cmake ..
+cmake .. %BUILD_FLAG% %INJECTOR_FLAG%
 cmake --build . --config Release -j %NUMBER_OF_PROCESSORS%
 echo Build complete.
 pause

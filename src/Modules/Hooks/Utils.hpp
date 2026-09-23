@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include "Offsets.hpp"
 
 namespace Utils
 {
@@ -10,7 +11,7 @@ namespace Utils
     inline void ClearDictionary(void* dict)
     {
       if (dict) {
-        *(int*) ((uintptr_t) dict + 0x20) = 0;
+        *(int*) ((uintptr_t) dict + Offsets::count) = 0;
       }
     }
   }  // namespace Il2Cpp

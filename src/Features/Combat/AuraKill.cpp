@@ -13,6 +13,8 @@ namespace Features
   {
     void (*Orig_EnemyNpcController_TakeDamage)(void* __this, float damage, void* method_info);
     void (*Orig_EnemyNpcController_Update)(void* __this, void* method_info);
+    void (*Orig_BossBase_Update)(void* __this, void* method_info);
+    void (*Orig_WorldElite_Update)(void* __this, void* method_info);
 
     void Hook_EnemyNpcController_TakeDamage(void* __this, float damage, void* method_info)
     {
@@ -21,7 +23,7 @@ namespace Features
 
     std::unordered_map<void*, ULONGLONG> damageCooldowns;
 
-    void Hook_EnemyNpcController_Update(void* __this, void* method_info)
+    void ApplyAuraKill(void* __this, void* method_info)
     {
       if (Menu::Config.bAuraKill) {
         if (Offsets::alive > 0) {
@@ -39,7 +41,24 @@ namespace Features
           }
         }
       }
+    }
+
+    void Hook_EnemyNpcController_Update(void* __this, void* method_info)
+    {
+      ApplyAuraKill(__this, method_info);
       Orig_EnemyNpcController_Update(__this, method_info);
+    }
+
+    void Hook_BossBase_Update(void* __this, void* method_info)
+    {
+      ApplyAuraKill(__this, method_info);
+      Orig_BossBase_Update(__this, method_info);
+    }
+
+    void Hook_WorldElite_Update(void* __this, void* method_info)
+    {
+      ApplyAuraKill(__this, method_info);
+      Orig_WorldElite_Update(__this, method_info);
     }
 
     void Initialize()
@@ -51,6 +70,10 @@ namespace Features
       HOOK_SIGNATURE(
         "EnemyNpcController::Update", Signatures::EnemyNpcController_Update, Hook_EnemyNpcController_Update,
         Orig_EnemyNpcController_Update
+      );
+      HOOK_SIGNATURE("BossBase::Update", Signatures::BossBase_Update, Hook_BossBase_Update, Orig_BossBase_Update);
+      HOOK_SIGNATURE(
+        "WorldElite::Update", Signatures::WorldElite_Update, Hook_WorldElite_Update, Orig_WorldElite_Update
       );
     }
 

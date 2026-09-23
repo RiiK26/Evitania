@@ -31,7 +31,7 @@ jobs:
           VERSION="${{ steps.get_version.outputs.version }}"
           FOLDER_NAME="Evitania v$VERSION"
           mkdir -p "release_pkg/$FOLDER_NAME"
-          cp build/release/Evitania.dll "release_pkg/$FOLDER_NAME/"
+          cp build/release/*.dll "release_pkg/$FOLDER_NAME/"
           cp build/release/injector.exe "release_pkg/$FOLDER_NAME/"
           cp scripts/run.sh "release_pkg/$FOLDER_NAME/"
           cp scripts/run.bat "release_pkg/$FOLDER_NAME/"

@@ -200,6 +200,8 @@ def main():
     targets = [
         ("EnemyNpcController", "TakeDamage", 0, [("alive", "EnemyNpcController")]),
         ("EnemyNpcController", "Update", 0, [("alive", "EnemyNpcController")]),
+        ("BossBase", "Update", 0, []),
+        ("WorldElite", "Update", 0, []),
         ("AttackReceiver", "Recieve", 0, [("AttackDamage", "Attack")]),
         ("RealmAttackReceiver", "Recieve", 0, []),
         ("EasterAttackReceiver", "Recieve", 0, []),
@@ -234,7 +236,7 @@ def main():
         ("PlayerCharacter", ".ctor", 0, [("networkPlayerSync", "PlayerCharacter")]),
         ("CurioGachaService", "RollRarity", 0, []),
         ("CurioPowerService", "GetLevelUpCost", 0, []),
-        ("EngineerService", "TryGetUpgradeCost", 0, []),
+        ("EngineerService", "TryGetUpgradeCost", 0, [("Amount", "UpgradeCost")]),
         ("EngineerUpgradeConfig", "GetPrice", 0, []),
         ("MarketLotScriptableObject", "CurrentPrice", 0, []),
         ("MarketLot", "GetCurrentPrice", 0, []),
@@ -280,6 +282,15 @@ def main():
                     "extract": extract_rules
                 }
                 print(f"[+] Added {method_key} to database")
+
+    # Add hardcoded offsets for generic classes that Il2CppDumper outputs as 0x0
+    sig_db["Il2Cpp_Dictionary"] = {
+        "signature": "",
+        "extract": {
+            "count": {"hardcoded": 32}
+        }
+    }
+    print("[+] Added Il2Cpp_Dictionary (hardcoded) to database")
 
     config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
 

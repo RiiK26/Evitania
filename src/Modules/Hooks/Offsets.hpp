@@ -9,4 +9,6 @@ namespace Offsets
   constexpr int _view             = 0x28;
   constexpr int networkPlayerSync = 0x88;
   constexpr int _isNet            = 0x50;
+  constexpr int Amount            = 0x8;   // UpgradeCost struct long
+  constexpr int count             = 0x20;  // IL2Cpp_Dictionary
 }  // namespace Offsets

@@ -299,7 +299,7 @@ namespace Menu
       if (ImGui::BeginTabBar("CheatTabs", ImGuiTabBarFlags_FittingPolicyScroll)) {
         // Combat Tab menu
         if (ImGui::BeginTabItem("Combat")) {
-          ImGui::BeginChild("CombatChild"), ImVec2(0, -65), 0;
+          ImGui::BeginChild("CombatChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("God Mode", &Config.bGodMode);
           ImGui::SameLine();
@@ -334,7 +334,7 @@ namespace Menu
 
         // Player Tab menu
         if (ImGui::BeginTabItem("Player")) {
-          ImGui::BeginChild("PlayerChild"), ImVec2(0, -65), 0;
+          ImGui::BeginChild("PlayerChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
           ImGui::TextWrapped("Multiplier Value");
@@ -359,7 +359,7 @@ namespace Menu
 
         // Economy Tab menu
         if (ImGui::BeginTabItem("Economy")) {
-          ImGui::BeginChild("EconomyChild"), ImVec2(0, -65), 0;
+          ImGui::BeginChild("EconomyChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Infinite items on inventory", &Config.bInfiniteItems);
 
@@ -383,7 +383,7 @@ namespace Menu
 
         // Curio Tab menu
         if (ImGui::BeginTabItem("Curio")) {
-          ImGui::BeginChild("CurioChild"), ImVec2(0, -65), 0;
+          ImGui::BeginChild("CurioChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Always Legendary Curio", &Menu::Config.bAlwaysLegendaryCurio);
           ImGui::SameLine();
@@ -404,7 +404,7 @@ namespace Menu
 
         // Engineer Tab menu
         if (ImGui::BeginTabItem("Engineer")) {
-          ImGui::BeginChild("EngineerChild"), ImVec2(0, -65), 0;
+          ImGui::BeginChild("EngineerChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Free Engineer Upgrades", &Menu::Config.bFreeEngineerUpgrades);
 
@@ -414,7 +414,7 @@ namespace Menu
 
         // Hunter Tab menu
         if (ImGui::BeginTabItem("Hunter")) {
-          ImGui::BeginChild("HunterChild"), ImVec2(0, -65), 0;
+          ImGui::BeginChild("HunterChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Free Hunter Upgrades", &Menu::Config.bFreeHunterUpgrades);
 

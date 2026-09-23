@@ -8,6 +8,14 @@ namespace Signatures
   // 0x93CCC0
   constexpr const char* EnemyNpcController_Update = "40 53 48 83 EC 40 80 79 20 00 48 8B D9 74 4D";
 
+  // 0x939340
+  constexpr const char* BossBase_Update = "80 79 3C 00 74 1D 48 8B 89 20 01 00 00 48 85 C9";
+
+  // 0x94B350
+  constexpr const char* WorldElite_Update =
+    "40 53 48 83 EC 50 0F 29 74 24 40 33 D2 0F 29 7C 24 30 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 45 33 C0 48 8D "
+    "4C 24 20 48 8B D0 E8 ? ? ? ? F3 0F 10 35 ? ? ? ?";
+
   // 0x99C920
   constexpr const char* AttackReceiver_Recieve = "40 53 56 48 83 EC 78 80 3D ? ? ? ? 00 48 8B F2";
 

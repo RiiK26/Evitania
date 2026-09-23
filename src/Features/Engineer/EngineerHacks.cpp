@@ -1,5 +1,6 @@
 #include "EngineerHacks.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
+#include "../../Modules/Hooks/Offsets.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
 #include "../../Modules/Hooks/Utils.hpp"
 #include "../../Modules/Menu/Menu.hpp"
@@ -20,7 +21,7 @@ namespace Features
         // UpgradeCost struct:
         // 0x0: TradableBase Item
         // 0x8: long Amount
-        *(long long*) ((uintptr_t) out_cost + 0x8) = 0;
+        *(long long*) ((uintptr_t) out_cost + Offsets::Amount) = 0;
       }
       return result;
     }

@@ -7,15 +7,15 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # For end user that just download from Release
-if [ -f "$SCRIPT_DIR/Evitania.dll" ] && [ -f "$SCRIPT_DIR/injector.exe" ]; then
-    DLL_PATH="$SCRIPT_DIR/Evitania.dll"
+if ls "$SCRIPT_DIR/"*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/injector.exe" ]; then
+    DLL_PATH=$(ls "$SCRIPT_DIR/"*.dll | head -n 1)
     INJECTOR_EXE="$SCRIPT_DIR/injector.exe"
 # For user who build from source code
-elif [ -f "$SCRIPT_DIR/../build/release/Evitania.dll" ] && [ -f "$SCRIPT_DIR/../build/release/injector.exe" ]; then
-    DLL_PATH="$SCRIPT_DIR/../build/release/Evitania.dll"
+elif ls "$SCRIPT_DIR/../build/release/"*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/release/injector.exe" ]; then
+    DLL_PATH=$(ls "$SCRIPT_DIR/../build/release/"*.dll | head -n 1)
     INJECTOR_EXE="$SCRIPT_DIR/../build/release/injector.exe"
 else
-    echo "Error: Could not find Evitania.dll and injector.exe. Please build the project or extract the release archive."
+    echo "Error: Could not find any .dll and injector.exe. Please build the project or extract the release archive."
     exit 1
 fi
 

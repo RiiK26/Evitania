@@ -131,6 +131,13 @@ def main():
         pattern = data["signature"]
         extract_rules = data.get("extract", {})
 
+        if not pattern:
+            for field_name, rule in extract_rules.items():
+                if "hardcoded" in rule:
+                    extracted_offsets[field_name] = rule["hardcoded"]
+                    print(f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)")
+            continue
+
         regex_str = parse_pattern_to_regex(pattern)
         regex = re.compile(regex_str, re.DOTALL)
 
