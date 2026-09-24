@@ -126,7 +126,7 @@ def is_unique_signature(pe_data, pattern):
             return False
     return matches == 1
 
-def generate_signature(pe, md, pe_data, rva, initial_min_length=15):
+def generate_signature(pe, md, pe_data, rva, initial_min_length=8):
     offset = pe.get_offset_from_rva(rva)
     if offset == 0:
         return None

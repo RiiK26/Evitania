@@ -30,19 +30,13 @@
 - Do not commit large compiled binaries (`.dll`, `.exe`) to version control.
 - Avoid using `.hpp` to define logic; use `.hpp` for declarations and `.cpp` for implementations.
 
-## Branch Workflow
-
-The project uses a strict 2-branch strategy for stable releases (that contain anti-RE protections) and clean builds (that do not contain anti-RE protections):
-
-- **`main`**: The default branch for stable releases. Contains advanced anti-reverse engineering protections
-- **`clean`**: Used for producing clean, unobfuscated builds that include PDB debug symbols. Contains no anti-RE protections
-
 ## VMProtect Configuration (performance matters)
 
 - **VMProtect Rules (`resources/template/Evitania.dll.vmp`)**:
-  - **`CompilationType="2"` (Virtualization)**: Use ONLY for one-time initialization functions (e.g., `DllMain`, `Hooks::Initialize`, `Menu::Initialize`). Never use this for recurring functions, as it severely degrades performance (up to 100x slower).
-  - **`CompilationType="1"` (Mutation)**: Use for event-driven cheat hooks (e.g., `TakeDamage`, `AddExperience`, `InitiatePurchase`). Provides adequate protection with minimal overhead.
-  - **`CompilationType="0"` (None)**: Use explicitly for all real-time/per-frame functions (e.g., `Menu::hkPresent`, `Menu::WndProc`, `Hook_MovementControl_Move`). Protecting these functions will cause massive CPU spikes and stuttering. Do NOT protect them.
+  - **`CompilationType="2"` (Ultra (Mutation + Virtualization))**: Use ONLY for one-time initialization functions (e.g., `DllMain`, `Hooks::Initialize`, `Menu::Initialize`). Never use this for recurring functions, as it severely degrades performance (up to 100x slower).
+  - **`CompilationType="1"` (Virtualization)**: Use for event-driven cheat hooks (e.g., `TakeDamage`, `AddExperience`, `InitiatePurchase`). Provides adequate protection with minimal overhead.
+  - **`CompilationType="0"` (Mutation)**: Use explicitly for all real-time/per-frame functions (e.g., `Menu::hkPresent`, `Menu::WndProc`, `Hook_MovementControl_Move`). Protecting these functions will cause massive CPU spikes and stuttering. Do NOT protect them.
+  - **`CompilationType="None"` (Doesnt need to be included inside the vmp file)**
 
 ## Patterns
 
