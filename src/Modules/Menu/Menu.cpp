@@ -131,29 +131,34 @@ namespace Menu
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
   Present_t oPresent = nullptr;
 
+  typedef HRESULT(__stdcall* Present1_t)(
+    IDXGISwapChain1* pSwapChain, UINT SyncInterval, UINT PresentFlags, const DXGI_PRESENT_PARAMETERS* pPresentParameters
+  );
+  Present1_t oPresent1 = nullptr;
+
   typedef HRESULT(__stdcall* ResizeBuffers_t)(
     IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags
   );
   ResizeBuffers_t oResizeBuffers = nullptr;
 
   typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
-  WNDPROC oWndProc                                         = nullptr;
+  WNDPROC oWndProc                                          = nullptr;
 
-  HWND                    window                           = nullptr;
-  ID3D11Device*           pDevice                          = nullptr;
-  ID3D11DeviceContext*    pContext                         = nullptr;
-  ID3D11RenderTargetView* mainRenderTargetView             = nullptr;
-  bool                    init                             = false;
+  HWND                    window                            = nullptr;
+  ID3D11Device*           pDevice                           = nullptr;
+  ID3D11DeviceContext*    pContext                          = nullptr;
+  ID3D11RenderTargetView* mainRenderTargetView              = nullptr;
+  bool                    init                              = false;
 
-  ID3D12Device*              g_pd3dDevice                  = nullptr;
-  ID3D12DescriptorHeap*      g_pd3dRtvDescHeap             = nullptr;
-  ID3D12DescriptorHeap*      g_pd3dSrvDescHeap             = nullptr;
-  ID3D12CommandQueue*        g_pd3dCommandQueue            = nullptr;
-  ID3D12GraphicsCommandList* g_pd3dCommandList             = nullptr;
-  ID3D12CommandAllocator*    g_commandAllocators[3]        = {};
-  ID3D12Resource*            g_mainRenderTargetResource[3] = {};
-  UINT                       g_NUM_FRAMES_IN_FLIGHT        = 3;
-  bool                       initDX12                      = false;
+  ID3D12Device*              g_pd3dDevice                   = nullptr;
+  ID3D12DescriptorHeap*      g_pd3dRtvDescHeap              = nullptr;
+  ID3D12DescriptorHeap*      g_pd3dSrvDescHeap              = nullptr;
+  ID3D12CommandQueue*        g_pd3dCommandQueue             = nullptr;
+  ID3D12GraphicsCommandList* g_pd3dCommandList              = nullptr;
+  ID3D12CommandAllocator*    g_commandAllocators[16]        = {};
+  ID3D12Resource*            g_mainRenderTargetResource[16] = {};
+  UINT                       g_NUM_FRAMES_IN_FLIGHT         = 16;
+  bool                       initDX12                       = false;
 
   typedef void(__stdcall* ExecuteCommandLists_t)(
     ID3D12CommandQueue* queue, UINT NumCommandLists, ID3D12CommandList* const* ppCommandLists
@@ -436,6 +441,34 @@ namespace Menu
     }
   }
 
+  bool GetSwapChainDesc(IDXGISwapChain* pSwapChain, DXGI_SWAP_CHAIN_DESC& sd)
+  {
+    ZeroMemory(&sd, sizeof(sd));
+    if (SUCCEEDED(pSwapChain->GetDesc(&sd))) {
+      return true;
+    }
+
+    IDXGISwapChain1* pSwapChain1 = nullptr;
+    if (SUCCEEDED(pSwapChain->QueryInterface(__uuidof(IDXGISwapChain1), (void**) &pSwapChain1))) {
+      DXGI_SWAP_CHAIN_DESC1 sd1;
+      if (SUCCEEDED(pSwapChain1->GetDesc1(&sd1))) {
+        sd.BufferCount       = sd1.BufferCount;
+        sd.BufferDesc.Format = sd1.Format;
+        sd.BufferDesc.Width  = sd1.Width;
+        sd.BufferDesc.Height = sd1.Height;
+        sd.SampleDesc        = sd1.SampleDesc;
+        sd.BufferUsage       = sd1.BufferUsage;
+        sd.SwapEffect        = sd1.SwapEffect;
+        sd.Flags             = sd1.Flags;
+        pSwapChain1->GetHwnd(&sd.OutputWindow);
+        pSwapChain1->Release();
+        return true;
+      }
+      pSwapChain1->Release();
+    }
+    return false;
+  }
+
   void RenderImGui_DX11(IDXGISwapChain* pSwapChain, ID3D11Device* pDeviceArg)
   {
     if (!init) {
@@ -443,7 +476,7 @@ namespace Menu
       if (pDevice) {
         pDevice->GetImmediateContext(&pContext);
         DXGI_SWAP_CHAIN_DESC sd;
-        pSwapChain->GetDesc(&sd);
+        GetSwapChainDesc(pSwapChain, sd);
         window = sd.OutputWindow;
         CreateRenderTarget(pSwapChain);
 
@@ -500,13 +533,13 @@ namespace Menu
       g_pd3dDevice = pDevice;
 
       DXGI_SWAP_CHAIN_DESC sd;
-      pSwapChain->GetDesc(&sd);
+      GetSwapChainDesc(pSwapChain, sd);
       window                 = sd.OutputWindow;
       oWndProc               = (WNDPROC) SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR) WndProc);
 
       g_NUM_FRAMES_IN_FLIGHT = sd.BufferCount;
-      if (g_NUM_FRAMES_IN_FLIGHT > 3)
-        g_NUM_FRAMES_IN_FLIGHT = 3;
+      if (g_NUM_FRAMES_IN_FLIGHT > 16)
+        g_NUM_FRAMES_IN_FLIGHT = 16;
 
       D3D12_DESCRIPTOR_HEAP_DESC desc = {};
       desc.Type                       = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -565,7 +598,7 @@ namespace Menu
       info.Device                       = pDevice;
       info.CommandQueue                 = g_pd3dCommandQueue;
       info.NumFramesInFlight            = g_NUM_FRAMES_IN_FLIGHT;
-      info.RTVFormat                    = DXGI_FORMAT_R8G8B8A8_UNORM;
+      info.RTVFormat                    = sd.BufferDesc.Format;
       info.DSVFormat                    = DXGI_FORMAT_UNKNOWN;
       info.SrvDescriptorHeap            = g_pd3dSrvDescHeap;
       info.LegacySingleSrvCpuDescriptor = g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart();
@@ -631,19 +664,51 @@ namespace Menu
     return oExecuteCommandLists(queue, NumCommandLists, ppCommandLists);
   }
 
-  HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+  void RenderFrame(IDXGISwapChain* pSwapChain)
   {
     ID3D11Device* pD11 = nullptr;
-    ID3D12Device* pD12 = nullptr;
     if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**) &pD11))) {
       RenderImGui_DX11(pSwapChain, pD11);
       pD11->Release();
+      return;
     }
-    else if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D12Device), (void**) &pD12))) {
+
+    // Proton / VKD3D behavior: GetDevice returns ID3D12Device
+    ID3D12Device* pD12 = nullptr;
+    if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D12Device), (void**) &pD12))) {
       RenderImGui_DX12(pSwapChain, pD12);
       pD12->Release();
+      return;
+    }
+
+    // Windows Native DXGI behavior: GetDevice returns ID3D12CommandQueue
+    ID3D12CommandQueue* pD12CommandQueue = nullptr;
+    if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D12CommandQueue), (void**) &pD12CommandQueue))) {
+      if (SUCCEEDED(pD12CommandQueue->GetDevice(__uuidof(ID3D12Device), (void**) &pD12))) {
+        g_pd3dCommandQueue = pD12CommandQueue;
+        RenderImGui_DX12(pSwapChain, pD12);
+        pD12->Release();
+      }
+      pD12CommandQueue->Release();
+    }
+  }
+
+  HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+  {
+    if ((Flags & DXGI_PRESENT_TEST) == 0) {
+      RenderFrame(pSwapChain);
     }
     return oPresent(pSwapChain, SyncInterval, Flags);
+  }
+
+  HRESULT __stdcall hkPresent1(
+    IDXGISwapChain1* pSwapChain, UINT SyncInterval, UINT PresentFlags, const DXGI_PRESENT_PARAMETERS* pPresentParameters
+  )
+  {
+    if ((PresentFlags & DXGI_PRESENT_TEST) == 0) {
+      RenderFrame(pSwapChain);
+    }
+    return oPresent1(pSwapChain, SyncInterval, PresentFlags, pPresentParameters);
   }
 
   void Initialize()
@@ -669,7 +734,6 @@ namespace Menu
     sd.SwapEffect                     = DXGI_SWAP_EFFECT_DISCARD;
 
     D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
-    D3D_FEATURE_LEVEL featureLevel;
 
     IDXGISwapChain*      pDummySwapChain = nullptr;
     ID3D11Device*        pDummyDevice    = nullptr;
@@ -689,15 +753,25 @@ namespace Menu
 
     if (SUCCEEDED(hr) && pDummySwapChain) {
 
-      void** pVTable           = *reinterpret_cast<void***>(pDummySwapChain);
-      void*  pPresent          = pVTable[8];
+      void** pVTable               = *reinterpret_cast<void***>(pDummySwapChain);
+      void*  pPresent              = pVTable[8];
 
-      MH_STATUS createStatus   = MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent);
-      MH_STATUS enableStatus   = MH_EnableHook(pPresent);
+      if (MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent) == MH_OK) {
+        MH_EnableHook(pPresent);
+      }
+
+      IDXGISwapChain1* pSwapChain1 = nullptr;
+      if (SUCCEEDED(pDummySwapChain->QueryInterface(__uuidof(IDXGISwapChain1), (void**) &pSwapChain1))) {
+        void** pVTable1  = *reinterpret_cast<void***>(pSwapChain1);
+        void*  pPresent1 = pVTable1[22];
+        if (MH_CreateHook(pPresent1, (void*) hkPresent1, (void**) &oPresent1) == MH_OK) {
+          MH_EnableHook(pPresent1);
+        }
+        pSwapChain1->Release();
+      }
 
       void*     pResizeBuffers = pVTable[13];
-      MH_STATUS createStatusRB = MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers);
-      if (createStatusRB == MH_OK) {
+      if (MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers) == MH_OK) {
         MH_EnableHook(pResizeBuffers);
       }
 
@@ -729,6 +803,42 @@ namespace Menu
           MH_CreateHook(pExecuteCommandLists, (void*) hkExecuteCommandLists, (void**) &oExecuteCommandLists) == MH_OK
         ) {
           MH_EnableHook(pExecuteCommandLists);
+        }
+
+        IDXGIFactory4* pFactory = nullptr;
+        if (SUCCEEDED(CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**) &pFactory))) {
+          DXGI_SWAP_CHAIN_DESC1 sd1      = {};
+          sd1.BufferCount                = 2;
+          sd1.Width                      = 100;
+          sd1.Height                     = 100;
+          sd1.Format                     = DXGI_FORMAT_R8G8B8A8_UNORM;
+          sd1.BufferUsage                = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+          sd1.SwapEffect                 = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+          sd1.SampleDesc.Count           = 1;
+
+          IDXGISwapChain1* pD12SwapChain = nullptr;
+          if (
+            SUCCEEDED(
+              pFactory->CreateSwapChainForHwnd(pDummyQueue, dummyWindow, &sd1, nullptr, nullptr, &pD12SwapChain)
+            )
+          ) {
+            void** pVTable12        = *reinterpret_cast<void***>(pD12SwapChain);
+            void*  pPresent12       = pVTable12[8];
+            void*  pPresent1_12     = pVTable12[22];
+            void*  pResizeBuffers12 = pVTable12[13];
+
+            if (MH_CreateHook(pPresent12, (void*) hkPresent, (void**) &oPresent) == MH_OK) {
+              MH_EnableHook(pPresent12);
+            }
+            if (MH_CreateHook(pPresent1_12, (void*) hkPresent1, (void**) &oPresent1) == MH_OK) {
+              MH_EnableHook(pPresent1_12);
+            }
+            if (MH_CreateHook(pResizeBuffers12, (void*) hkResizeBuffers, (void**) &oResizeBuffers) == MH_OK) {
+              MH_EnableHook(pResizeBuffers12);
+            }
+            pD12SwapChain->Release();
+          }
+          pFactory->Release();
         }
 
         pDummyQueue->Release();
