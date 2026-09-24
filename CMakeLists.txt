@@ -74,7 +74,7 @@ set_target_properties(Evitania PROPERTIES PREFIX "" SUFFIX ".dll" OUTPUT_NAME "$
 target_link_options(Evitania PRIVATE "-static" "-static-libgcc" "-static-libstdc++")
 target_link_libraries(Evitania PRIVATE d3d11 d3d12 d3dcompiler dxgi gdi32 dwmapi)
 
-if(NOT EVITANIA_UNSTRIPPED_BINARY)
+if(NOT BUILD_CLEAN)
     target_link_options(Evitania PRIVATE "-s")
     # target_link_options(injector PRIVATE "-s") No need injector
 endif()

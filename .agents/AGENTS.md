@@ -35,8 +35,8 @@
 - **VMProtect Rules (`resources/template/Evitania.dll.vmp`)**:
   - **`CompilationType="2"` (Ultra (Mutation + Virtualization))**: Use ONLY for one-time initialization functions (e.g., `DllMain`, `Hooks::Initialize`, `Menu::Initialize`). Never use this for recurring functions, as it severely degrades performance (up to 100x slower).
   - **`CompilationType="1"` (Virtualization)**: Use for event-driven cheat hooks (e.g., `TakeDamage`, `AddExperience`, `InitiatePurchase`). Provides adequate protection with minimal overhead.
-  - **`CompilationType="0"` (Mutation)**: Use explicitly for all real-time/per-frame functions (e.g., `Menu::hkPresent`, `Menu::WndProc`, `Hook_MovementControl_Move`). Protecting these functions will cause massive CPU spikes and stuttering. Do NOT protect them.
-  - **`CompilationType="None"` (Doesnt need to be included inside the vmp file)**
+  - **`CompilationType="0"` (Mutation)**: Use for functions that need basic obfuscation but run frequently.
+  - **`CompilationType="None"` flagged as `IncludedInCompilation="0"` (No Protection)**: For real-time/per-frame hooks (e.g., `Menu::hkPresent`, `Menu::WndProc`, `Hook_MovementControl_Move`), heavy memory scanners (e.g., `Scanner::FindPattern`), and heavy string resolvers (e.g., `IL2CPP::UnityAPI::Initialize`). Protecting these will cause massive CPU spikes and lag. **To apply this**, either remove the `<Procedure>` completely from the `.vmp` file, or flag it with `IncludedInCompilation="0"`.
 
 ## Patterns
 
