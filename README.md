@@ -4,8 +4,6 @@
 ![Build Status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2FRiiK26%2FEvitania%2Factions%2Fruns%3Fbranch%3Dmain%26status%3Dsuccess&query=%24.workflow_runs.0.name&label=Build&color=blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20-orange)
 
-A high-performance, modular internal client for **Evitania Online (PC Build)**. This project is engineered for resilience against application updates, leveraging dynamic IL2CPP resolution and automated Array-of-Bytes (AOB) signature extraction via static analysis.
-
 ## Features
 
 The architecture is strictly modularized into distinct feature categories located within the `src/Features/` directory.
@@ -26,6 +24,23 @@ The architecture is strictly modularized into distinct feature categories locate
 | **Exp Multiplier** | Modifies the experience point acquisition algorithm to exponentially accelerate leveling. |
 | **Speed Hack** | Modifies the global `Time.timeScale` variable to accelerate animation execution, movement physics, and application loops. |
 
+### Curio
+
+| Feature | Description |
+|---|---|
+| **Always Legendary Curio** | guarantedd legendary tier of curio everytime gacha pull. |
+| **Free Upgrade Curio** | upgrading curio needs 0. |
+
+### Engineer
+| Feature | Description |
+|---|---|
+| **Free Engineer Upgrades** | upgrading engineer needs 0. |
+
+### Hunter
+| Feature | Description |
+|---|---|
+| **Free Hunter Upgrades** | upgrading hunter needs 0. |
+
 ### Economy & Progression
 
 | Feature | Description |
@@ -34,68 +49,10 @@ The architecture is strictly modularized into distinct feature categories locate
 | **100% Enhancement Success** | Hooks the item enhancement algorithm to enforce a guaranteed 100% success probability. |
 | **Infinite Currency** | Nullifies subtraction routines for all premium and standard currencies (e.g., Diamonds, Gold, Sands). |
 | **Free Store (IAP Bypass)** | Bypasses client-side in-app purchase (IAP) validation checks to acquire premium marketplace items without authorization. |
-| **Hourglass Bypass** | Bypasses regional and temporal cooldown restrictions for Timeskip item utilization. |
 
-### Security & Anti-Detection
+## Disclaimer
 
-| Feature | Description |
-|---|---|
-| **Dynamic Signature Scanning** | Eliminates reliance on static offsets. Utilizes the Capstone Engine and Python scripts to dynamically resolve memory addresses, ensuring compatibility across application patches. |
-| **Anti-Reverse Engineering** | Implements Thread Local Storage (TLS) callbacks, PEB `NtGlobalFlag` verification, `__rdtsc` timing constraints, and hypervisor detection to mitigate debugging and dynamic analysis. |
-| **Memory Hardening** | Introduces bounds checking and exception handling to protect against integer underflows and denial-of-service configuration faults. |
-
-## Tech Stack & Architecture
-
-- **Language**: `C++20`
-- **Build System**: `CMake` utilizing the `MinGW-w64` cross-compiler
-- **UI Framework**: `ImGui` rendering via DirectX 11
-- **Hooking**: `MinHook` for inline function interception
-- **Unity Interop**: `Il2CppResolver` for dynamic Unity class and method resolution
-- **Static Analysis**: `Capstone Engine` for automated machine-code offset extraction
-
-## Build and Execution Guidelines
-
-### Prerequisites
-The build environment requires CMake, MinGW-w64, and Python 3. Linux environments support cross-compilation to a Windows `.dll`, which can be injected into the application layer via Proton.
-
-### 1. Compilation
-Execute the provided build script. This will compile the project and deploy `Evitania.dll` to the `build/release/` output directory.
-```bash
-./scripts/build
-```
-
-### 2. Injection (Linux / Proton)
-Initialize the application via Steam. Upon reaching the primary menu interface, execute the injection script. The script automatically isolates the target process ID (PID) and Proton path for DLL injection.
-```bash
-./scripts/run.sh
-```
-Alternatively, for native Windows environments:
-```bat
-scripts\run.bat
-```
-*Note: Press the `[INSERT]` key to toggle the graphical user interface.*
-
-## Offset Updating Protocol
-
-Evitania maintains strict resilience across patches by utilizing Capstone to disassemble the application's machine code, dynamically extracting requisite offsets and signatures.
-
-Following an application update:
-1. Extract the latest `GameAssembly.dll` and generate a new `dump.cs` using Il2CppDumper. Place both files into the `resources/dumped/` directory.
-2. Generate the new baseline signature database (`config.json`):
-   ```bash
-   python3 resources/Tools/build_sig_db.py
-   ```
-3. Execute the offset extraction script to generate `Offsets.hpp` and `Signatures.hpp`:
-   **On Linux / macOS:**
-   ```bash
-   ./scripts/update_offsets.sh
-   ```
-
-   **On Windows:**
-   ```bat
-   scripts\update_offsets.bat
-   ```
-4. Recompile the project to integrate the newly generated headers.
+> I am not responsible for any actions taken by users of this cheat, including but not limited to violations of game terms of service or other regulations. Users should use this cheat at their own risk and be aware of the potential consequences.
 
 ## License
 This project is licensed under the [MIT License](license).

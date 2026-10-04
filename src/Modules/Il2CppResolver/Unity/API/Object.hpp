@@ -86,7 +86,7 @@ namespace Unity
       m_ObjectFunctions.m_GetName           = nullptr;
       m_ObjectFunctions.m_GetName_ThisIsPtr = false;
 
-      void* m_pGetName = IL2CPP::ResolveUnityMethod(UNITY_OBJECT_CLASS, "get_name", 0);
+      void* m_pGetName                      = IL2CPP::ResolveUnityMethod(UNITY_OBJECT_CLASS, "get_name", 0);
       if (m_pGetName) {
         m_ObjectFunctions.m_GetName = m_pGetName;
       }

@@ -725,15 +725,15 @@ namespace Menu
 
     DXGI_SWAP_CHAIN_DESC sd;
     ZeroMemory(&sd, sizeof(sd));
-    sd.BufferCount                    = 1;
-    sd.BufferDesc.Format              = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferUsage                    = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow                   = dummyWindow;
-    sd.SampleDesc.Count               = 1;
-    sd.Windowed                       = TRUE;
-    sd.SwapEffect                     = DXGI_SWAP_EFFECT_DISCARD;
+    sd.BufferCount                       = 1;
+    sd.BufferDesc.Format                 = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferUsage                       = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.OutputWindow                      = dummyWindow;
+    sd.SampleDesc.Count                  = 1;
+    sd.Windowed                          = TRUE;
+    sd.SwapEffect                        = DXGI_SWAP_EFFECT_DISCARD;
 
-    D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
+    D3D_FEATURE_LEVEL featureLevels[]    = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
     IDXGISwapChain*      pDummySwapChain = nullptr;
     ID3D11Device*        pDummyDevice    = nullptr;
@@ -753,8 +753,8 @@ namespace Menu
 
     if (SUCCEEDED(hr) && pDummySwapChain) {
 
-      void** pVTable               = *reinterpret_cast<void***>(pDummySwapChain);
-      void*  pPresent              = pVTable[8];
+      void** pVTable  = *reinterpret_cast<void***>(pDummySwapChain);
+      void*  pPresent = pVTable[8];
 
       if (MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent) == MH_OK) {
         MH_EnableHook(pPresent);
@@ -770,7 +770,7 @@ namespace Menu
         pSwapChain1->Release();
       }
 
-      void*     pResizeBuffers = pVTable[13];
+      void* pResizeBuffers = pVTable[13];
       if (MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers) == MH_OK) {
         MH_EnableHook(pResizeBuffers);
       }
