@@ -1,7 +1,7 @@
 # Evitania Online
 
 ![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FRiiK26%2FEvitania%2Fmain%2Fconfig.json&query=%24.version&label=Version&color=green)
-![Build Status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2FRiiK26%2FEvitania%2Factions%2Fruns%3Fbranch%3Dmain%26status%3Dsuccess&query=%24.workflow_runs.0.name&label=Build&color=blue)
+![Build Status](https://img.shields.io/github/actions/workflow/status/RiiK26/Evitania/release.yml?branch=main)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20-orange)
 
 ## Features
