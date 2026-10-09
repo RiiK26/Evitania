@@ -13,6 +13,7 @@
 #include "../../Features/Curio/CurioHacks.hpp"
 #include "../../Features/Engineer/EngineerHacks.hpp"
 #include "../../Features/Hunter/HunterHacks.hpp"
+#include "../../Features/Bonfire/Bonfire.hpp"
 
 #include "MinHook.h"
 
@@ -39,11 +40,13 @@ void Hooks::Initialize()
   Features::CurioHacks::Initialize();
   Features::EngineerHacks::Initialize();
   Features::HunterHacks::Initialize();
+  Features::Bonfire::Initialize();
 }
 
 void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
+  Features::Bonfire::Uninitialize();
   Features::EngineerHacks::Uninitialize();
   Features::CurioHacks::Uninitialize();
   Features::HourglassBypass::Uninitialize();

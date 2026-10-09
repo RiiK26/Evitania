@@ -29,6 +29,12 @@ namespace Menu
     bool  bFreeEngineerUpgrades   = false;
     bool  bFreeHunterUpgrades     = false;
 
+    // Bonfire
+
+    bool bAlwaysLitBonfire  = false;
+    bool bFreeAshUpgrade    = false;
+    bool bFreeSacrificeCost = false;
+
     void LoadConfig();
     void SaveConfig();
   };

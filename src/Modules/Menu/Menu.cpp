@@ -96,6 +96,12 @@ namespace Menu
             bFreeEngineerUpgrades = (value == "1");
           else if (key == "free_hunter_upgrades")
             bFreeHunterUpgrades = (value == "1");
+          else if (key == "always_lit_bonfire")
+            bAlwaysLitBonfire = (value == "1");
+          else if (key == "free_ash_upgrade")
+            bFreeAshUpgrade = (value == "1");
+          else if (key == "free_sacrifice_cost")
+            bFreeSacrificeCost = (value == "1");
         }
       }
     }
@@ -126,6 +132,10 @@ namespace Menu
     out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
     out << "free_engineer_upgrades=" << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
     out << "free_hunter_upgrades=" << (bFreeHunterUpgrades ? "1" : "0") << "\n";
+
+    out << "always_lit_bonfire=" << (bAlwaysLitBonfire ? "1" : "0") << "\n";
+    out << "free_ash_upgrade=" << (bFreeAshUpgrade ? "1" : "0") << "\n";
+    out << "free_sacrifice_cost=" << (bFreeSacrificeCost ? "1" : "0") << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -342,6 +352,11 @@ namespace Menu
           ImGui::BeginChild("PlayerChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("EXP multiplier have progress account detection, use at ur own risk");
+          }
           ImGui::TextWrapped("Multiplier Value");
           ImGui::InputFloat("##ExpMultiplier", &Config.fExpMultiplierValue);
           if (Config.fExpMultiplierValue < 1.0f)
@@ -422,6 +437,17 @@ namespace Menu
           ImGui::BeginChild("HunterChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Free Hunter Upgrades", &Menu::Config.bFreeHunterUpgrades);
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Bonfire")) {
+          ImGui::BeginChild("BonfireChild", ImVec2(0, -65), 0);
+
+          ImGui::Checkbox("Always Lit Bonfire", &Menu::Config.bAlwaysLitBonfire);
+          ImGui::Checkbox("Free Ash Upgrade", &Menu::Config.bFreeAshUpgrade);
+          ImGui::Checkbox("Free Sacrifice Cost", &Menu::Config.bFreeSacrificeCost);
 
           ImGui::EndChild();
           ImGui::EndTabItem();

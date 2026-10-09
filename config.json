@@ -1,7 +1,92 @@
 {
 	"project_name": "Evitania",
-	"version": "0.319.4",
+	"version": "0.320.0",
 	"signatures": {
+		"AntiCheatService_Apply": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 8B 07 48 8D 54 24 48",
+			"extract": {}
+		},
+		"AntiCheatService_Handle": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 30 00",
+			"extract": {}
+		},
+		"AntiCheatService_Initialize": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F1 75 5B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ?",
+			"extract": {}
+		},
+		"AntiCheatService_OnObscuredCheatingDetected": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 0D ? ? ? ? 48 8B 18 83 B9 E4 00 00 00 00 75 05 E8 ? ? ? ? 45 33 C0 33 D2 48 8B CB E8 ? ? ? ? 84 C0 74 58 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 08 48 85 C9 74 7A 33 D2",
+			"extract": {}
+		},
+		"AntiCheatService_OnSpeedHackDetected": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 0D ? ? ? ? 48 8B 18 83 B9 E4 00 00 00 00 75 05 E8 ? ? ? ? 45 33 C0 33 D2 48 8B CB E8 ? ? ? ? 84 C0 74 58 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 08 48 85 C9 74 77 33 D2",
+			"extract": {}
+		},
+		"AntiCheatService_ReportCheatToAnalytics": {
+			"signature": "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA 48 8B F1 0F 85 ? ? ? ?",
+			"extract": {}
+		},
+		"AttackReceiver_Awake": {
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? 48 8B CB E8 ? ? ? ? 48 8D 4B 38 48 89 43 38 48 8B D0 E8 ? ? ? ? 4C 8B 53 38",
+			"extract": {
+				"isPlayer": {
+					"instr_idx": 36,
+					"op_idx": 0
+				}
+			}
+		},
+		"AttackReceiver_Recieve": {
+			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 5B 48 8D 0D ? ? ? ?",
+			"extract": {
+				"AttackDamage": {
+					"hardcoded": 16
+				}
+			}
+		},
+		"BonfireFuelBurner_get_Fuel": {
+			"signature": "48 83 EC 28 48 8B 41 18 48 85 C0 74 0A F3 0F 10 40 14",
+			"extract": {}
+		},
+		"BonfireFuelBurner_get_MaxFuel": {
+			"signature": "F3 0F 10 41 34 C3 CC CC CC CC CC CC CC CC CC CC F3 0F 10 41 28",
+			"extract": {}
+		},
+		"BonfireService_TryIgnite": {
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 0F 84 ? ? ? ? 48 8B 40 50",
+			"extract": {}
+		},
+		"BonfireService_get_CanIgnite": {
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 74 54 48 8B 40 50",
+			"extract": {}
+		},
+		"BonfireService_get_Lit": {
+			"signature": "48 83 EC 28 48 8B 41 10 48 85 C0 74 1E 48 8B 40 50 48 85 C0 74 15 48 8B 80 80 00 00 00",
+			"extract": {}
+		},
+		"BossBase_Update": {
+			"signature": "80 79 3C 00 74 1D 48 8B 89 38 01 00 00",
+			"extract": {}
+		},
+		"CurioGachaService_RollRarity": {
+			"signature": "48 89 54 24 10 48 89 4C 24 08 53 56 57 41 56 41 57 48 83 EC 70 0F 29 74 24 60",
+			"extract": {}
+		},
+		"CurioPowerService_GetLevelUpCost": {
+			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 41 8B F0 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 18",
+			"extract": {}
+		},
+		"CurrencyService_Subtract": {
+			"signature": "40 53 48 83 EC 30 48 8B D9 0F 29 74 24 20 48 8B 49 10 0F 28 F2 48 85 C9",
+			"extract": {}
+		},
+		"CurrencyService_Subtract_1": {
+			"signature": "48 89 5C 24 10 56 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 70",
+			"extract": {}
+		},
+		"EasterAttackReceiver_Recieve": {
+			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 67 48 8D 0D ? ? ? ?",
+			"extract": {}
+		},
 		"EnemyNpcController_TakeDamage": {
 			"signature": "40 53 48 83 EC 20 80 79 3C 00 48 8B D9 74 4C F3 0F 10 91 90 00 00 00",
 			"extract": {
@@ -20,76 +105,102 @@
 				}
 			}
 		},
-		"BossBase_Update": {
-			"signature": "80 79 3C 00 74 1D 48 8B 89 20 01 00 00",
-			"extract": {}
-		},
-		"WorldElite_Update": {
-			"signature": "40 53 48 83 EC 50 0F 29 74 24 40 33 D2 0F 29 7C 24 30 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 45 33 C0 48 8D 4C 24 20 48 8B D0 E8 ? ? ? ? F3 0F 10 35 ? ? ? ?",
-			"extract": {}
-		},
-		"AttackReceiver_Recieve": {
-			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00",
+		"EngineerService_TryGetUpgradeCost": {
+			"signature": "40 55 56 57 41 56 48 83 EC 38 80 3D ? ? ? ? 00 4D 8B F1 49 8B F0 8B EA 48 8B F9",
 			"extract": {
-				"AttackDamage": {
-					"hardcoded": 16
+				"Amount": {
+					"hardcoded": 8
 				}
 			}
 		},
-		"RealmAttackReceiver_Recieve": {
-			"signature": "48 89 74 24 20 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1",
+		"EngineerUpgradeConfig_GetPrice": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 7F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 33 D2 48 8B C8 48 8B F0 E8 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 89 5E 10",
 			"extract": {}
 		},
-		"EasterAttackReceiver_Recieve": {
-			"signature": "48 89 6C 24 18 48 89 74 24 20 41 56 48 83 EC 60 80 3D ? ? ? ? 00 48 8B F2 4C 8B F1",
+		"EnhancementTreeUI_Buy": {
+			"signature": "40 53 55 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B E9 0F 85 ? ? ? ?",
 			"extract": {}
 		},
-		"AttackReceiver_Awake": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? 48 8B CB E8 ? ? ? ? 48 8D 4B 38 48 89 43 38 48 8B D0 E8 ? ? ? ? 4C 8B 53 38",
+		"HourglassHardUUpgrade_GetCostAmount": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 8B FA",
+			"extract": {}
+		},
+		"HourglassLevelConfig_SandCost": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 45 33 C9",
+			"extract": {}
+		},
+		"HourglassService_BuyGenerator": {
+			"signature": "48 89 6C 24 18 48 89 74 24 20 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8",
+			"extract": {}
+		},
+		"HourglassService_BuyHardUpgrade": {
+			"signature": "40 55 56 48 83 EC 48 80 3D ? ? ? ? 00 48 8B EA 48 8B F1 75 37 48 8D 0D ? ? ? ?",
+			"extract": {}
+		},
+		"HourglassService_BuyShopItem": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA",
+			"extract": {}
+		},
+		"HourglassService_BuyTalent": {
+			"signature": "48 89 5C 24 20 56 48 83 EC 60 80 3D ? ? ? ? 00",
+			"extract": {}
+		},
+		"HourglassService_BuyUpgrade": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 33 D2 48 8B CB E8 ? ? ? ? 45 33 C0",
+			"extract": {}
+		},
+		"HourglassService_BuyUpgradeBlock": {
+			"signature": "48 89 5C 24 18 48 89 54 24 10 48 89 4C 24 08 56 57 41 56 48 83 EC 60 4C 8B F2 48 8B F1",
+			"extract": {}
+		},
+		"HourglassService_CostFactor": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 20 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 03 45 33 C9",
+			"extract": {}
+		},
+		"HourglassService_LevelCost": {
+			"signature": "40 53 48 83 EC 20 48 8B 81 80 00 00 00 48 85 C0 74 2A",
+			"extract": {}
+		},
+		"HourglassService_ShopNextCost": {
+			"signature": "40 53 48 83 EC 20 48 8B DA 48 85 D2 74 1B",
+			"extract": {}
+		},
+		"HourglassService_UpgradeCost": {
+			"signature": "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00",
+			"extract": {}
+		},
+		"HourglassUpgradeItem_GetCost": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 0F 29 74 24 40",
+			"extract": {}
+		},
+		"IAPRewarder_Reward": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 20 80 3D ? ? ? ? 00 45 0F B6 F1",
+			"extract": {}
+		},
+		"Il2Cpp_Dictionary": {
+			"signature": "",
 			"extract": {
-				"isPlayer": {
-					"instr_idx": 36,
-					"op_idx": 0
+				"count": {
+					"hardcoded": 32
 				}
 			}
 		},
-		"CurrencyService_Subtract": {
-			"signature": "40 53 48 83 EC 30 48 8B D9 0F 29 74 24 20 48 8B 49 10 0F 28 F2 48 85 C9",
+		"MarketLotScriptableObject_CurrentPrice": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 7F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 33 D2 48 8B C8 48 8B F0 E8 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 48 8D 4E 18",
 			"extract": {}
 		},
-		"CurrencyService_Subtract_1": {
-			"signature": "48 89 5C 24 10 56 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 70",
+		"MarketLot_GetCurrentPrice": {
+			"signature": "48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F9 0F 29 74 24 20 0F 28 F1 75 7F 48 8D 0D ? ? ? ?",
 			"extract": {}
-		},
-		"Skill_AddExperience": {
-			"signature": "40 53 48 83 EC 70 0F 10 41 30",
-			"extract": {}
-		},
-		"SteamPurchaseService_InitiatePurchase": {
-			"signature": "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 73 48 8D 0D ? ? ? ?",
-			"extract": {
-				"_rewarder": {
-					"instr_idx": 0,
-					"op_idx": 0
-				}
-			}
 		},
 		"MobilePurchaseService_InitiatePurchase": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 4C 00",
+			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 4C 00 48 C7 44 24 30 ? ? ? ? 75 78",
 			"extract": {
 				"_rewarder": {
 					"instr_idx": 97,
 					"op_idx": 0
 				}
 			}
-		},
-		"SteamPurchaseService_FindLot": {
-			"signature": "48 83 EC 28 48 8B 49 28 48 85 C9 74 0C 45 33 C0 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 08",
-			"extract": {}
-		},
-		"IAPRewarder_Reward": {
-			"signature": "40 53 56 57 41 56 48 83 EC 28 80 3D ? ? ? ? 00 45 0F B6 F1 41 0F B6 F0",
-			"extract": {}
 		},
 		"MovementControl_Move": {
 			"signature": "40 53 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B D9 0F 29 BC 24 E0 00 00 00",
@@ -107,153 +218,58 @@
 				}
 			}
 		},
-		"Time_set_timeScale": {
-			"signature": "48 83 EC 38 48 8B 05 ? ? ? ? 0F 29 74 24 20 0F 28 F0 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 0F 28 C6 0F 28 74 24 20 48 83 C4 38 48 FF E0 CC CC CC CC CC CC 40 53 48 83 EC 20 80 3D ? ? ? ? 00",
-			"extract": {}
-		},
-		"TimeskipItem_get_CanUseImpl": {
-			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 10",
-			"extract": {}
-		},
-		"HourglassService_CostFactor": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 20 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 03 45 33 C9",
-			"extract": {}
-		},
-		"HourglassService_UpgradeCost": {
-			"signature": "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 38 ? ? ? ? 48 85 DB 74 51 48 8B 4E 78 48 85 C9 74 56 4C 8B 0D ? ? ? ?",
-			"extract": {}
-		},
-		"HourglassService_LevelCost": {
-			"signature": "40 53 48 83 EC 20 48 8B 41 10 48 85 C0 74 2A 48 8B 58 78",
-			"extract": {}
-		},
-		"HourglassUpgradeItem_GetCost": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 0F 29 74 24 40",
-			"extract": {}
-		},
-		"HourglassHardUUpgrade_GetCostAmount": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 8B FA",
-			"extract": {}
-		},
-		"HourglassService_BuyUpgrade": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 33 D2 48 8B CB E8 ? ? ? ? 45 33 C0",
-			"extract": {}
-		},
-		"HourglassService_BuyHardUpgrade": {
-			"signature": "40 55 56 48 83 EC 48 80 3D ? ? ? ? 00 48 8B EA 48 8B F1 75 37 48 8D 0D ? ? ? ?",
-			"extract": {}
-		},
-		"HourglassService_BuyTalent": {
-			"signature": "48 89 5C 24 18 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ?",
-			"extract": {}
-		},
-		"HourglassService_BuyGenerator": {
-			"signature": "48 89 6C 24 18 48 89 74 24 20 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8",
-			"extract": {}
-		},
-		"HourglassService_BuyUpgradeBlock": {
-			"signature": "48 89 5C 24 18 48 89 54 24 10 48 89 4C 24 08 56 57 41 56 48 83 EC 60 4C 8B F2 48 8B F1",
-			"extract": {}
-		},
-		"AntiCheatService_Initialize": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F1 75 5B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ?",
-			"extract": {}
-		},
-		"AntiCheatService_OnSpeedHackDetected": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 0D ? ? ? ? 48 8B 18 83 B9 E4 00 00 00 00 75 05 E8 ? ? ? ? 45 33 C0 33 D2 48 8B CB E8 ? ? ? ? 84 C0 74 58 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 08 48 85 C9 74 77 33 D2",
-			"extract": {}
-		},
-		"AntiCheatService_OnObscuredCheatingDetected": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 0D ? ? ? ? 48 8B 18 83 B9 E4 00 00 00 00 75 05 E8 ? ? ? ? 45 33 C0 33 D2 48 8B CB E8 ? ? ? ? 84 C0 74 58 48 8B 05 ? ? ? ? 48 8B 40 20 F6 80 35 01 00 00 01 75 08 48 8B C8 E8 ? ? ? ? 48 8B 80 A8 00 00 00 48 8B 48 10 48 8B 81 A0 00 00 00 48 8B 08 48 85 C9 74 7A 33 D2",
-			"extract": {}
-		},
-		"AntiCheatService_Handle": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 28 00 74 23 0F 10 07",
-			"extract": {}
-		},
-		"AntiCheatService_Apply": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 8B 03 48 8D 54 24 48",
-			"extract": {}
-		},
-		"AntiCheatService_ReportCheatToAnalytics": {
-			"signature": "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA 48 8B F1",
-			"extract": {}
-		},
-		"CurioGachaService_RollRarity": {
-			"signature": "48 89 54 24 10 48 89 4C 24 08 53 56 57 41 56 41 57 48 83 EC 70 0F 29 74 24 60",
-			"extract": {}
-		},
-		"CurioPowerService_GetLevelUpCost": {
-			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 41 8B F0 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 18",
-			"extract": {}
-		},
-		"EngineerService_TryGetUpgradeCost": {
-			"signature": "40 53 55 56 57 41 56 48 83 EC 30 80 3D ? ? ? ? 00 4D 8B F1 49 8B F8",
-			"extract": {
-				"Amount": {
-					"hardcoded": 8
-				}
-			}
-		},
-		"EngineerUpgradeConfig_GetPrice": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 7F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 33 D2 48 8B C8 48 8B F0 E8 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 89 5E 10",
-			"extract": {}
-		},
-		"MarketLotScriptableObject_CurrentPrice": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 7F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 33 D2 48 8B C8 48 8B F0 E8 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 48 8D 4E 18",
-			"extract": {}
-		},
-		"MarketLot_GetCurrentPrice": {
-			"signature": "48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F9 0F 29 74 24 20 0F 28 F1 75 7F 48 8D 0D ? ? ? ?",
-			"extract": {}
-		},
 		"PlayerCharacter_TakeDamage": {
 			"signature": "48 83 EC 38 80 3D ? ? ? ? 00 0F 29 74 24 20 0F 28 F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ?",
 			"extract": {}
 		},
-		"HourglassService_BuyCoinCdUpgrade": {
-			"signature": "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 89 7C 24 40 0F 29 74 24 20 48 85 C0 0F 84 ? ? ? ? 48 8B B8 98 00 00 00 33 D2 48 8B CB E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 48 8B 50 68 48 85 D2 0F 84 ? ? ? ? 48 85 FF 0F 84 ? ? ? ? 8B 52 10",
+		"RealmAttackReceiver_Recieve": {
+			"signature": "48 89 74 24 20 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 67 48 8D 0D ? ? ? ?",
 			"extract": {}
 		},
-		"HourglassService_BuyCoinRewardUpgrade": {
-			"signature": "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 89 7C 24 40 0F 29 74 24 20 48 85 C0 0F 84 ? ? ? ? 48 8B B8 98 00 00 00 33 D2 48 8B CB E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 48 8B 50 68 48 85 D2 0F 84 ? ? ? ? 48 85 FF 0F 84 ? ? ? ? 8B 52 14",
+		"SacrificeUI_Buy": {
+			"signature": "40 56 57 48 83 EC 48 80 3D ? ? ? ? 00 48 8B F2 48 8B F9 75 7F 48 8D 0D ? ? ? ?",
 			"extract": {}
 		},
-		"HourglassService_BuyRiftWorker": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 33 D2 48 8B CB E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 48 8B 90 80 00 00 00",
+		"SacrificeUI_TryRollSacrificeHalfCost": {
+			"signature": "48 83 EC 38 33 D2 0F 29 74 24 20 B9 ? ? ? ? E8 ? ? ? ? 33 C9 0F 28 F0 E8 ? ? ? ? 0F 2F F0 0F 28 74 24 20 0F 97 C0 48 83 C4 38 C3 CC 40 53 48 83 EC 20",
 			"extract": {}
 		},
-		"HourglassService_BuyShopItem": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA",
+		"ShopSpendingService_CanSpend": {
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 81 EC ? ? ? ? 0F 29 74 24 70 41 8B F0 48 8B FA",
 			"extract": {}
 		},
-		"HourglassService_CoinCdCost": {
-			"signature": "40 53 48 83 EC 20 48 8B 41 10 48 85 C0 74 34 48 8B 98 98 00 00 00 33 D2 E8 ? ? ? ? 48 85 C0 74 21 48 8B 50 68 48 85 D2 74 18 48 85 DB 74 13 8B 52 10 45 33 C0 48 8B CB 48 83 C4 20 5B E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC 48 83 EC 28",
+		"ShopSpendingService_Spend": {
+			"signature": "48 83 EC 28 48 8B 49 18 48 85 C9 74 0C 45 33 C9 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 53",
 			"extract": {}
 		},
-		"HourglassService_CoinRewardCost": {
-			"signature": "40 53 48 83 EC 20 48 8B 41 10 48 85 C0 74 34 48 8B 98 98 00 00 00 33 D2 E8 ? ? ? ? 48 85 C0 74 21 48 8B 50 68 48 85 D2 74 18 48 85 DB 74 13 8B 52 14 45 33 C0 48 8B CB 48 83 C4 20 5B E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC 40 53 48 83 EC 20",
+		"Skill_AddExperience": {
+			"signature": "40 53 48 83 EC 70 0F 10 41 30",
 			"extract": {}
 		},
-		"HourglassService_ShopNextCost": {
-			"signature": "40 53 48 83 EC 20 48 8B DA 48 85 D2 74 1B",
+		"SteamPurchaseService_FindLot": {
+			"signature": "48 83 EC 28 48 8B 49 28 48 85 C9 74 0C 45 33 C0 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 08",
 			"extract": {}
 		},
-		"HourglassLevelConfig_SandCost": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 60 80 3D ? ? ? ? 00 8B FA 48 8B D9 75 1F",
-			"extract": {}
-		},
-		"HourglassLevelConfig_GoldCost": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 41 B1 01 48 C7 44 24 20 ? ? ? ?",
-			"extract": {}
-		},
-		"Il2Cpp_Dictionary": {
-			"signature": "",
+		"SteamPurchaseService_InitiatePurchase": {
+			"signature": "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 73 48 8D 0D ? ? ? ?",
 			"extract": {
-				"count": {
-					"hardcoded": 32
+				"_rewarder": {
+					"instr_idx": 0,
+					"op_idx": 0
 				}
 			}
+		},
+		"Time_set_timeScale": {
+			"signature": "48 83 EC 38 48 8B 05 ? ? ? ? 0F 29 74 24 20 0F 28 F0 48 85 C0 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 89 05 ? ? ? ? 0F 28 C6 0F 28 74 24 20 48 83 C4 38 48 FF E0 CC CC CC CC CC CC 48 89 5C 24 08 57 48 83 EC 20 48 8B FA 48 8B D9",
+			"extract": {}
+		},
+		"TimeskipItem_get_CanUseImpl": {
+			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 53 48 83 EC 20 8B 41 18",
+			"extract": {}
+		},
+		"WorldElite_Update": {
+			"signature": "40 53 48 83 EC 50 0F 29 74 24 40 33 D2 0F 29 7C 24 30 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 45 33 C0 48 8D 4C 24 20 48 8B D0 E8 ? ? ? ? F3 0F 10 35 ? ? ? ?",
+			"extract": {}
 		}
 	}
 }
