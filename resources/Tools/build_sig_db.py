@@ -3,9 +3,25 @@ import re
 import json
 import pefile
 import platform
+import sys
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
 
 DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
+DUMP_DIR = os.path.dirname(DUMP_PATH)
+
+if not os.path.exists(DUMP_DIR):
+    os.makedirs(DUMP_DIR, exist_ok=True)
+    print(f"[-] Created directory: {DUMP_DIR}")
+    print(
+        "[-] Please place your dump.cs from Il2CppDumper in this directory before running."
+    )
+    sys.exit(1)
+elif not os.path.exists(DUMP_PATH):
+    print(f"[-] dump.cs not found at {DUMP_PATH}")
+    print(
+        "[-] Please place your dump.cs from Il2CppDumper in this directory before running."
+    )
+    sys.exit(1)
 
 
 def find_game_assembly():

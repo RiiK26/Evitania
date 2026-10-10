@@ -13,7 +13,7 @@ Follow these steps to update the cheat after a game patch:
 2. **Run the Generator**
    Navigate to the `resources/Tools/` directory and run the extraction script:
    ```bash
-   python3 build_sig_db.py
+   python3 build_sig_db.py # This Need dump.cs from Il2CppDumper. once you have em, put it into /resources/dumped/
    python3 aobgenerator.py
    ```
    The script will:

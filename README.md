@@ -15,40 +15,26 @@ The architecture is strictly modularized into distinct feature categories locate
 
 </details>
 
-### Combat
+## Build Instructions
 
-| Feature | Description |
-|---|---|
-| **God Mode** | Grants absolute invulnerability. Includes granular configuration for health points, custom damage multipliers, and unrestricted movement speed. |
-| **Aura Kill** | Automatically neutralizes all hostile entities within the localized environment radius upon rendering. |
-| **Exp Multiplier** | Modifies the experience point acquisition algorithm to exponentially accelerate leveling. |
-| **Speed Hack** | Modifies the global `Time.timeScale` variable to accelerate animation execution, movement physics, and application loops. |
+### Linux (Cross-Compiling for Windows)
+Ensure you have `mingw-w64` and `cmake` installed on your system.
+```bash
+sudo apt install mingw-w64 cmake
+```
+Then run the included build script:
+```bash
+./scripts/build
+```
 
-### Curio
-
-| Feature | Description |
-|---|---|
-| **Always Legendary Curio** | guarantedd legendary tier of curio everytime gacha pull. |
-| **Free Upgrade Curio** | upgrading curio needs 0. |
-
-### Engineer
-| Feature | Description |
-|---|---|
-| **Free Engineer Upgrades** | upgrading engineer needs 0. |
-
-### Hunter
-| Feature | Description |
-|---|---|
-| **Free Hunter Upgrades** | upgrading hunter needs 0. |
-
-### Economy & Progression
-
-| Feature | Description |
-|---|---|
-| **Infinite Items** | Intercepts inventory consumption subroutines to prevent asset depletion upon usage. |
-| **100% Enhancement Success** | Hooks the item enhancement algorithm to enforce a guaranteed 100% success probability. |
-| **Infinite Currency** | Nullifies subtraction routines for all premium and standard currencies (e.g., Diamonds, Gold, Sands). |
-| **Free Store (IAP Bypass)** | Bypasses client-side in-app purchase (IAP) validation checks to acquire premium marketplace items without authorization. |
+### Windows (Native)
+Ensure you have `cmake` and a compatible C++ compiler (such as MinGW-w64) installed.
+```cmd
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
 
 ## Disclaimer
 

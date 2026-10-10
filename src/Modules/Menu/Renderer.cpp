@@ -1,4 +1,5 @@
 #include "Menu.hpp"
+#include "MenuInternal.hpp"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
@@ -7,148 +8,13 @@
 #include <dxgi1_4.h>
 #include "MinHook.h"
 #include <cstdio>
-#include <fstream>
 #include <string>
-#include <sstream>
-#include "../../Features/Player/SpeedHack.hpp"
-#include <shellapi.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace Menu
 {
-  ConfigData         Config;
   static std::string g_IniPath;
-
-  std::string GetConfigPath()
-  {
-    char    path[MAX_PATH];
-    HMODULE hMod = NULL;
-    GetModuleHandleExA(
-      GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR) &GetConfigPath,
-      &hMod
-    );
-    if (hMod && GetModuleFileNameA(hMod, path, MAX_PATH)) {
-      std::string fullPath(path);
-      size_t      lastSlash = fullPath.find_last_of("\\/");
-      if (lastSlash != std::string::npos) {
-        return fullPath.substr(0, lastSlash) + "\\config.txt";
-      }
-    }
-    return "config.txt";
-  }
-
-  static float SafeParseFloat(const std::string& value, float defaultValue)
-  {
-    try {
-      return std::stof(value);
-    } catch (...) {
-      return defaultValue;
-    }
-  }
-
-  void ConfigData::LoadConfig()
-  {
-    std::ifstream f(GetConfigPath());
-    if (!f.is_open())
-      return;
-
-    std::string line;
-    while (std::getline(f, line)) {
-      std::istringstream is_line(line);
-      std::string        key;
-      if (std::getline(is_line, key, '=')) {
-        std::string value;
-        if (std::getline(is_line, value)) {
-          if (key == "god_mode")
-            bGodMode = (value == "1");
-          else if (key == "god_mode_nullify")
-            bGodMode_Nullify = (value == "1");
-          else if (key == "god_mode_damage_toggle")
-            bGodMode_Damage = (value == "1");
-          else if (key == "god_mode_speed_toggle")
-            bGodMode_Speed = (value == "1");
-          else if (key == "god_mode_damage")
-            fGodModeDamage = SafeParseFloat(value, fGodModeDamage);
-          else if (key == "god_mode_speed_multiplier")
-            fGodModeSpeedMultiplier = SafeParseFloat(value, fGodModeSpeedMultiplier);
-          else if (key == "aura_kill")
-            bAuraKill = (value == "1");
-          else if (key == "exp_multiplier")
-            bExpMultiplier = (value == "1");
-          else if (key == "exp_multiplier_value")
-            fExpMultiplierValue = SafeParseFloat(value, fExpMultiplierValue);
-          else if (key == "infinite_items")
-            bInfiniteItems = (value == "1");
-          else if (key == "enhance_item_100")
-            bEnhanceItem100 = (value == "1");
-          else if (key == "infinite_currency")
-            bInfiniteCurrency = (value == "1");
-          else if (key == "free_store")
-            bFreeStore = (value == "1");
-          else if (key == "speed_hack")
-            bSpeedHack = (value == "1");
-          else if (key == "speed_multiplier")
-            fSpeedMultiplier = SafeParseFloat(value, fSpeedMultiplier);
-          else if (key == "hourglass_bypass")
-            bHourglassBypass = (value == "1");
-          else if (key == "free_timeline_nodes")
-            bFreeTimelineNodes = (value == "1");
-          else if (key == "free_restoration_nodes")
-            bFreeRestorationNodes = (value == "1");
-          else if (key == "free_engineer_upgrades")
-            bFreeEngineerUpgrades = (value == "1");
-          else if (key == "free_hunter_upgrades")
-            bFreeHunterUpgrades = (value == "1");
-          else if (key == "always_lit_bonfire")
-            bAlwaysLitBonfire = (value == "1");
-          else if (key == "free_ash_upgrade")
-            bFreeAshUpgrade = (value == "1");
-          else if (key == "free_sacrifice_cost")
-            bFreeSacrificeCost = (value == "1");
-          else if (key == "force_curio_rarity")
-            bForceCurioRarity = (value == "1");
-          else if (key == "curio_rarity")
-            iCurioRarity = std::stoi(value);
-        }
-      }
-    }
-  }
-
-  void ConfigData::SaveConfig()
-  {
-    std::ofstream out(GetConfigPath());
-    if (!out.is_open())
-      return;
-
-    out << "menu_open=" << (bMenuOpen ? "1" : "0") << "\n";
-    out << "god_mode=" << (bGodMode ? "1" : "0") << "\n";
-    out << "god_mode_nullify=" << (bGodMode_Nullify ? "1" : "0") << "\n";
-    out << "god_mode_damage_toggle=" << (bGodMode_Damage ? "1" : "0") << "\n";
-    out << "god_mode_speed_toggle=" << (bGodMode_Speed ? "1" : "0") << "\n";
-    out << "god_mode_damage=" << fGodModeDamage << "\n";
-    out << "god_mode_speed_multiplier=" << fGodModeSpeedMultiplier << "\n";
-    out << "aura_kill=" << (bAuraKill ? "1" : "0") << "\n";
-    out << "exp_multiplier=" << (bExpMultiplier ? "1" : "0") << "\n";
-    out << "exp_multiplier_value=" << (long long) fExpMultiplierValue << "\n";
-    out << "infinite_items=" << (bInfiniteItems ? "1" : "0") << "\n";
-    out << "enhance_item_100=" << (bEnhanceItem100 ? "1" : "0") << "\n";
-    out << "infinite_currency=" << (bInfiniteCurrency ? "1" : "0") << "\n";
-    out << "free_store=" << (bFreeStore ? "1" : "0") << "\n";
-    out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
-    out << "speed_multiplier=" << fSpeedMultiplier << "\n";
-    out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
-    out << "free_timeline_nodes=" << (bFreeTimelineNodes ? "1" : "0") << "\n";
-    out << "free_restoration_nodes=" << (bFreeRestorationNodes ? "1" : "0") << "\n";
-    out << "free_engineer_upgrades=" << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
-    out << "free_hunter_upgrades=" << (bFreeHunterUpgrades ? "1" : "0") << "\n";
-
-    out << "always_lit_bonfire=" << (bAlwaysLitBonfire ? "1" : "0") << "\n";
-    out << "free_ash_upgrade=" << (bFreeAshUpgrade ? "1" : "0") << "\n";
-    out << "free_sacrifice_cost=" << (bFreeSacrificeCost ? "1" : "0") << "\n";
-    out << "force_curio_rarity=" << (bForceCurioRarity ? "1" : "0") << "\n";
-    out << "curio_rarity=" << iCurioRarity << "\n";
-  }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
   Present_t oPresent = nullptr;
@@ -239,13 +105,20 @@ namespace Menu
   LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
     if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) {
-      Config.bMenuOpen = !Config.bMenuOpen;
+      if ((lParam & (1 << 30)) == 0) {
+        Config.bMenuOpen = !Config.bMenuOpen;
+      }
+      return 1;
+    }
+    if (uMsg == WM_KEYUP && wParam == VK_INSERT) {
       return 1;
     }
 
-    if (Config.bMenuOpen) {
+    if (ImGui::GetCurrentContext()) {
       ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
+    }
 
+    if (Config.bMenuOpen) {
       ImGuiIO& io = ImGui::GetIO();
 
       // Block mouse input to the game ONLY if ImGui wants to capture it (e.g. hovering over the menu)
@@ -278,224 +151,6 @@ namespace Menu
       CreateRenderTargetDX12(pSwapChain, g_pd3dDevice);
 
     return hr;
-  }
-
-  void ApplyStyle()
-  {
-    ImGuiStyle& style       = ImGui::GetStyle();
-    style.WindowRounding    = 8.0f;
-    style.FrameRounding     = 6.0f;
-    style.PopupRounding     = 6.0f;
-    style.ScrollbarRounding = 6.0f;
-    style.GrabRounding      = 6.0f;
-    style.TabRounding       = 6.0f;
-
-    style.WindowPadding     = ImVec2(12, 12);
-    style.FramePadding      = ImVec2(8, 4);
-    style.ItemSpacing       = ImVec2(8, 8);
-    style.ItemInnerSpacing  = ImVec2(6, 6);
-
-    // Custom Dark/Vibrant Palette
-    ImVec4* colors                    = style.Colors;
-    colors[ImGuiCol_WindowBg]         = ImVec4(0.08f, 0.08f, 0.09f, 0.96f);
-    colors[ImGuiCol_Header]           = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
-    colors[ImGuiCol_HeaderHovered]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
-    colors[ImGuiCol_HeaderActive]     = ImVec4(0.30f, 0.30f, 0.32f, 1.00f);
-    colors[ImGuiCol_Button]           = ImVec4(0.20f, 0.25f, 0.30f, 1.00f);
-    colors[ImGuiCol_ButtonHovered]    = ImVec4(0.26f, 0.35f, 0.44f, 1.00f);
-    colors[ImGuiCol_ButtonActive]     = ImVec4(0.36f, 0.45f, 0.54f, 1.00f);
-    colors[ImGuiCol_FrameBg]          = ImVec4(0.12f, 0.12f, 0.14f, 1.00f);
-    colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
-    colors[ImGuiCol_FrameBgActive]    = ImVec4(0.24f, 0.24f, 0.26f, 1.00f);
-    colors[ImGuiCol_CheckMark]        = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
-    colors[ImGuiCol_SliderGrab]       = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
-    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.38f, 0.73f, 1.00f, 1.00f);
-    colors[ImGuiCol_TitleBg]          = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
-    colors[ImGuiCol_TitleBgActive]    = ImVec4(0.15f, 0.15f, 0.18f, 1.00f);
-  }
-
-  void DrawMenuUI()
-  {
-    if (Config.bMenuOpen) {
-      ImGui::SetNextWindowSize(ImVec2(650, 650), ImGuiCond_FirstUseEver);
-      ImGui::Begin(
-        "Evitania Online v" PROJECT_VERSION, nullptr,
-        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
-      );
-
-      if (ImGui::BeginTabBar("CheatTabs", ImGuiTabBarFlags_FittingPolicyScroll)) {
-        // Combat Tab menu
-        if (ImGui::BeginTabItem("Combat")) {
-          ImGui::BeginChild("CombatChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("God Mode", &Config.bGodMode);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Master God Mode toggle");
-          }
-
-          if (ImGui::TreeNode("God Mode Settings")) {
-            ImGui::Checkbox("Infinite HP", &Config.bGodMode_Nullify);
-            ImGui::Checkbox("High Damage", &Config.bGodMode_Damage);
-            ImGui::TextWrapped("Damage Value");
-            ImGui::InputFloat("##GodModeDamage", &Config.fGodModeDamage);
-            if (Config.fGodModeDamage < 0.0f)
-              Config.fGodModeDamage = 0.0f;
-
-            ImGui::Checkbox("Movement Speed", &Config.bGodMode_Speed);
-            ImGui::TextWrapped("Speed Multiplier");
-            ImGui::SliderFloat("##GodModeSpeed", &Config.fGodModeSpeedMultiplier, 1.0f, 10.0f);
-            ImGui::TreePop();
-          }
-          ImGui::Checkbox("Aura Kill", &Config.bAuraKill);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("The Damage taken from GodMode high damage value");
-          }
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        // Player Tab menu
-        if (ImGui::BeginTabItem("Player")) {
-          ImGui::BeginChild("PlayerChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Exp Multiplier", &Config.bExpMultiplier);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("EXP multiplier have progress account detection, use at ur own risk");
-          }
-          ImGui::TextWrapped("Multiplier Value");
-          ImGui::InputFloat("##ExpMultiplier", &Config.fExpMultiplierValue);
-          if (Config.fExpMultiplierValue < 1.0f)
-            Config.fExpMultiplierValue = 1.0f;
-
-          if (ImGui::Checkbox("Speed Hack", &Config.bSpeedHack)) {
-            Features::SpeedHack::ApplySpeedHack();
-          }
-          ImGui::TextWrapped("Speed Value");
-          if (ImGui::SliderFloat("##SpeedHack", &Config.fSpeedMultiplier, 1.0f, 10.0f)) {
-            Features::SpeedHack::ApplySpeedHack();
-          }
-
-          ImGui::Checkbox("100% Success enhance Item", &Config.bEnhanceItem100);
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        // Timeline Tab menu
-        if (ImGui::BeginTabItem("Timeline")) {
-          ImGui::BeginChild("TimelineChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Use Timeskip hourglass anywhere", &Config.bHourglassBypass);
-          ImGui::Checkbox("Free Timeline upgrade tree", &Config.bFreeTimelineNodes);
-          ImGui::Checkbox("Free Restoration of Eternity tree", &Config.bFreeRestorationNodes);
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        // Economy Tab menu
-        if (ImGui::BeginTabItem("Economy")) {
-          ImGui::BeginChild("EconomyChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Infinite items on inventory", &Config.bInfiniteItems);
-
-          ImGui::Checkbox("Infinite currency", &Config.bInfiniteCurrency);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Diamonds, Gold, Sands, etc");
-          }
-
-          ImGui::Checkbox("Free Store", &Config.bFreeStore);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Bypass InAppPurchases");
-          }
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        // Curio Tab menu
-        if (ImGui::BeginTabItem("Curio")) {
-          ImGui::BeginChild("CurioChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Force Curio Rarity", &Menu::Config.bForceCurioRarity);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Forces every gacha pull to drop a specific rarity Curio");
-          }
-
-          const char* rarities[] = {"Common", "Uncommon", "Rare", "Epic", "Legendary"};
-          ImGui::Combo("Rarity", &Menu::Config.iCurioRarity, rarities, IM_ARRAYSIZE(rarities));
-
-          ImGui::Checkbox("Free Curio Upgrades", &Menu::Config.bFreeCurioUpgrades);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Upgrading curio levels costs 0");
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        // Engineer Tab menu
-        if (ImGui::BeginTabItem("Engineer")) {
-          ImGui::BeginChild("EngineerChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Free Engineer Upgrades", &Menu::Config.bFreeEngineerUpgrades);
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        // Hunter Tab menu
-        if (ImGui::BeginTabItem("Hunter")) {
-          ImGui::BeginChild("HunterChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Free Hunter Upgrades", &Menu::Config.bFreeHunterUpgrades);
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-
-        if (ImGui::BeginTabItem("Bonfire")) {
-          ImGui::BeginChild("BonfireChild", ImVec2(0, -65), 0);
-
-          ImGui::Checkbox("Always Lit Bonfire", &Menu::Config.bAlwaysLitBonfire);
-          ImGui::SameLine();
-          ImGui::TextDisabled("(?)");
-          if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Still Experimental, need to verified if the fire not extinguished");
-
-          ImGui::Checkbox("Free Ash Upgrade", &Menu::Config.bFreeAshUpgrade);
-          ImGui::Checkbox("Free Sacrifice Cost", &Menu::Config.bFreeSacrificeCost);
-
-          ImGui::EndChild();
-          ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-      }
-
-      // Save Config button
-      ImGui::Separator();
-      if (ImGui::Button("Save Config", ImVec2(-1, 0))) {
-        Config.SaveConfig();
-      }
-      ImGui::Separator();
-      ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "%s", "[INSERT] show/hide menu");
-
-      ImGui::End();
-    }
   }
 
   bool GetSwapChainDesc(IDXGISwapChain* pSwapChain, DXGI_SWAP_CHAIN_DESC& sd)
@@ -562,7 +217,6 @@ namespace Menu
         ImGui_ImplDX11_Init(pDevice, pContext);
 
         ImGui::StyleColorsDark();
-        ApplyStyle();
 
         init = true;
       }
@@ -663,7 +317,6 @@ namespace Menu
       ImGui_ImplDX12_Init(&info);
 
       ImGui::StyleColorsDark();
-      ApplyStyle();
 
       initDX12 = true;
     }
