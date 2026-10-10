@@ -9,7 +9,7 @@
 #include "../../Features/Economy/FreeStore.hpp"
 #include "../../Features/Player/SpeedHack.hpp"
 #include "../../Features/AntiCheat/AntiCheat.hpp"
-#include "../../Features/Player/HourglassBypass.hpp"
+#include "../../Features/Timeline/HourglassBypass.hpp"
 #include "../../Features/Curio/CurioHacks.hpp"
 #include "../../Features/Engineer/EngineerHacks.hpp"
 #include "../../Features/Hunter/HunterHacks.hpp"

@@ -161,6 +161,17 @@ namespace Signatures
   // 0x83CE50
   constexpr const char* HourglassService_UpgradeCost = "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00";
 
+  // 0xA53590
+  constexpr const char* HourglassSystemUI_BuildTalentTooltipContent =
+    "40 53 56 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B F2 48 8B D9";
+
+  // 0x99D230
+  constexpr const char* HourglassTalentConfig_get_Cost = "F2 0F 10 41 48 C3 CC CC";
+
+  // 0xAFEB00
+  constexpr const char* HourglassTalentNodeView_SetState =
+    "40 53 55 56 57 48 83 EC 28 80 3D ? ? ? ? 00 0F B6 FA 41 0F B6 F1";
+
   // 0x9A6910
   constexpr const char* HourglassUpgradeItem_GetCost =
     "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 0F 29 74 24 40";

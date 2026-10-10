@@ -23,17 +23,17 @@ namespace Menu
     bool  bFreeStore              = false;
     bool  bSpeedHack              = false;
     float fSpeedMultiplier        = 2.0f;
-    bool  bAlwaysLegendaryCurio   = false;
+    bool  bForceCurioRarity       = false;
+    int   iCurioRarity            = 4;
     bool  bFreeCurioUpgrades      = false;
     bool  bHourglassBypass        = false;
+    bool  bFreeTimelineNodes      = false;
+    bool  bFreeRestorationNodes   = false;
     bool  bFreeEngineerUpgrades   = false;
     bool  bFreeHunterUpgrades     = false;
-
-    // Bonfire
-
-    bool bAlwaysLitBonfire  = false;
-    bool bFreeAshUpgrade    = false;
-    bool bFreeSacrificeCost = false;
+    bool  bAlwaysLitBonfire       = false;
+    bool  bFreeAshUpgrade         = false;
+    bool  bFreeSacrificeCost      = false;
 
     void LoadConfig();
     void SaveConfig();

@@ -30,14 +30,19 @@ namespace Features
           bool isAlive = *(bool*) ((uintptr_t) __this + Offsets::alive);
           if (isAlive) {
             ULONGLONG currentTick = GetTickCount64();
-            if (currentTick - damageCooldowns[__this] > 1000) {
+            auto      it          = damageCooldowns.find(__this);
+
+            if (it == damageCooldowns.end() || currentTick - it->second > 1000) {
               Orig_EnemyNpcController_TakeDamage(__this, Menu::Config.fGodModeDamage, method_info);
               damageCooldowns[__this] = currentTick;
             }
           }
           else {
             // Cleanup if dead to prevent memory leaks from reused pointers
-            damageCooldowns.erase(__this);
+            auto it = damageCooldowns.find(__this);
+            if (it != damageCooldowns.end()) {
+              damageCooldowns.erase(it);
+            }
           }
         }
       }

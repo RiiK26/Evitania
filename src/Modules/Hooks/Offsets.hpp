@@ -6,6 +6,7 @@ namespace Offsets
   constexpr int AttackDamage      = 0x10;
   constexpr int alive             = 0x3C;
   constexpr int Amount            = 0x8;
+  constexpr int cost              = 0x48;
   constexpr int count             = 0x20;
   constexpr int _rewarder         = 0x20;
   constexpr int _view             = 0x28;

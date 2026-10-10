@@ -10,8 +10,8 @@ namespace Features
     int (*Orig_CurioGachaService_RollRarity)(void* __this, void* rng, void* method_info);
     int Hook_CurioGachaService_RollRarity(void* __this, void* rng, void* method_info)
     {
-      if (Menu::Config.bAlwaysLegendaryCurio)
-        return 4;  // CurioRarity.Legendary = 4
+      if (Menu::Config.bForceCurioRarity)
+        return Menu::Config.iCurioRarity;  // 0=Common, 1=Uncommon, 2=Rare, 3=Epic, 4=Legend
       return Orig_CurioGachaService_RollRarity(__this, rng, method_info);
     }
 

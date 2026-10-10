@@ -92,6 +92,10 @@ namespace Menu
             fSpeedMultiplier = SafeParseFloat(value, fSpeedMultiplier);
           else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
+          else if (key == "free_timeline_nodes")
+            bFreeTimelineNodes = (value == "1");
+          else if (key == "free_restoration_nodes")
+            bFreeRestorationNodes = (value == "1");
           else if (key == "free_engineer_upgrades")
             bFreeEngineerUpgrades = (value == "1");
           else if (key == "free_hunter_upgrades")
@@ -102,6 +106,10 @@ namespace Menu
             bFreeAshUpgrade = (value == "1");
           else if (key == "free_sacrifice_cost")
             bFreeSacrificeCost = (value == "1");
+          else if (key == "force_curio_rarity")
+            bForceCurioRarity = (value == "1");
+          else if (key == "curio_rarity")
+            iCurioRarity = std::stoi(value);
         }
       }
     }
@@ -130,12 +138,16 @@ namespace Menu
     out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
     out << "speed_multiplier=" << fSpeedMultiplier << "\n";
     out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
+    out << "free_timeline_nodes=" << (bFreeTimelineNodes ? "1" : "0") << "\n";
+    out << "free_restoration_nodes=" << (bFreeRestorationNodes ? "1" : "0") << "\n";
     out << "free_engineer_upgrades=" << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
     out << "free_hunter_upgrades=" << (bFreeHunterUpgrades ? "1" : "0") << "\n";
 
     out << "always_lit_bonfire=" << (bAlwaysLitBonfire ? "1" : "0") << "\n";
     out << "free_ash_upgrade=" << (bFreeAshUpgrade ? "1" : "0") << "\n";
     out << "free_sacrifice_cost=" << (bFreeSacrificeCost ? "1" : "0") << "\n";
+    out << "force_curio_rarity=" << (bForceCurioRarity ? "1" : "0") << "\n";
+    out << "curio_rarity=" << iCurioRarity << "\n";
   }
 
   typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
@@ -371,7 +383,18 @@ namespace Menu
           }
 
           ImGui::Checkbox("100% Success enhance Item", &Config.bEnhanceItem100);
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
+
+        // Timeline Tab menu
+        if (ImGui::BeginTabItem("Timeline")) {
+          ImGui::BeginChild("TimelineChild", ImVec2(0, -65), 0);
+
           ImGui::Checkbox("Use Timeskip hourglass anywhere", &Config.bHourglassBypass);
+          ImGui::Checkbox("Free Timeline upgrade tree", &Config.bFreeTimelineNodes);
+          ImGui::Checkbox("Free Restoration of Eternity tree", &Config.bFreeRestorationNodes);
 
           ImGui::EndChild();
           ImGui::EndTabItem();
@@ -405,12 +428,15 @@ namespace Menu
         if (ImGui::BeginTabItem("Curio")) {
           ImGui::BeginChild("CurioChild", ImVec2(0, -65), 0);
 
-          ImGui::Checkbox("Always Legendary Curio", &Menu::Config.bAlwaysLegendaryCurio);
+          ImGui::Checkbox("Force Curio Rarity", &Menu::Config.bForceCurioRarity);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Forces every gacha pull to drop a Legendary rarity Curio");
+            ImGui::SetTooltip("Forces every gacha pull to drop a specific rarity Curio");
           }
+
+          const char* rarities[] = {"Common", "Uncommon", "Rare", "Epic", "Legendary"};
+          ImGui::Combo("Rarity", &Menu::Config.iCurioRarity, rarities, IM_ARRAYSIZE(rarities));
 
           ImGui::Checkbox("Free Curio Upgrades", &Menu::Config.bFreeCurioUpgrades);
           ImGui::SameLine();
@@ -446,6 +472,11 @@ namespace Menu
           ImGui::BeginChild("BonfireChild", ImVec2(0, -65), 0);
 
           ImGui::Checkbox("Always Lit Bonfire", &Menu::Config.bAlwaysLitBonfire);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Still Experimental, need to verified if the fire not extinguished");
+
           ImGui::Checkbox("Free Ash Upgrade", &Menu::Config.bFreeAshUpgrade);
           ImGui::Checkbox("Free Sacrifice Cost", &Menu::Config.bFreeSacrificeCost);
 

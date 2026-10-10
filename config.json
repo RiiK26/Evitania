@@ -169,6 +169,23 @@
 			"signature": "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00",
 			"extract": {}
 		},
+		"HourglassSystemUI_BuildTalentTooltipContent": {
+			"signature": "40 53 56 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B F2 48 8B D9",
+			"extract": {}
+		},
+		"HourglassTalentConfig_get_Cost": {
+			"signature": "F2 0F 10 41 48 C3 CC CC",
+			"extract": {
+				"cost": {
+					"instr_idx": 0,
+					"op_idx": 1
+				}
+			}
+		},
+		"HourglassTalentNodeView_SetState": {
+			"signature": "40 53 55 56 57 48 83 EC 28 80 3D ? ? ? ? 00 0F B6 FA 41 0F B6 F1",
+			"extract": {}
+		},
 		"HourglassUpgradeItem_GetCost": {
 			"signature": "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 0F 29 74 24 40",
 			"extract": {}
