@@ -69,3 +69,9 @@ namespace Features
     void Uninitialize() { }
   }  // namespace SpeedHack
 }  // namespace Features
+```
+
+### Gotchas / Known Quirks
+- **Property Setters vs Array Removals**: When trying to hook item consumption (e.g. Infinite Items), intercepting the property setter (like `ItemDetail::set_Amount`) is often **insufficient**. The game logic often completely destroys/removes the object from the inventory array for consumables or full-stack uses by calling higher-level manager methods like `BaseStorageService::Remove` or `BaseStorageService::TryRemove`. Hook these root array managers to properly prevent removals.
+- **Backing Fields in Regex**: In `build_sig_db.py` and `aobgenerator.py`, we extract field offsets via Capstone. Many unity fields are compiler-generated backing fields containing angle brackets (e.g., `<Amount>k__BackingField`). Our Python scripts have been updated to support `[a-zA-Z0-9_<>]+` in regex to correctly parse them. Do NOT regress this regex support if you edit the scripts.
+- **Centralizing Offsets**: Never hardcode hex offsets in hooks (like `0x18`). ALWAYS extract them dynamically via `build_sig_db.py`'s extraction rules and place them in `Offsets.hpp`.

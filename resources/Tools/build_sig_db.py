@@ -103,7 +103,7 @@ def get_offsets():
         r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract|override|virtual)\s+)*.*?\s+(\w+|[a-zA-Z0-9_]+)\s*\("
     )
     field_regex = re.compile(
-        r"^\s*(?:(?:public|private|protected|internal|static|readonly|const|volatile)\s+)*.*?\s+(\w+|[a-zA-Z0-9_]+);\s*//\s*0x([0-9A-Fa-f]+)"
+        r"^\s*(?:(?:public|private|protected|internal|static|readonly|const|volatile)\s+)*.*?\s+([<>\w]+|[a-zA-Z0-9_]+);\s*//\s*0x([0-9A-Fa-f]+)"
     )
 
     for i, line in enumerate(lines):
@@ -267,6 +267,15 @@ def main():
         ),
         ("Time", "set_timeScale", 0, []),
         ("TimeskipItem", "get_CanUseImpl", 0, []),
+        (
+            "ItemDetail",
+            "get_Amount",
+            0,
+            [("itemAmount", "<Amount>k__BackingField", "ItemDetail")],
+        ),
+        ("BaseStorageService", "Remove", 0, []),
+        ("BaseStorageService", "TryRemove", 0, []),
+        ("BaseStorageService", "TryRemoveMany", 0, []),
         ("HourglassService", "CostFactor", 0, []),
         ("HourglassService", "UpgradeCost", 0, []),
         ("HourglassService", "LevelCost", 0, []),
@@ -335,20 +344,25 @@ def main():
                 )
 
                 extract_rules = {}
-                for field_name, field_cls in fields_to_extract:
+                for field_tuple in fields_to_extract:
+                    if len(field_tuple) == 2:
+                        output_name, field_cls = field_tuple
+                        field_name = output_name
+                    else:
+                        output_name, field_name, field_cls = field_tuple
+
                     offset = (
                         class_data.get(field_cls, {}).get("fields", {}).get(field_name)
                     )
                     if offset is not None:
                         idx, op_idx = find_usage(pe, pe_data, md, rva, offset)
                         if idx is not None:
-                            extract_rules[field_name] = {
+                            extract_rules[output_name] = {
                                 "instr_idx": idx,
                                 "op_idx": op_idx,
                             }
                         else:
-                            # Fallback: Just record the hardcoded offset for fields we can't find via Capstone
-                            extract_rules[field_name] = {"hardcoded": offset}
+                            extract_rules[output_name] = {"hardcoded": offset}
 
                 sig_db[method_key] = {"signature": sig, "extract": extract_rules}
                 print(f"[+] Added {method_key} to database")

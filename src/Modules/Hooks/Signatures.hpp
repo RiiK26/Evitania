@@ -46,6 +46,15 @@ namespace Signatures
   constexpr const char* AttackReceiver_Recieve =
     "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 5B 48 8D 0D ? ? ? ?";
 
+  // 0x6E3B60
+  constexpr const char* BaseStorageService_Remove =
+    "48 89 4C 24 08 53 56 57 41 54 41 56 41 57 48 83 EC 68 4D 8B F0 48 8B DA";
+
+  // 0x6E4510
+  constexpr const char* BaseStorageService_TryRemove =
+    "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B D8 48 8B FA 48 8B F1 75 1F 48 8D 0D ? ? ? ? "
+    "E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00";
+
   // 0xA035E0
   constexpr const char* BonfireFuelBurner_get_Fuel = "48 83 EC 28 48 8B 41 18 48 85 C0 74 0A F3 0F 10 40 14";
 
@@ -179,6 +188,9 @@ namespace Signatures
   // 0x8D6B50
   constexpr const char* IAPRewarder_Reward =
     "48 89 5C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 20 80 3D ? ? ? ? 00 45 0F B6 F1";
+
+  // 0x656980
+  constexpr const char* ItemDetail_get_Amount = "48 8B 41 18 C3 CC CC CC CC CC CC CC CC CC CC CC F3 0F 11 44 24 08";
 
   // 0x77DD10
   constexpr const char* MarketLotScriptableObject_CurrentPrice =
