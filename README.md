@@ -70,16 +70,26 @@ You can pass arguments to customize the build:
 
 | Flag | Description |
 | :--- | :--- |
-| `clean` | Builds with debug symbols (`RelWithDebInfo`) and unstripped binaries for development/debugging. |
+| `release` | (Default) Builds optimized and stripped binaries into `build/release/`. |
+| `clean` | Builds clean binaries with debug symbols and full optimization (`RelWithDebInfo`) into `build/relwithdebinfo/`. |
+| `debug` | Builds unoptimized binaries with debug symbols (`Debug`) into `build/debug/`. |
 | `no-injector` | Skips building `injector.exe`, only compiling the mod DLL. |
 
 **Examples:**
 ```bash
-# Build with debug symbols and skip injector
+# Build clean binary with debug symbols (outputs to build/relwithdebinfo/)
 ./scripts/build clean no-injector
 
-# Windows equivalent
+# Build unoptimized debug binary (outputs to build/debug/)
+./scripts/build debug
+
+# Build optimized release binary (outputs to build/release/)
+./scripts/build release
+
+# Windows equivalents
 scripts\build clean no-injector
+scripts\build debug
+scripts\build release
 ```
 
 ---
@@ -91,11 +101,22 @@ If you prefer building manually without the wrapper script:
 #### Linux (Cross-Compiling for Windows via MinGW)
 ```bash
 mkdir -p build && cd build
+
+# Release build (outputs to build/release/)
 cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_SYSTEM_NAME=Windows \
   -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
   -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
   -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres
+cmake --build . -j$(nproc)
+
+# Clean / RelWithDebInfo build (outputs to build/relwithdebinfo/)
+cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake --build . -j$(nproc)
+
+# Pure Debug build (outputs to build/debug/)
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 cmake --build . -j$(nproc)
 ```
 
@@ -104,14 +125,32 @@ cmake --build . -j$(nproc)
 mkdir build
 cd build
 cmake ..
+
+:: Release build (outputs to build\release\)
 cmake --build . --config Release -j %NUMBER_OF_PROCESSORS%
+
+:: Clean / RelWithDebInfo build (outputs to build\relwithdebinfo\)
+cmake --build . --config RelWithDebInfo -j %NUMBER_OF_PROCESSORS%
+
+:: Debug build (outputs to build\debug\)
+cmake --build . --config Debug -j %NUMBER_OF_PROCESSORS%
 ```
 
 #### Windows (MinGW-w64)
 ```cmd
 mkdir build
 cd build
+
+:: Release build
 cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . -j %NUMBER_OF_PROCESSORS%
+
+:: Clean / RelWithDebInfo build
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+cmake --build . -j %NUMBER_OF_PROCESSORS%
+
+:: Debug build
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
 cmake --build . -j %NUMBER_OF_PROCESSORS%
 ```
 
@@ -119,16 +158,27 @@ cmake --build . -j %NUMBER_OF_PROCESSORS%
 
 | Option | Default | Description |
 | :--- | :--- | :--- |
-| `-DBUILD_CLEAN=ON\|OFF` | `OFF` | Build with symbols (`RelWithDebInfo`) instead of stripped `Release`. |
+| `-DCMAKE_BUILD_TYPE=Release\|RelWithDebInfo\|Debug` | `Release` | Target configuration type. |
+| `-DBUILD_CLEAN=ON\|OFF` | `OFF` | Build clean binary with symbols (`RelWithDebInfo`) instead of stripped `Release`. |
 | `-DBUILD_INJECTOR=ON\|OFF` | `ON` | Build the standalone injector executable (`injector.exe`). |
 
 ---
 
 ### Output Binaries
 
-All build targets are placed in the `build/release/` directory:
-- `Evitania v<version>.dll` — The main mod library.
-- `injector.exe` — Standalone DLL injector (if enabled).
+All build targets are automatically placed into their respective configuration directory:
+
+- **Release (`build/release/`)**:
+  - `Evitania v<version>.dll` — Optimized and stripped mod library.
+  - `injector.exe` — Standalone DLL injector (if enabled).
+
+- **Clean / RelWithDebInfo (`build/relwithdebinfo/`)**:
+  - `Evitania v<version>.dll` — Optimized mod library with full debug symbols.
+  - `injector.exe` — Standalone DLL injector with symbols (if enabled).
+
+- **Debug (`build/debug/`)**:
+  - `Evitania v<version>.dll` — Unoptimized mod library with full debug symbols.
+  - `injector.exe` — Standalone DLL injector with debug symbols (if enabled).
 
 ---
 

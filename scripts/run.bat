@@ -19,6 +19,18 @@ if defined DLL_PATH if exist "%SCRIPT_DIR%..\build\release\injector.exe" (
     goto found_dll
 )
 
+for %%F in ("%SCRIPT_DIR%..\build\relwithdebinfo\*.dll") do set "DLL_PATH=%%F"
+if defined DLL_PATH if exist "%SCRIPT_DIR%..\build\relwithdebinfo\injector.exe" (
+    set "INJECTOR_EXE=%SCRIPT_DIR%..\build\relwithdebinfo\injector.exe"
+    goto found_dll
+)
+
+for %%F in ("%SCRIPT_DIR%..\build\debug\*.dll") do set "DLL_PATH=%%F"
+if defined DLL_PATH if exist "%SCRIPT_DIR%..\build\debug\injector.exe" (
+    set "INJECTOR_EXE=%SCRIPT_DIR%..\build\debug\injector.exe"
+    goto found_dll
+)
+
 echo Error: Could not find any .dll and injector.exe
 pause
 exit /b 1
