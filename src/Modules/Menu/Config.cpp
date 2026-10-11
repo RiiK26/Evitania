@@ -99,6 +99,16 @@ namespace Menu
             bForceCurioRarity = (value == "1");
           else if (key == "curio_rarity")
             iCurioRarity = std::stoi(value);
+          else if (key == "stage_hopper_loop")
+            bStageHopperLoop = (value == "1");
+          else if (key == "stage_hopper_delay")
+            fStageHopperDelay = SafeParseFloat(value, fStageHopperDelay);
+          else if (key == "stage_hopper_target") {
+            snprintf(szStageHopperTarget, sizeof(szStageHopperTarget), "%s", value.c_str());
+          }
+          else if (key == "stage_hopper_start") {
+            snprintf(szStageHopperStart, sizeof(szStageHopperStart), "%s", value.c_str());
+          }
         }
       }
     }
@@ -136,6 +146,10 @@ namespace Menu
     out << "free_sacrifice_cost=" << (bFreeSacrificeCost ? "1" : "0") << "\n";
     out << "force_curio_rarity=" << (bForceCurioRarity ? "1" : "0") << "\n";
     out << "curio_rarity=" << iCurioRarity << "\n";
+    out << "stage_hopper_loop=" << (bStageHopperLoop ? "1" : "0") << "\n";
+    out << "stage_hopper_delay=" << fStageHopperDelay << "\n";
+    out << "stage_hopper_target=" << szStageHopperTarget << "\n";
+    out << "stage_hopper_start=" << szStageHopperStart << "\n";
   }
 
 }  // namespace Menu

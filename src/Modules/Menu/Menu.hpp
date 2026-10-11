@@ -34,6 +34,10 @@ namespace Menu
     bool  bAlwaysLitBonfire       = false;
     bool  bFreeAshUpgrade         = false;
     bool  bFreeSacrificeCost      = false;
+    bool  bStageHopperLoop        = false;
+    float fStageHopperDelay       = 5.0f;
+    char  szStageHopperTarget[32] = "1.0";
+    char  szStageHopperStart[32]  = "1.0";
 
     void LoadConfig();
     void SaveConfig();

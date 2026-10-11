@@ -14,6 +14,7 @@
 #include "../../Features/Engineer/EngineerHacks.hpp"
 #include "../../Features/Hunter/HunterHacks.hpp"
 #include "../../Features/Bonfire/Bonfire.hpp"
+#include "../../Features/Player/StageHopper.hpp"
 
 #include "MinHook.h"
 
@@ -41,11 +42,13 @@ void Hooks::Initialize()
   Features::EngineerHacks::Initialize();
   Features::HunterHacks::Initialize();
   Features::Bonfire::Initialize();
+  Features::StageHopper::Initialize();
 }
 
 void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
+  Features::StageHopper::Uninitialize();
   Features::Bonfire::Uninitialize();
   Features::EngineerHacks::Uninitialize();
   Features::CurioHacks::Uninitialize();

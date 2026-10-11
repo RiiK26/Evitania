@@ -350,6 +350,8 @@ def main():
         ("ShopSpendingService", "CanSpend", 0, []),
         ("ShopSpendingService", "Spend", 0, []),
         ("EnhancementTreeUI", "Buy", 0, []),
+        ("PositionerService", "TryChangeScene", 0, []),
+        ("MapUi", "UpdatePlayerLocation", 0, []),
     ]
 
     sig_db = {}

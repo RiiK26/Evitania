@@ -207,6 +207,11 @@ namespace Signatures
   // 0x656980
   constexpr const char* ItemDetail_get_Amount = "48 8B 41 18 C3 CC CC CC CC CC CC CC CC CC CC CC F3 0F 11 44 24 08";
 
+  // 0xB36730
+  constexpr const char* MapUi_UpdatePlayerLocation =
+    "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? "
+    "? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 8B 08 01 00 00";
+
   // 0x77DD10
   constexpr const char* MarketLotScriptableObject_CurrentPrice =
     "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 7F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 "
@@ -256,6 +261,10 @@ namespace Signatures
   // 0x7F9E70
   constexpr const char* PlayerDataStorageService_FireAccountMismatchAnalytics =
     "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 49 8B D8 48 8B F2 48 8B F9 75 43";
+
+  // 0x7C6650
+  constexpr const char* PositionerService_TryChangeScene =
+    "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 41 0F B6 F8 48 8B F2 48 8B D9 75 1F";
 
   // 0x9AA9B0
   constexpr const char* RealmAttackReceiver_Recieve =
