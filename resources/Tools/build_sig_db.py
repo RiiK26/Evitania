@@ -251,7 +251,6 @@ def main():
         ("BossBase", "Update", 0, []),
         ("WorldElite", "Update", 0, []),
         ("YellowDragonBoss", "Update", 0, []),
-        ("BlueDragonBoss", "Update", 0, []),
         ("AttackReceiver", "Recieve", 0, [("AttackDamage", "Attack")]),
         ("RealmAttackReceiver", "Recieve", 0, []),
         ("EasterAttackReceiver", "Recieve", 0, []),

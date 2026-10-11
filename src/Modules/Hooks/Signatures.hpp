@@ -70,9 +70,6 @@ namespace Signatures
     "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B D8 48 8B FA 48 8B F1 75 1F 48 8D 0D ? ? ? ? "
     "E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00";
 
-  // 0xA87730
-  constexpr const char* BlueDragonBoss_Update = "40 53 48 83 EC 30 33 D2 48 8B D9 E8 ? ? ? ? 80 7B 3C 00";
-
   // 0xA035E0
   constexpr const char* BonfireFuelBurner_get_Fuel = "48 83 EC 28 48 8B 41 18 48 85 C0 74 0A F3 0F 10 40 14";
 
