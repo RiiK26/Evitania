@@ -95,7 +95,7 @@ namespace Menu
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Use float number. the number before dot are the act, after dot is a stage");
+            ImGui::SetTooltip("use current position for a hint where do you want to go");
           }
           ImGui::InputText("##HopperTargetInput", Config.szStageHopperTarget, sizeof(Config.szStageHopperTarget));
 
