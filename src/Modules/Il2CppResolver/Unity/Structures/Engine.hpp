@@ -44,14 +44,14 @@ namespace Unity
     {
       float m_fDeg2Rad = static_cast<float>(M_PI) / 180.f;
 
-      float m_fSinX = sinf(x * m_fDeg2Rad);
-      float m_fCosX = cosf(x * m_fDeg2Rad);
+      float m_fSinX    = sinf(x * m_fDeg2Rad);
+      float m_fCosX    = cosf(x * m_fDeg2Rad);
 
-      float m_fSinY = sinf(y * m_fDeg2Rad);
-      float m_fCosY = cosf(y * m_fDeg2Rad);
+      float m_fSinY    = sinf(y * m_fDeg2Rad);
+      float m_fCosY    = cosf(y * m_fDeg2Rad);
 
-      float m_fSinZ = sinf(z * m_fDeg2Rad);
-      float m_fCosZ = cosf(z * m_fDeg2Rad);
+      float m_fSinZ    = sinf(z * m_fDeg2Rad);
+      float m_fCosZ    = cosf(z * m_fDeg2Rad);
 
       if (m_pForward) {
         m_pForward->x = m_fCosX * m_fCosY;
@@ -104,23 +104,23 @@ namespace Unity
     {
       float m_fDeg2Rad = static_cast<float>(M_PI) / 180.f;
 
-      m_fX = m_fX * m_fDeg2Rad * 0.5f;
-      m_fY = m_fY * m_fDeg2Rad * 0.5f;
-      m_fZ = m_fZ * m_fDeg2Rad * 0.5f;
+      m_fX             = m_fX * m_fDeg2Rad * 0.5f;
+      m_fY             = m_fY * m_fDeg2Rad * 0.5f;
+      m_fZ             = m_fZ * m_fDeg2Rad * 0.5f;
 
-      float m_fSinX = sinf(m_fX);
-      float m_fCosX = cosf(m_fX);
+      float m_fSinX    = sinf(m_fX);
+      float m_fCosX    = cosf(m_fX);
 
-      float m_fSinY = sinf(m_fY);
-      float m_fCosY = cosf(m_fY);
+      float m_fSinY    = sinf(m_fY);
+      float m_fCosY    = cosf(m_fY);
 
-      float m_fSinZ = sinf(m_fZ);
-      float m_fCosZ = cosf(m_fZ);
+      float m_fSinZ    = sinf(m_fZ);
+      float m_fCosZ    = cosf(m_fZ);
 
-      x = m_fCosY * m_fSinX * m_fCosZ + m_fSinY * m_fCosX * m_fSinZ;
-      y = m_fSinY * m_fCosX * m_fCosZ - m_fCosY * m_fSinX * m_fSinZ;
-      z = m_fCosY * m_fCosX * m_fSinZ - m_fSinY * m_fSinX * m_fCosZ;
-      w = m_fCosY * m_fCosX * m_fCosZ + m_fSinY * m_fSinX * m_fSinZ;
+      x                = m_fCosY * m_fSinX * m_fCosZ + m_fSinY * m_fCosX * m_fSinZ;
+      y                = m_fSinY * m_fCosX * m_fCosZ - m_fCosY * m_fSinX * m_fSinZ;
+      z                = m_fCosY * m_fCosX * m_fSinZ - m_fSinY * m_fSinX * m_fCosZ;
+      w                = m_fCosY * m_fCosX * m_fCosZ + m_fSinY * m_fSinX * m_fSinZ;
 
       return *this;
     }

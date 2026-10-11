@@ -4,20 +4,20 @@ namespace Unity
 {
   struct ApplicationFunctions_t
   {
-    void* m_GetTargetFrameRate = nullptr;
-    void* m_SetTargetFrameRate = nullptr;
-    void* m_GetIsFocused       = nullptr;
+    void* m_GetTargetFrameRate     = nullptr;
+    void* m_SetTargetFrameRate     = nullptr;
+    void* m_GetIsFocused           = nullptr;
 
     void* m_GetDataPath            = nullptr;
     void* m_GetPersistentDataPath  = nullptr;
     void* m_GetStreamingAssetsPath = nullptr;
 
-    void* m_GetProductName  = nullptr;
-    void* m_GetIdentifier   = nullptr;
-    void* m_GetUnityVersion = nullptr;
+    void* m_GetProductName         = nullptr;
+    void* m_GetIdentifier          = nullptr;
+    void* m_GetUnityVersion        = nullptr;
 
-    void* m_Quit              = nullptr;
-    bool  m_QuitTakesExitCode = false;
+    void* m_Quit                   = nullptr;
+    bool  m_QuitTakesExitCode      = false;
   };
   inline ApplicationFunctions_t m_ApplicationFunctions;
 

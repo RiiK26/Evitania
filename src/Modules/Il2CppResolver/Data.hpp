@@ -23,30 +23,30 @@ namespace IL2CPP
     void* m_ClassGetPropertyFromName = nullptr;
     void* m_ClassGetType             = nullptr;
 
-    void* m_DomainGet           = nullptr;
-    void* m_DomainGetAssemblies = nullptr;
+    void* m_DomainGet                = nullptr;
+    void* m_DomainGetAssemblies      = nullptr;
 
-    void* m_Free = nullptr;
+    void* m_Free                     = nullptr;
 
-    void* m_ImageGetClass      = nullptr;
-    void* m_ImageGetClassCount = nullptr;
+    void* m_ImageGetClass            = nullptr;
+    void* m_ImageGetClassCount       = nullptr;
 
-    void* m_ResolveFunction = nullptr;
+    void* m_ResolveFunction          = nullptr;
 
-    void* m_StringNew = nullptr;
+    void* m_StringNew                = nullptr;
 
-    void* m_ThreadAttach = nullptr;
-    void* m_ThreadDetach = nullptr;
+    void* m_ThreadAttach             = nullptr;
+    void* m_ThreadDetach             = nullptr;
 
-    void* m_TypeGetObject = nullptr;
+    void* m_TypeGetObject            = nullptr;
 
-    void* m_pObjectNew          = nullptr;
-    void* m_MethodGetParamName  = nullptr;
-    void* m_MethodGetParam      = nullptr;
-    void* m_ClassFromIl2cppType = nullptr;
+    void* m_pObjectNew               = nullptr;
+    void* m_MethodGetParamName       = nullptr;
+    void* m_MethodGetParam           = nullptr;
+    void* m_ClassFromIl2cppType      = nullptr;
 
-    void* m_FieldStaticGetValue = nullptr;
-    void* m_FieldStaticSetValue = nullptr;
+    void* m_FieldStaticGetValue      = nullptr;
+    void* m_FieldStaticSetValue      = nullptr;
   };
   inline Functions_t Functions;
 }  // namespace IL2CPP

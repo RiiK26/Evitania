@@ -7,16 +7,16 @@ namespace Unity
     void* m_GetDeltaTime         = nullptr;
     void* m_GetUnscaledDeltaTime = nullptr;
 
-    void* m_GetTime         = nullptr;
-    void* m_GetUnscaledTime = nullptr;
+    void* m_GetTime              = nullptr;
+    void* m_GetUnscaledTime      = nullptr;
 
-    void* m_GetFixedDeltaTime = nullptr;
-    void* m_SetFixedDeltaTime = nullptr;
+    void* m_GetFixedDeltaTime    = nullptr;
+    void* m_SetFixedDeltaTime    = nullptr;
 
-    void* m_GetTimeScale = nullptr;
-    void* m_SetTimeScale = nullptr;
+    void* m_GetTimeScale         = nullptr;
+    void* m_SetTimeScale         = nullptr;
 
-    void* m_GetFrameCount = nullptr;
+    void* m_GetFrameCount        = nullptr;
   };
   inline TimeFunctions_t m_TimeFunctions;
 

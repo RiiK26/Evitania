@@ -86,7 +86,7 @@ namespace IL2CPP
       m_Context->m_OnStart = m_OnStartFunc;
       m_Context->m_OnEnd   = m_OnEndFunc;
 
-      HANDLE m_Thread = CreateThread(nullptr, 0, Handler, m_Context, 0, nullptr);
+      HANDLE m_Thread      = CreateThread(nullptr, 0, Handler, m_Context, 0, nullptr);
       if (m_Thread) {
         CloseHandle(m_Thread);
         return true;

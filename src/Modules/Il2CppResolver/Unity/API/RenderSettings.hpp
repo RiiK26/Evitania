@@ -4,24 +4,24 @@ namespace Unity
 {
   struct RenderSettingsFunctions_t
   {
-    void* m_GetFog = nullptr;
-    void* m_SetFog = nullptr;
+    void* m_GetFog                   = nullptr;
+    void* m_SetFog                   = nullptr;
 
-    void* m_GetFogColor_Value    = nullptr;
-    void* m_GetFogColor_Injected = nullptr;
-    void* m_SetFogColor_Value    = nullptr;
-    void* m_SetFogColor_Injected = nullptr;
+    void* m_GetFogColor_Value        = nullptr;
+    void* m_GetFogColor_Injected     = nullptr;
+    void* m_SetFogColor_Value        = nullptr;
+    void* m_SetFogColor_Injected     = nullptr;
 
     void* m_GetAmbientLight_Value    = nullptr;
     void* m_GetAmbientLight_Injected = nullptr;
     void* m_SetAmbientLight_Value    = nullptr;
     void* m_SetAmbientLight_Injected = nullptr;
 
-    void* m_GetSkybox = nullptr;
-    void* m_SetSkybox = nullptr;
+    void* m_GetSkybox                = nullptr;
+    void* m_SetSkybox                = nullptr;
 
-    void* m_GetSun = nullptr;
-    void* m_SetSun = nullptr;
+    void* m_GetSun                   = nullptr;
+    void* m_SetSun                   = nullptr;
   };
   inline RenderSettingsFunctions_t m_RenderSettingsFunctions;
 

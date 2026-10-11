@@ -9,15 +9,15 @@ namespace Unity
     void* m_SetDetectCollisions           = nullptr;
     bool  m_SetDetectCollisions_ThisIsPtr = false;
 
-    void* m_GetVelocity_Injected       = nullptr;
-    bool  m_GetVelocity_ThisIsPtr      = false;
-    void* m_GetVelocity_Value          = nullptr;
-    bool  m_GetVelocityValue_ThisIsPtr = false;
+    void* m_GetVelocity_Injected          = nullptr;
+    bool  m_GetVelocity_ThisIsPtr         = false;
+    void* m_GetVelocity_Value             = nullptr;
+    bool  m_GetVelocityValue_ThisIsPtr    = false;
 
-    void* m_SetVelocity_Injected       = nullptr;
-    bool  m_SetVelocity_ThisIsPtr      = false;
-    void* m_SetVelocity_Value          = nullptr;
-    bool  m_SetVelocityValue_ThisIsPtr = false;
+    void* m_SetVelocity_Injected          = nullptr;
+    bool  m_SetVelocity_ThisIsPtr         = false;
+    void* m_SetVelocity_Value             = nullptr;
+    bool  m_SetVelocityValue_ThisIsPtr    = false;
   };
   inline RigidbodyFunctions_t m_RigidbodyFunctions;
 

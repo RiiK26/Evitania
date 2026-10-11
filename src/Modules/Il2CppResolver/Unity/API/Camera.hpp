@@ -3,13 +3,13 @@ namespace Unity
 {
   struct CameraFunctions_t
   {
-    void* m_GetCurrent = nullptr;
-    void* m_GetMain    = nullptr;
+    void* m_GetCurrent               = nullptr;
+    void* m_GetMain                  = nullptr;
 
-    void* m_GetDepth           = nullptr;
-    bool  m_GetDepth_ThisIsPtr = false;
-    void* m_SetDepth           = nullptr;
-    bool  m_SetDepth_ThisIsPtr = false;
+    void* m_GetDepth                 = nullptr;
+    bool  m_GetDepth_ThisIsPtr       = false;
+    void* m_SetDepth                 = nullptr;
+    bool  m_SetDepth_ThisIsPtr       = false;
 
     void* m_GetFieldOfView           = nullptr;
     bool  m_GetFieldOfView_ThisIsPtr = false;

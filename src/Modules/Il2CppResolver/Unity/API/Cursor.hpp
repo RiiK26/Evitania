@@ -4,8 +4,8 @@ namespace Unity
 {
   struct CursorFunctions_t
   {
-    void* m_GetVisible = nullptr;
-    void* m_SetVisible = nullptr;
+    void* m_GetVisible   = nullptr;
+    void* m_SetVisible   = nullptr;
 
     void* m_GetLockState = nullptr;
     void* m_SetLockState = nullptr;

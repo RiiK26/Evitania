@@ -16,46 +16,46 @@ namespace Unity
     bool  m_FindChild_ThisIsPtr     = false;
 
     // Vector/Quat getters: we support injected(out) and value-return fallbacks
-    void* m_GetPosition_Injected       = nullptr;
-    bool  m_GetPosition_ThisIsPtr      = false;
-    void* m_GetPosition_Value          = nullptr;
-    bool  m_GetPositionValue_ThisIsPtr = false;
+    void* m_GetPosition_Injected            = nullptr;
+    bool  m_GetPosition_ThisIsPtr           = false;
+    void* m_GetPosition_Value               = nullptr;
+    bool  m_GetPositionValue_ThisIsPtr      = false;
 
-    void* m_GetRotation_Injected       = nullptr;
-    bool  m_GetRotation_ThisIsPtr      = false;
-    void* m_GetRotation_Value          = nullptr;
-    bool  m_GetRotationValue_ThisIsPtr = false;
+    void* m_GetRotation_Injected            = nullptr;
+    bool  m_GetRotation_ThisIsPtr           = false;
+    void* m_GetRotation_Value               = nullptr;
+    bool  m_GetRotationValue_ThisIsPtr      = false;
 
     void* m_GetLocalPosition_Injected       = nullptr;
     bool  m_GetLocalPosition_ThisIsPtr      = false;
     void* m_GetLocalPosition_Value          = nullptr;
     bool  m_GetLocalPositionValue_ThisIsPtr = false;
 
-    void* m_GetLocalScale_Injected       = nullptr;
-    bool  m_GetLocalScale_ThisIsPtr      = false;
-    void* m_GetLocalScale_Value          = nullptr;
-    bool  m_GetLocalScaleValue_ThisIsPtr = false;
+    void* m_GetLocalScale_Injected          = nullptr;
+    bool  m_GetLocalScale_ThisIsPtr         = false;
+    void* m_GetLocalScale_Value             = nullptr;
+    bool  m_GetLocalScaleValue_ThisIsPtr    = false;
 
     // Setters: support injected(ref) and by-value
-    void* m_SetPosition_Injected       = nullptr;
-    bool  m_SetPosition_ThisIsPtr      = false;
-    void* m_SetPosition_Value          = nullptr;
-    bool  m_SetPositionValue_ThisIsPtr = false;
+    void* m_SetPosition_Injected            = nullptr;
+    bool  m_SetPosition_ThisIsPtr           = false;
+    void* m_SetPosition_Value               = nullptr;
+    bool  m_SetPositionValue_ThisIsPtr      = false;
 
-    void* m_SetRotation_Injected       = nullptr;
-    bool  m_SetRotation_ThisIsPtr      = false;
-    void* m_SetRotation_Value          = nullptr;
-    bool  m_SetRotationValue_ThisIsPtr = false;
+    void* m_SetRotation_Injected            = nullptr;
+    bool  m_SetRotation_ThisIsPtr           = false;
+    void* m_SetRotation_Value               = nullptr;
+    bool  m_SetRotationValue_ThisIsPtr      = false;
 
     void* m_SetLocalPosition_Injected       = nullptr;
     bool  m_SetLocalPosition_ThisIsPtr      = false;
     void* m_SetLocalPosition_Value          = nullptr;
     bool  m_SetLocalPositionValue_ThisIsPtr = false;
 
-    void* m_SetLocalScale_Injected       = nullptr;
-    bool  m_SetLocalScale_ThisIsPtr      = false;
-    void* m_SetLocalScale_Value          = nullptr;
-    bool  m_SetLocalScaleValue_ThisIsPtr = false;
+    void* m_SetLocalScale_Injected          = nullptr;
+    bool  m_SetLocalScale_ThisIsPtr         = false;
+    void* m_SetLocalScale_Value             = nullptr;
+    bool  m_SetLocalScaleValue_ThisIsPtr    = false;
   };
   inline TransformFunctions_t m_TransformFunctions;
 

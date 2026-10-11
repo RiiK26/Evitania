@@ -4,17 +4,17 @@ namespace Unity
 {
   struct InputFunctions_t
   {
-    void* m_GetAxis    = nullptr;
-    void* m_GetAxisRaw = nullptr;
+    void* m_GetAxis                   = nullptr;
+    void* m_GetAxisRaw                = nullptr;
 
-    void* m_GetMouseButton     = nullptr;
-    void* m_GetMouseButtonDown = nullptr;
-    void* m_GetMouseButtonUp   = nullptr;
+    void* m_GetMouseButton            = nullptr;
+    void* m_GetMouseButtonDown        = nullptr;
+    void* m_GetMouseButtonUp          = nullptr;
 
     void* m_GetMousePosition_Injected = nullptr;
     void* m_GetMousePosition_Value    = nullptr;
 
-    void* m_GetTouchCount = nullptr;
+    void* m_GetTouchCount             = nullptr;
   };
   inline InputFunctions_t m_InputFunctions;
 

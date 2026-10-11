@@ -121,7 +121,7 @@ namespace IL2CPP
 {
   namespace UnityAPI
   {
-    using ExportResolverCallback_t = void* (*) (HMODULE, const char*);
+    using ExportResolverCallback_t = void* (*)(HMODULE, const char*);
 
     enum m_eExportObfuscationType
     {

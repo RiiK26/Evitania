@@ -26,7 +26,7 @@ namespace Unity
 
     inline TKey GetKeyByIndex(int iIndex)
     {
-      TKey tKey = {0};
+      TKey tKey     = {0};
 
       Entry* pEntry = GetEntry();
       if (pEntry && iIndex >= 0 && iIndex < m_iCount)

@@ -5,9 +5,9 @@ namespace Unity
   template<typename T>
   struct il2cppArray: il2cppObject
   {
-    using value_type     = T;
-    using iterator       = T*;
-    using const_iterator = const T*;
+    using value_type                = T;
+    using iterator                  = T*;
+    using const_iterator            = const T*;
 
     il2cppArrayBounds* m_pBounds    = nullptr;
     uintptr_t          m_uMaxLength = 0;

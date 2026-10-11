@@ -374,8 +374,8 @@ namespace Unity
         6, "GetComponentsInternal_Injected", 7, {IL2CPP_RStr(UNITY_GAMEOBJECT_CLASS "::GetComponentsInternal")},
         {UNITY_GAMEOBJECT_GETCOMPONENTS, IL2CPP_RStr(UNITY_GAMEOBJECT_CLASS "::GetComponentsInternal_Injected"),
          IL2CPP_RStr(
-           UNITY_GAMEOBJECT_CLASS
-           "::GetComponentsInternal_Injected(System.IntPtr,System.Type,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Object)"
+           UNITY_GAMEOBJECT_CLASS "::GetComponentsInternal_Injected(System.IntPtr,System.Type,System.Boolean,System."
+                                  "Boolean,System.Boolean,System.Boolean,System.Object)"
          )}
       );
 
