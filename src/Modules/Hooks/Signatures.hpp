@@ -2,6 +2,12 @@
 
 namespace Signatures
 {
+  // 0xAA5B60
+  constexpr const char* ACTkDetectorBase_InvokeCheatingDetectedEvent = "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28";
+
+  // 0x2332ED0
+  constexpr const char* ACTkDetectorBase_OnCheatingDetected = "40 53 48 83 EC 20 48 8B D9 C6 41 48 01";
+
   // 0x8638C0
   constexpr const char* AntiCheatService_Apply =
     "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? "
@@ -16,6 +22,12 @@ namespace Signatures
     "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F1 75 5B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D "
     "? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? "
     "? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ?";
+
+  // 0x863F90
+  constexpr const char* AntiCheatService_OnDataLoaded =
+    "48 89 5C 24 10 48 89 4C 24 08 57 48 81 EC ? ? ? ? 48 8B F9 80 3D ? ? ? ? 00 75 43 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 "
+    "8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 "
+    "05 ? ? ? ? 01 0F 57 C0 0F 11 44 24 60";
 
   // 0x864110
   constexpr const char* AntiCheatService_OnObscuredCheatingDetected =
@@ -36,6 +48,9 @@ namespace Signatures
   // 0x8643B0
   constexpr const char* AntiCheatService_ReportCheatToAnalytics =
     "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA 48 8B F1 0F 85 ? ? ? ?";
+
+  // 0x864650
+  constexpr const char* AntiCheatService_SetFlag = "48 83 EC 28 85 D2 74 3D";
 
   // 0xA9F720
   constexpr const char* AttackReceiver_Awake =
@@ -204,6 +219,9 @@ namespace Signatures
   constexpr const char* MarketLot_GetCurrentPrice =
     "48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F9 0F 29 74 24 20 0F 28 F1 75 7F 48 8D 0D ? ? ? ?";
 
+  // 0x6CBDE0
+  constexpr const char* MetaModel_get_IsCheater = "80 79 38 00 75 17 80 79 39 00";
+
   // 0x8583B0
   constexpr const char* MobilePurchaseService_InitiatePurchase =
     "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? "
@@ -213,9 +231,31 @@ namespace Signatures
   constexpr const char* MovementControl_Move =
     "40 53 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B D9 0F 29 BC 24 E0 00 00 00";
 
+  // 0x682290
+  constexpr const char* ObscuredCheatingDetector_OnCheatingDetected =
+    "40 53 55 56 41 56 48 83 EC 28 80 3D ? ? ? ? 00 49 8B F1 49 8B E8 48 8B DA 4C 8B F1";
+
+  // 0x682360
+  constexpr const char* ObscuredCheatingDetector_OnCheatingDetected_1 =
+    "40 53 55 56 41 56 48 83 EC 28 80 3D ? ? ? ? 00 49 8B F1 41 0F B6 E8";
+
+  // 0x66ADC0
+  constexpr const char* ObscuredFilePrefs_OnDataFromAnotherDeviceDetected =
+    "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 "
+    "00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 4C 8B 40 08";
+
+  // 0x66AE30
+  constexpr const char* ObscuredFilePrefs_OnNotGenuineDataDetected =
+    "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 "
+    "00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 4C 8B 00";
+
   // 0x8740A0
   constexpr const char* PlayerCharacter_TakeDamage = "48 83 EC 38 80 3D ? ? ? ? 00 0F 29 74 24 20 0F 28 F1 75 13 48 8D "
                                                      "0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ?";
+
+  // 0x7F9E70
+  constexpr const char* PlayerDataStorageService_FireAccountMismatchAnalytics =
+    "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 49 8B D8 48 8B F2 48 8B F9 75 43";
 
   // 0x9AA9B0
   constexpr const char* RealmAttackReceiver_Recieve =
@@ -241,6 +281,13 @@ namespace Signatures
   // 0x875B00
   constexpr const char* Skill_AddExperience = "40 53 48 83 EC 70 0F 10 41 30";
 
+  // 0x69B650
+  constexpr const char* SpeedHackDetector_IsTicksCheated =
+    "40 53 55 56 57 48 83 EC 38 80 3D ? ? ? ? 00 49 8B F1 0F 29 74 24 20";
+
+  // 0x69B6F0
+  constexpr const char* SpeedHackDetector_IsTimeScaleCheated = "40 53 48 83 EC 30 80 79 7D 00";
+
   // 0x85B4A0
   constexpr const char* SteamPurchaseService_FindLot =
     "48 83 EC 28 48 8B 49 28 48 85 C9 74 0C 45 33 C0 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 08";
@@ -248,6 +295,11 @@ namespace Signatures
   // 0x85B6E0
   constexpr const char* SteamPurchaseService_InitiatePurchase =
     "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 73 48 8D 0D ? ? ? ?";
+
+  // 0x69E190
+  constexpr const char* TimeCheatingDetector_ReportCheckResult =
+    "41 56 48 83 EC 20 80 3D ? ? ? ? 00 4C 8B F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 49 8B 86 D8 00 00 "
+    "00";
 
   // 0x39E0860
   constexpr const char* Time_set_timeScale =

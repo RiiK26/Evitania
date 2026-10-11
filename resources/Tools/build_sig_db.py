@@ -311,6 +311,17 @@ def main():
         ("AntiCheatService", "Handle", 0, []),
         ("AntiCheatService", "Apply", 0, []),
         ("AntiCheatService", "ReportCheatToAnalytics", 0, []),
+        ("AntiCheatService", "OnDataLoaded", 0, []),
+        ("AntiCheatService", "SetFlag", 0, []),
+        ("MetaModel", "get_IsCheater", 0, []),
+        ("SpeedHackDetector", "IsTicksCheated", 0, []),
+        ("SpeedHackDetector", "IsTimeScaleCheated", 0, []),
+        ("ObscuredCheatingDetector", "OnCheatingDetected", 0, []),
+        ("ObscuredCheatingDetector", "OnCheatingDetected", 1, []),
+        ("TimeCheatingDetector", "ReportCheckResult", 0, []),
+        ("ObscuredFilePrefs", "OnNotGenuineDataDetected", 0, []),
+        ("ObscuredFilePrefs", "OnDataFromAnotherDeviceDetected", 0, []),
+        ("PlayerDataStorageService", "FireAccountMismatchAnalytics", 0, []),
         ("Attack", ".ctor", 0, [("AttackDamage", "Attack")]),
         ("PlayerCharacter", ".ctor", 0, [("networkPlayerSync", "PlayerCharacter")]),
         ("CurioGachaService", "RollRarity", 0, []),
@@ -382,6 +393,44 @@ def main():
 
                 sig_db[method_key] = {"signature": sig, "extract": extract_rules}
                 print(f"[+] Added {method_key} to database")
+
+    # Shared generic instances (e.g. ACTkDetectorBase<__Canon>) only appear as
+    # "|-RVA: 0x..." / "|-Class<__Canon>.Method" pairs, which get_offsets() skips.
+    generic_targets = [
+        (
+            "ACTkDetectorBase<__Canon>",
+            "OnCheatingDetected",
+            "ACTkDetectorBase_OnCheatingDetected",
+        ),
+        (
+            "ACTkDetectorBase<__Canon>",
+            "InvokeCheatingDetectedEvent",
+            "ACTkDetectorBase_InvokeCheatingDetectedEvent",
+        ),
+    ]
+    with open(DUMP_PATH, "r", encoding="utf-8") as f:
+        dump_lines = f.readlines()
+    generic_rva_regex = re.compile(r"\|-RVA: 0x([0-9A-Fa-f]+)")
+    for inst, method, key in generic_targets:
+        needle = f"|-{inst}.{method}"
+        rva = None
+        for i, line in enumerate(dump_lines):
+            if line.strip() == needle:
+                for j in range(i - 1, max(i - 40, 0), -1):
+                    m = generic_rva_regex.search(dump_lines[j])
+                    if m:
+                        rva = int(m.group(1), 16)
+                        break
+                break
+        if rva is None:
+            print(f"[-] Could not find generic instance {needle}")
+            continue
+        sig = generate_signature(pe, md, pe_data, rva)
+        if not sig:
+            print(f"[-] Could not generate sig for {key}")
+            continue
+        sig_db[key] = {"signature": sig, "extract": {}}
+        print(f"[+] Added {key} (generic) to database")
 
     # Add hardcoded offsets for generic classes that Il2CppDumper outputs as 0x0
     sig_db["Il2Cpp_Dictionary"] = {
