@@ -222,6 +222,3 @@ scripts\update_offsets.bat
 
 ## License
 This project licensed under [MIT License](license).
-
-
-bash -c '(sleep 5 && /home/riik/Projects/Evitania/scripts/run.sh) &' ; %command% -d3d12
