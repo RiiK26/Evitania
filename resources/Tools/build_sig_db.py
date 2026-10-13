@@ -355,6 +355,58 @@ def main():
         ("EnhancementTreeUI", "Buy", 0, []),
         ("PositionerService", "TryChangeScene", 0, []),
         ("MapUi", "UpdatePlayerLocation", 0, []),
+        (
+            "OfflineProgressService",
+            "CreateActivitySnapshot",
+            0,
+            [
+                ("EntityGuid", "EntityGuid", "OfflineActivitySnapshot"),
+                ("XpPerHour", "XpPerHour", "OfflineActivitySnapshot"),
+                ("KillsPerHour", "KillsPerHour", "OfflineActivitySnapshot"),
+                ("GoldPerHour", "GoldPerHour", "OfflineActivitySnapshot"),
+            ],
+        ),
+        ("OfflineProgressService", "SetCurrentActivity", 0, []),
+        ("OfflineProgressService", "WriteClearedActivity", 0, []),
+        ("OfflineProgressService", "CanUseTimeskip", 0, []),
+        ("OfflineProgressService", "CurrentActivitySnapshot", 0, []),
+        (
+            "MobKillTrigger",
+            "Start",
+            0,
+            [
+                ("mobKillsToOpen", "mobKillsToOpen", "MobKillTrigger"),
+                ("enemy", "enemy", "MobKillTrigger"),
+            ],
+        ),
+        (
+            "MobKillTrigger",
+            "Apply",
+            0,
+            [
+                ("_portal", "_portal", "MobKillTrigger"),
+            ],
+        ),
+        (
+            "MobKillTrigger",
+            "CurrentKills",
+            0,
+            [
+                ("difficulty", "difficulty", "MobKillTrigger"),
+            ],
+        ),
+        ("MobKillTrigger", "OnEnable", 0, []),
+        ("MobKillTrigger", "OnDisable", 0, []),
+        (
+            "EnemyCard",
+            "get_UniqueName",
+            0,
+            [
+                ("uniqueName", "uniqueName", "EnemyCard"),
+            ],
+        ),
+        ("StatisticsService", "AddKillWithPortalProgress", 0, []),
+        ("StatisticsService", "AddPortalKill", 0, []),
     ]
 
     sig_db = {}

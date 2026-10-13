@@ -115,6 +115,9 @@ namespace Signatures
   constexpr const char* EasterAttackReceiver_Recieve =
     "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 67 48 8D 0D ? ? ? ?";
 
+  // 0x6440D0
+  constexpr const char* EnemyCard_get_UniqueName = "48 8B 41 20 C3 CC CC CC CC CC CC CC CC CC CC CC 48 89 51 20";
+
   // 0xA3BE90
   constexpr const char* EnemyNpcController_TakeDamage =
     "40 53 48 83 EC 20 80 79 3C 00 48 8B D9 74 4C F3 0F 10 91 90 00 00 00";
@@ -233,6 +236,39 @@ namespace Signatures
   // 0x6CBDE0
   constexpr const char* MetaModel_get_IsCheater = "80 79 38 00 75 17 80 79 39 00";
 
+  // 0xA2D780
+  constexpr const char* MobKillTrigger_Apply =
+    "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F2 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? "
+    "C6 05 ? ? ? ? 01 48 63 43 20";
+
+  // 0xA2D990
+  constexpr const char* MobKillTrigger_CurrentKills =
+    "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 28 48 89 "
+    "7C 24 30 48 85 C9 74 42 48 8B 05 ? ? ? ?";
+
+  // 0xA2DA50
+  constexpr const char* MobKillTrigger_OnDisable =
+    "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F1 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D "
+    "? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? "
+    "? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 88 A0 00 00 00 48 8B 79 10 48 8B 0D ? ? ? ? E8 ? ? ? ? "
+    "4C 8B 05 ? ? ? ? 45 33 C9 48 8B D6 48 8B C8 48 8B D8 E8 ? ? ? ? 45 33 C0 48 8B D3 48 8B CF E8 ? ? ? ? 48 8B D8 48 "
+    "85 C0 75 16 48 8B 05 ? ? ? ? 33 D2 48 8B 88 A0 00 00 00 48 89 59 10 EB 47 48 8B 3D ? ? ? ? 48 8B CB 48 8B D7 E8 ? "
+    "? ? ? 48 85 C0 0F 84 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 91 A0 00 00 00 48 8B CB 48 89 42 10 48 8B 3D ? ? ? ? 48 8B D7 "
+    "E8 ? ? ? ? 48 8B D0 48 85 C0 74 79 48 8B 05 ? ? ? ?";
+
+  // 0xA2DBF0
+  constexpr const char* MobKillTrigger_OnEnable =
+    "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F1 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D "
+    "? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? "
+    "? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 48 8B 88 A0 00 00 00 48 8B 79 10 48 8B 0D ? ? ? ? E8 ? ? ? ? "
+    "4C 8B 05 ? ? ? ? 45 33 C9 48 8B D6 48 8B C8 48 8B D8 E8 ? ? ? ? 45 33 C0 48 8B D3 48 8B CF E8 ? ? ? ? 48 8B D8 48 "
+    "85 C0 75 16 48 8B 05 ? ? ? ? 33 D2 48 8B 88 A0 00 00 00 48 89 59 10 EB 47 48 8B 3D ? ? ? ? 48 8B CB 48 8B D7 E8 ? "
+    "? ? ? 48 85 C0 0F 84 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 91 A0 00 00 00 48 8B CB 48 89 42 10 48 8B 3D ? ? ? ? 48 8B D7 "
+    "E8 ? ? ? ? 48 8B D0 48 85 C0 74 76 48 8B 05 ? ? ? ?";
+
+  // 0xA2DA10
+  constexpr const char* MobKillTrigger_Start = "40 53 48 83 EC 20 83 79 20 00 48 8B D9 7E 21 48 83 79 28 00";
+
   // 0x8582E0
   constexpr const char* MobilePurchaseService_InitiatePurchase =
     "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? "
@@ -259,6 +295,27 @@ namespace Signatures
   constexpr const char* ObscuredFilePrefs_OnNotGenuineDataDetected =
     "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 "
     "00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 4C 8B 00";
+
+  // 0x83F9E0
+  constexpr const char* OfflineProgressService_CanUseTimeskip =
+    "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? "
+    "? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? 48 C7 44 24 30 ? ? ? ?";
+
+  // 0x8406A0
+  constexpr const char* OfflineProgressService_CreateActivitySnapshot =
+    "48 89 5C 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 4F 48 8D 0D ? ? ? ?";
+
+  // 0x840A40
+  constexpr const char* OfflineProgressService_CurrentActivitySnapshot =
+    "48 89 5C 24 08 57 48 83 EC 30 48 8B F9 0F 29 74 24 20";
+
+  // 0x842530
+  constexpr const char* OfflineProgressService_SetCurrentActivity =
+    "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 5B 48 8D 0D ? ? ? ?";
+
+  // 0x843CD0
+  constexpr const char* OfflineProgressService_WriteClearedActivity =
+    "48 89 5C 24 08 57 48 83 EC 20 48 8B 41 20 48 8B D9 48 85 C0 0F 84 ? ? ? ? 48 8B 40 50";
 
   // 0x873FD0
   constexpr const char* PlayerCharacter_TakeDamage = "48 83 EC 38 80 3D ? ? ? ? 00 0F 29 74 24 20 0F 28 F1 75 13 48 8D "
@@ -309,6 +366,13 @@ namespace Signatures
 
   // 0x69B6F0
   constexpr const char* SpeedHackDetector_IsTimeScaleCheated = "40 53 48 83 EC 30 80 79 7D 00";
+
+  // 0x7CCFC0
+  constexpr const char* StatisticsService_AddKillWithPortalProgress =
+    "40 53 55 56 57 48 83 EC 38 49 8B F9 48 C7 44 24 20 ? ? ? ?";
+
+  // 0x7CD310
+  constexpr const char* StatisticsService_AddPortalKill = "40 55 57 41 54 41 56 41 57 48 83 EC 40 80 3D ? ? ? ? 00";
 
   // 0x85B3D0
   constexpr const char* SteamPurchaseService_FindLot =
