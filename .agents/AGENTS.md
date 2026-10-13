@@ -13,6 +13,8 @@
 - **Run the Project**: `scripts/run`
 - **Generate Signatures & Offsets**: `python3 resources/Tools/aobgenerator.py`
 - **Build Baseline Signature DB**: `python3 resources/Tools/build_sig_db.py`
+- **Find Field Usage & Disassemble**: `python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> [--disasm]`
+- **Update Workflow Guide**: Reference [.agents/workflows/update-workflow.md](file:///home/riik/Projects/Evitania/.agents/workflows/update-workflow.md) for full update procedure.
 
 ## Code Conventions
 - **Modular Architecture**: 1 Feature = 1 `.hpp`/`.cpp` pair located inside `src/Features/<Domain>/` (e.g. `src/Features/Combat/GodMode.cpp`). **No god files.**
