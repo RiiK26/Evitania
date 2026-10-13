@@ -147,17 +147,30 @@ def main():
         "{",
     ]
 
-    extracted_offsets = {}
+    il2cpp_offsets = {}
+    game_offsets = {}
 
     print("\n--- Scanning & Extracting ---")
     for method_key, data in sig_db.items():
         pattern = data["signature"]
         extract_rules = data.get("extract", {})
 
+        if method_key.startswith("Il2Cpp_"):
+            struct_name = method_key.replace("Il2Cpp_", "")
+            if struct_name not in il2cpp_offsets:
+                il2cpp_offsets[struct_name] = {}
+            for field_name, rule in extract_rules.items():
+                if "hardcoded" in rule:
+                    il2cpp_offsets[struct_name][field_name] = rule["hardcoded"]
+                    print(
+                        f"    -> Extracted Il2Cpp::{struct_name}::{field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
+                    )
+            continue
+
         if not pattern:
             for field_name, rule in extract_rules.items():
                 if "hardcoded" in rule:
-                    extracted_offsets[field_name] = rule["hardcoded"]
+                    game_offsets[field_name] = rule["hardcoded"]
                     print(
                         f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
                     )
@@ -179,7 +192,7 @@ def main():
 
             for field_name, rule in extract_rules.items():
                 if "hardcoded" in rule:
-                    extracted_offsets[field_name] = rule["hardcoded"]
+                    game_offsets[field_name] = rule["hardcoded"]
                     print(
                         f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
                     )
@@ -190,7 +203,7 @@ def main():
                         pe_data, rva, md, instr_idx, op_idx
                     )
                     if val is not None:
-                        extracted_offsets[field_name] = val
+                        game_offsets[field_name] = val
                         print(f"    -> Extracted {field_name}: 0x{val:X}")
                     else:
                         print(f"    [-] Failed to extract {field_name}")
@@ -201,8 +214,38 @@ def main():
 
     signatures_content.append("}  // namespace Signatures")
 
-    for field_name, val in extracted_offsets.items():
-        offsets_content.append(f"  constexpr int {field_name} = 0x{val:X};")
+    offsets_content = [
+        "#pragma once",
+        "",
+        "namespace Offsets",
+        "{",
+        "  // IL2CPP Internal Structures",
+        "  namespace Il2Cpp",
+        "  {",
+    ]
+
+    for struct_name, fields in il2cpp_offsets.items():
+        offsets_content.append(f"    namespace {struct_name}")
+        offsets_content.append("    {")
+        for field_name, val in fields.items():
+            offsets_content.append(f"      constexpr int {field_name:<11} = 0x{val:X};")
+        offsets_content.append(f"    }}  // namespace {struct_name}")
+        offsets_content.append("")
+
+    offsets_content.extend(
+        [
+            "  }  // namespace Il2Cpp",
+            "",
+            "  // Backward-compatible aliases for IL2CPP generic offsets",
+            "  constexpr int entries = Il2Cpp::Dictionary::entries;",
+            "  constexpr int count   = Il2Cpp::Dictionary::count;",
+            "",
+            "  // Game Logic Field Offsets",
+        ]
+    )
+
+    for field_name, val in game_offsets.items():
+        offsets_content.append(f"  constexpr int {field_name:<16} = 0x{val:X};")
     offsets_content.append("}  // namespace Offsets")
 
     sig_path = os.path.join(

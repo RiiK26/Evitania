@@ -328,6 +328,7 @@ def main():
         ("CurioPowerService", "GetLevelUpCost", 0, []),
         ("EngineerService", "TryGetUpgradeCost", 0, [("Amount", "UpgradeCost")]),
         ("EngineerUpgradeConfig", "GetPrice", 0, []),
+        ("EngineerSystemUI", "TryBuyUpgrade", 0, []),
         ("MarketLotScriptableObject", "CurrentPrice", 0, []),
         ("MarketLot", "GetCurrentPrice", 0, []),
         ("PlayerCharacter", "TakeDamage", 0, []),
@@ -435,11 +436,24 @@ def main():
         print(f"[+] Added {key} (generic) to database")
 
     # Add hardcoded offsets for generic classes that Il2CppDumper outputs as 0x0
+    sig_db["Il2Cpp_Array"] = {
+        "signature": "",
+        "extract": {
+            "length": {"hardcoded": 24},
+            "data": {"hardcoded": 32},
+        },
+    }
     sig_db["Il2Cpp_Dictionary"] = {
         "signature": "",
-        "extract": {"count": {"hardcoded": 32}},
+        "extract": {
+            "entries": {"hardcoded": 24},
+            "count": {"hardcoded": 32},
+            "entryStride": {"hardcoded": 24},
+            "keyOffset": {"hardcoded": 8},
+            "valueOffset": {"hardcoded": 16},
+        },
     }
-    print("[+] Added Il2Cpp_Dictionary (hardcoded) to database")
+    print("[+] Added Il2Cpp structures (hardcoded) to database")
 
     config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
 

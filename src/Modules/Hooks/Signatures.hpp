@@ -126,6 +126,12 @@ namespace Signatures
   constexpr const char* EngineerService_TryGetUpgradeCost =
     "40 55 56 57 41 56 48 83 EC 38 80 3D ? ? ? ? 00 4D 8B F1 49 8B F0 8B EA 48 8B F9";
 
+  // 0xB0F2F0
+  constexpr const char* EngineerSystemUI_TryBuyUpgrade =
+    "48 89 5C 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? "
+    "? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? "
+    "E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF 90 01 00 00 00";
+
   // 0x9BFA00
   constexpr const char* EngineerUpgradeConfig_GetPrice =
     "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 8B DA 48 8B F9 75 7F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 "
