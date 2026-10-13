@@ -1,5 +1,5 @@
 ---
-description: This workflow documents the standard procedure for updating Evitania when the target game (**Evitania Online**) receives an update, when hooking a new game system, or when maintaining signature/offset resilience.
+description: This workflow documents the standard procedure for updating Evitania when the target game (Evitania Online) receives an update, when hooking a new game system, or when maintaining signature/offset resilience.
 ---
 
 # Evitania Update & Reverse Engineering Workflow
@@ -137,7 +137,7 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
    - Every feature declares `void Initialize()` and `void Uninitialize()`, registered in `src/Modules/Hooks/Hooks.cpp`.
 2. **Centralize Offsets**:
    - Never hardcode raw hex offsets (like `0x18`) in feature hooks or helpers.
-   - Low-level IL2CPP structures live under `Offsets::Il2Cpp::...` (e.g. `Array::length`, `Dictionary::entries`).
+   - Low-level IL2CPP structures live under `Offsets::Il2Cpp::...` (e.g. `Array::length`, `List::items`, `Object::cachedPtr`, `Dictionary::entries`).
    - Gameplay offsets live directly under `Offsets::...` (e.g. `Offsets::discount`, `Offsets::alive`).
 3. **UI Visuals vs. Spending Validation (Dual-Mode Hooking)**:
    - For store/upgrade bypasses, game UI methods render currency icons by iterating dictionaries. If the count or item is empty, the UI icons disappear.
