@@ -293,6 +293,13 @@ namespace Signatures
   constexpr const char* ShopSpendingService_Spend =
     "48 83 EC 28 48 8B 49 18 48 85 C9 74 0C 45 33 C9 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 53";
 
+  // 0x783690
+  constexpr const char* Shop_TryBuy =
+    "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 0F 85 ? ? ? ?";
+
+  // 0x783B90
+  constexpr const char* Shop_UpdateDiscount = "40 53 48 83 EC 40 80 79 50 00";
+
   // 0x875A30
   constexpr const char* Skill_AddExperience = "40 53 48 83 EC 70 0F 10 41 30";
 

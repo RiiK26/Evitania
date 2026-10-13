@@ -351,6 +351,19 @@
 			"signature": "48 83 EC 28 48 8B 49 18 48 85 C9 74 0C 45 33 C9 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 53",
 			"extract": {}
 		},
+		"Shop_TryBuy": {
+			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 0F 85 ? ? ? ?",
+			"extract": {}
+		},
+		"Shop_UpdateDiscount": {
+			"signature": "40 53 48 83 EC 40 80 79 50 00",
+			"extract": {
+				"discount": {
+					"instr_idx": 10,
+					"op_idx": 0
+				}
+			}
+		},
 		"Skill_AddExperience": {
 			"signature": "40 53 48 83 EC 70 0F 10 41 30",
 			"extract": {}

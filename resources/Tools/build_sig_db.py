@@ -350,6 +350,8 @@ def main():
         ("BonfireFuelBurner", "get_MaxFuel", 0, []),
         ("ShopSpendingService", "CanSpend", 0, []),
         ("ShopSpendingService", "Spend", 0, []),
+        ("Shop", "TryBuy", 0, []),
+        ("Shop", "UpdateDiscount", 0, [("discount", "Shop")]),
         ("EnhancementTreeUI", "Buy", 0, []),
         ("PositionerService", "TryChangeScene", 0, []),
         ("MapUi", "UpdatePlayerLocation", 0, []),

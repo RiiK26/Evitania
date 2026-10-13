@@ -71,7 +71,7 @@ namespace Features
       uintptr_t findLotAddr =
         Scanner::FindPattern((HMODULE) IL2CPP::Globals.m_GameAssembly, Signatures::SteamPurchaseService_FindLot);
       if (findLotAddr) {
-        FindLot = (void* (*) (void*, void*, void*) ) findLotAddr;
+        FindLot = (void* (*)(void*, void*, void*) ) findLotAddr;
       }
 
       uintptr_t rewardAddr =

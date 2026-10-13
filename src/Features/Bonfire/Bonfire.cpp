@@ -56,17 +56,6 @@ namespace Features
       return dict;
     }
 
-    void* (*Orig_MarketLot_GetCurrentPrice)(void* __this, float discount, void* method_info);
-    void* Hook_MarketLot_GetCurrentPrice(void* __this, float discount, void* method_info)
-    {
-      void* dict = Orig_MarketLot_GetCurrentPrice(__this, discount, method_info);
-      if (Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeSacrificeCost) {
-        if (dict) {
-          Utils::Il2Cpp::ClearDictionary(dict);
-        }
-      }
-      return dict;
-    }
 
     bool (*Orig_ShopSpendingService_CanSpend)(void* __this, void* price, void* source, void* method_info);
     bool Hook_ShopSpendingService_CanSpend(void* __this, void* price, void* source, void* method_info)
@@ -124,10 +113,6 @@ namespace Features
       HOOK_SIGNATURE(
         "MarketLotScriptableObject::CurrentPrice", Signatures::MarketLotScriptableObject_CurrentPrice,
         Hook_MarketLotScriptableObject_CurrentPrice, Orig_MarketLotScriptableObject_CurrentPrice
-      );
-      HOOK_SIGNATURE(
-        "MarketLot::GetCurrentPrice", Signatures::MarketLot_GetCurrentPrice, Hook_MarketLot_GetCurrentPrice,
-        Orig_MarketLot_GetCurrentPrice
       );
 
       HOOK_SIGNATURE("SacrificeUI::Buy", Signatures::SacrificeUI_Buy, Hook_SacrificeUI_Buy, Orig_SacrificeUI_Buy);
