@@ -1,6 +1,6 @@
 {
 	"project_name": "Evitania",
-	"version": "0.320.0",
+	"version": "0.320.1",
 	"signatures": {
 		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
 			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
