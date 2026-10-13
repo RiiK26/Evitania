@@ -48,7 +48,7 @@ namespace Features
     void* Hook_MarketLotScriptableObject_CurrentPrice(void* __this, int tier, void* method_info)
     {
       void* dict = Orig_MarketLotScriptableObject_CurrentPrice(__this, tier, method_info);
-      if (Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeSacrificeCost || Menu::Config.bFreeStore) {
+      if (Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeSacrificeCost) {
         if (dict) {
           Utils::Il2Cpp::ClearDictionary(dict);
         }
@@ -60,7 +60,7 @@ namespace Features
     void* Hook_MarketLot_GetCurrentPrice(void* __this, float discount, void* method_info)
     {
       void* dict = Orig_MarketLot_GetCurrentPrice(__this, discount, method_info);
-      if (Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeSacrificeCost || Menu::Config.bFreeStore) {
+      if (Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeSacrificeCost) {
         if (dict) {
           Utils::Il2Cpp::ClearDictionary(dict);
         }
@@ -71,7 +71,7 @@ namespace Features
     bool (*Orig_ShopSpendingService_CanSpend)(void* __this, void* price, void* source, void* method_info);
     bool Hook_ShopSpendingService_CanSpend(void* __this, void* price, void* source, void* method_info)
     {
-      if (Menu::Config.bFreeSacrificeCost || Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeStore) {
+      if (Menu::Config.bFreeSacrificeCost || Menu::Config.bFreeAshUpgrade) {
         return true;
       }
       return Orig_ShopSpendingService_CanSpend(__this, price, source, method_info);
@@ -79,7 +79,7 @@ namespace Features
 
     bool Hook_ShopSpendingService_Spend(void* __this, void* price, void* source, void* method_info)
     {
-      if (Menu::Config.bFreeSacrificeCost || Menu::Config.bFreeAshUpgrade || Menu::Config.bFreeStore) {
+      if (Menu::Config.bFreeSacrificeCost || Menu::Config.bFreeAshUpgrade) {
         return true;
       }
       return Orig_ShopSpendingService_Spend(__this, price, source, method_info);
