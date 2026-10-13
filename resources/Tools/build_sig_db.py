@@ -112,11 +112,11 @@ def get_offsets():
         lines = f.readlines()
 
     class_regex = re.compile(
-        r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract)\s+)*(?:class|struct|interface|enum)\s+(\w+)"
+        r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract)\s+)*(?:class|struct|interface|enum)\s+([<>\w.]+)"
     )
     rva_regex = re.compile(r"// RVA: 0x([0-9A-Fa-f]+)")
     method_regex = re.compile(
-        r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract|override|virtual)\s+)*.*?\s+(\w+|[a-zA-Z0-9_]+)\s*\("
+        r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract|override|virtual)\s+)*.*?\s+(\w+|[a-zA-Z0-9_]+|\.ctor)\s*\("
     )
     field_regex = re.compile(
         r"^\s*(?:(?:public|private|protected|internal|static|readonly|const|volatile)\s+)*.*?\s+([<>\w]+|[a-zA-Z0-9_]+);\s*//\s*0x([0-9A-Fa-f]+)"
@@ -345,6 +345,7 @@ def main():
         ("BonfireService", "get_CanIgnite", 0, []),
         ("BonfireService", "TryIgnite", 0, []),
         ("SacrificeUI", "Buy", 0, []),
+        ("SacrificeUI", "Select", 0, []),
         ("SacrificeUI", "TryRollSacrificeHalfCost", 0, []),
         ("BonfireFuelBurner", "get_Fuel", 0, []),
         ("BonfireFuelBurner", "get_MaxFuel", 0, []),
@@ -353,6 +354,7 @@ def main():
         ("Shop", "TryBuy", 0, []),
         ("Shop", "UpdateDiscount", 0, [("discount", "Shop")]),
         ("EnhancementTreeUI", "Buy", 0, []),
+        ("EnhancementTreeUI", "Select", 0, []),
         ("PositionerService", "TryChangeScene", 0, []),
         ("MapUi", "UpdatePlayerLocation", 0, []),
         (
@@ -361,10 +363,36 @@ def main():
             0,
             [
                 ("EntityGuid", "EntityGuid", "OfflineActivitySnapshot"),
+                ("Skill", "Skill", "OfflineActivitySnapshot"),
                 ("XpPerHour", "XpPerHour", "OfflineActivitySnapshot"),
                 ("KillsPerHour", "KillsPerHour", "OfflineActivitySnapshot"),
                 ("GoldPerHour", "GoldPerHour", "OfflineActivitySnapshot"),
+                ("_cardDatabase", "_cardDatabase", "OfflineProgressService"),
             ],
+        ),
+        (
+            "OfflineProgressService",
+            "GetCombatCalculator",
+            0,
+            [("_combatCalculator", "OfflineProgressService")],
+        ),
+        (
+            "CombatOfflineRewardsCalculator",
+            "SetCurrentSpawner",
+            0,
+            [("_currentSpawner", "CombatOfflineRewardsCalculator")],
+        ),
+        (
+            "EnemySpawnerService",
+            "get_EnemyCard",
+            0,
+            [("_enemyCards", "EnemySpawnerService")],
+        ),
+        (
+            "EntityCardDatabase",
+            ".ctor",
+            0,
+            [("enemies", "EntityCardDatabase")],
         ),
         ("OfflineProgressService", "SetCurrentActivity", 0, []),
         ("OfflineProgressService", "WriteClearedActivity", 0, []),
@@ -421,10 +449,11 @@ def main():
                     print(f"[-] Could not generate sig for {cls}::{method}")
                     continue
 
+                method_clean = method.replace(".", "")
                 method_key = (
-                    f"{cls}_{method}_{overload_idx}"
+                    f"{cls}_{method_clean}_{overload_idx}"
                     if overload_idx > 0
-                    else f"{cls}_{method}"
+                    else f"{cls}_{method_clean}"
                 )
 
                 extract_rules = {}
@@ -505,6 +534,19 @@ def main():
             "entryStride": {"hardcoded": 24},
             "keyOffset": {"hardcoded": 8},
             "valueOffset": {"hardcoded": 16},
+        },
+    }
+    sig_db["Il2Cpp_List"] = {
+        "signature": "",
+        "extract": {
+            "items": {"hardcoded": 16},
+            "size": {"hardcoded": 24},
+        },
+    }
+    sig_db["Il2Cpp_Object"] = {
+        "signature": "",
+        "extract": {
+            "cachedPtr": {"hardcoded": 16},
         },
     }
     print("[+] Added Il2Cpp structures (hardcoded) to database")

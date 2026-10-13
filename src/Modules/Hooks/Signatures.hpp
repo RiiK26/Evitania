@@ -61,6 +61,10 @@ namespace Signatures
   constexpr const char* AttackReceiver_Recieve =
     "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 5B 48 8D 0D ? ? ? ?";
 
+  // 0xAC2220
+  constexpr const char* Attack_ctor = "48 89 5C 24 08 57 48 83 EC 40 0F 29 74 24 30 48 8B DA 0F 29 7C 24 20 33 D2 0F "
+                                      "28 FB 0F 28 F2 48 8B F9 E8 ? ? ? ? 48 8D 4F 18";
+
   // 0x6E3B60
   constexpr const char* BaseStorageService_Remove =
     "48 89 4C 24 08 53 56 57 41 54 41 56 41 57 48 83 EC 68 4D 8B F0 48 8B DA";
@@ -94,6 +98,10 @@ namespace Signatures
   // 0xA3C840
   constexpr const char* BossBase_Update = "80 79 3C 00 74 1D 48 8B 89 38 01 00 00";
 
+  // 0x67FE60
+  constexpr const char* CombatOfflineRewardsCalculator_SetCurrentSpawner =
+    "48 89 51 38 48 83 C1 38 E9 ? ? ? ? CC CC CC 48 89 5C 24 18";
+
   // 0x86B130
   constexpr const char* CurioGachaService_RollRarity =
     "48 89 54 24 10 48 89 4C 24 08 53 56 57 41 56 41 57 48 83 EC 70 0F 29 74 24 60";
@@ -125,6 +133,11 @@ namespace Signatures
   // 0xA401A0
   constexpr const char* EnemyNpcController_Update = "40 53 48 83 EC 40 80 79 20 00";
 
+  // 0x871B10
+  constexpr const char* EnemySpawnerService_get_EnemyCard =
+    "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 30 48 85 "
+    "C9 74 13 4C 8B 05 ? ? ? ? 33 D2 48 83 C4 20 5B E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 0F B6 41 4D";
+
   // 0x853C10
   constexpr const char* EngineerService_TryGetUpgradeCost =
     "40 55 56 57 41 56 48 83 EC 38 80 3D ? ? ? ? 00 4D 8B F1 49 8B F0 8B EA 48 8B F9";
@@ -146,6 +159,17 @@ namespace Signatures
   // 0xB3EBD0
   constexpr const char* EnhancementTreeUI_Buy =
     "40 53 55 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B E9 0F 85 ? ? ? ?";
+
+  // 0xB3F3D0
+  constexpr const char* EnhancementTreeUI_Select = "48 89 5C 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 "
+                                                   "75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 0F 29 74 24 30";
+
+  // 0xA102A0
+  constexpr const char* EntityCardDatabase_ctor =
+    "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? "
+    "? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 48 8B 15 ? ? ? ? 48 8B C8 48 8B D8 E8 ? ? ? ? 48 8D 4F 18 48 89 "
+    "5F 18 48 8B D3 E8 ? ? ? ? 33 D2 48 8B CF 48 8B 5C 24 30 48 83 C4 20 5F E9 ? ? ? ? CC CC CC CC CC CC CC CC CC 48 "
+    "89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F9 75 13 48 8D 0D ? ? ? ?";
 
   // 0x9A3010
   constexpr const char* HourglassHardUUpgrade_GetCostAmount =
@@ -309,6 +333,10 @@ namespace Signatures
   constexpr const char* OfflineProgressService_CurrentActivitySnapshot =
     "48 89 5C 24 08 57 48 83 EC 30 48 8B F9 0F 29 74 24 20";
 
+  // 0x6A70F0
+  constexpr const char* OfflineProgressService_GetCombatCalculator =
+    "48 8B 41 48 C3 CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 58";
+
   // 0x841690
   constexpr const char* OfflineProgressService_SetCurrentActivity =
     "48 89 5C 24 08 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 5B 48 8D 0D ? ? ? ?";
@@ -320,6 +348,11 @@ namespace Signatures
   // 0x8781D0
   constexpr const char* PlayerCharacter_TakeDamage = "48 83 EC 38 80 3D ? ? ? ? 00 0F 29 74 24 20 0F 28 F1 75 13 48 8D "
                                                      "0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ?";
+
+  // 0x878400
+  constexpr const char* PlayerCharacter_ctor =
+    "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? "
+    "? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 C7 87 B8 00 00 00 ? ? ? ?";
 
   // 0x7FA8D0
   constexpr const char* PlayerDataStorageService_FireAccountMismatchAnalytics =
@@ -337,6 +370,10 @@ namespace Signatures
   constexpr const char* SacrificeUI_Buy =
     "40 56 57 48 83 EC 48 80 3D ? ? ? ? 00 48 8B F2 48 8B F9 75 7F 48 8D 0D ? ? ? ?";
 
+  // 0xA34500
+  constexpr const char* SacrificeUI_Select =
+    "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B E9";
+
   // 0xA34CF0
   constexpr const char* SacrificeUI_TryRollSacrificeHalfCost =
     "48 83 EC 38 33 D2 0F 29 74 24 20 B9 ? ? ? ? E8 ? ? ? ? 33 C9";
@@ -345,9 +382,9 @@ namespace Signatures
   constexpr const char* ShopSpendingService_CanSpend =
     "48 89 5C 24 10 48 89 74 24 18 57 48 81 EC ? ? ? ? 0F 29 74 24 70 41 8B F0 48 8B FA";
 
-  // 0x78FA80
-  constexpr const char* ShopSpendingService_Spend =
-    "48 83 EC 28 48 8B 49 18 48 85 C9 74 0C 45 33 C9 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 53";
+  // 0x78D5E0
+  constexpr const char* ShopSpendingService_Spend = "48 8B C4 48 89 58 18 48 89 50 10 48 89 48 08 56 57 41 54 41 56 41 "
+                                                    "57 48 81 EC ? ? ? ? 0F 29 70 C8 0F 29 78 B8 41 8B D8 4C 8B FA";
 
   // 0x78EA30
   constexpr const char* Shop_TryBuy =

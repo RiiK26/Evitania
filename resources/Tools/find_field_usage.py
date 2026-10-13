@@ -114,7 +114,7 @@ def get_offsets():
         lines = f.readlines()
 
     class_regex = re.compile(
-        r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract)\s+)*(?:class|struct|interface|enum)\s+(\w+)"
+        r"^\s*(?:(?:public|private|protected|internal|static|sealed|abstract)\s+)*(?:class|struct|interface|enum)\s+([<>\w.]+)"
     )
     rva_regex = re.compile(r"// RVA: 0x([0-9A-Fa-f]+)")
     method_regex = re.compile(
@@ -227,6 +227,32 @@ DEFAULT_TARGETS = [
     ("MovementControl", "Move", "_isNet", "NetworkPlayerSync"),
     ("SteamPurchaseService", "InitiatePurchase", "_rewarder", "SteamPurchaseService"),
     ("Shop", "UpdateDiscount", "discount", "Shop"),
+    (
+        "OfflineProgressService",
+        "CreateActivitySnapshot",
+        "Skill",
+        "OfflineActivitySnapshot",
+    ),
+    (
+        "OfflineProgressService",
+        "CreateActivitySnapshot",
+        "_cardDatabase",
+        "OfflineProgressService",
+    ),
+    (
+        "OfflineProgressService",
+        "GetCombatCalculator",
+        "_combatCalculator",
+        "OfflineProgressService",
+    ),
+    (
+        "CombatOfflineRewardsCalculator",
+        "SetCurrentSpawner",
+        "_currentSpawner",
+        "CombatOfflineRewardsCalculator",
+    ),
+    ("EnemySpawnerService", "get_EnemyCard", "_enemyCards", "EnemySpawnerService"),
+    ("EntityCardDatabase", ".ctor", "enemies", "EntityCardDatabase"),
 ]
 
 
