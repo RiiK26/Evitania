@@ -1,6 +1,6 @@
 {
 	"project_name": "Evitania",
-	"version": "0.320.1",
+	"version": "0.320.2",
 	"signatures": {
 		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
 			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
@@ -425,7 +425,7 @@
 			"extract": {}
 		},
 		"SacrificeUI_TryRollSacrificeHalfCost": {
-			"signature": "48 83 EC 38 33 D2 0F 29 74 24 20 B9 ? ? ? ? E8 ? ? ? ? 33 C9 0F 28 F0 E8 ? ? ? ? 0F 2F F0 0F 28 74 24 20 0F 97 C0 48 83 C4 38 C3 CC 40 53 48 83 EC 20",
+			"signature": "48 83 EC 38 33 D2 0F 29 74 24 20 B9 ? ? ? ? E8 ? ? ? ? 33 C9",
 			"extract": {}
 		},
 		"ShopSpendingService_CanSpend": {

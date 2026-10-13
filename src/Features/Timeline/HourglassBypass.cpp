@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <mutex>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -31,11 +32,19 @@ namespace Features
       return Orig_OfflineProgressService_CanUseTimeskip(__this, method_info);
     }
 
-    static void*              s_LastValidSnapshot = nullptr;
+    static std::string        s_LastEnemyUniqueName = "";
     static std::vector<void*> s_ActiveTriggers;
     static std::mutex         s_TriggerMutex;
     static int64_t            s_PendingTimeskipPortalKills = 0;
     static void*              s_StatisticsService          = nullptr;
+
+    inline bool IsUnityObjectAlive(void* obj)
+    {
+      if (!obj)
+        return false;
+      void* cachedPtr = *(void**) ((uintptr_t) obj + 0x10);
+      return cachedPtr != nullptr;
+    }
 
     inline bool IsSnapshotValid(void* snapshot)
     {
@@ -44,8 +53,8 @@ namespace Features
       void* entityGuid = *(void**) ((uintptr_t) snapshot + Offsets::EntityGuid);
       if (!entityGuid)
         return false;
-      int len = *(int*) ((uintptr_t) entityGuid + 0x10);
-      if (len <= 0)
+      auto* s = reinterpret_cast<Unity::System_String*>(entityGuid);
+      if (s->m_iLength <= 0 || s->m_iLength > 256)
         return false;
       float xpPerHour = *(float*) ((uintptr_t) snapshot + Offsets::XpPerHour);
       return xpPerHour > 0.0f;
@@ -61,7 +70,13 @@ namespace Features
     void Hook_OfflineProgressService_SetCurrentActivity(void* __this, void* snapshot, void* method_info)
     {
       if (snapshot && IsSnapshotValid(snapshot)) {
-        s_LastValidSnapshot = snapshot;
+        void* entityGuid = *(void**) ((uintptr_t) snapshot + Offsets::EntityGuid);
+        if (entityGuid) {
+          auto* s = reinterpret_cast<Unity::System_String*>(entityGuid);
+          if (s->m_iLength > 0 && s->m_iLength < 256) {
+            s_LastEnemyUniqueName = s->ToString();
+          }
+        }
       }
       else if (Menu::Config.bHourglassBypass && (!snapshot || !IsSnapshotValid(snapshot))) {
         // Prevent game from clearing active activity on town/gathering exit
@@ -83,107 +98,112 @@ namespace Features
     void* (*Orig_OfflineProgressService_CreateActivitySnapshot)(void* __this, void* method_info);
     void* Hook_OfflineProgressService_CreateActivitySnapshot(void* __this, void* method_info)
     {
-      if (Menu::Config.bHourglassBypass) {
-        // 1. Try real-time activity evaluation for active combat/gathering stage
-        if (Orig_OfflineProgressService_CurrentActivitySnapshot && __this) {
-          void* cur = Orig_OfflineProgressService_CurrentActivitySnapshot(__this, nullptr);
-          if (IsSnapshotValid(cur)) {
-            s_LastValidSnapshot = cur;
-            return cur;
-          }
-        }
-
-        // 2. Try previous valid snapshot from current game session
-        if (IsSnapshotValid(s_LastValidSnapshot)) {
-          return s_LastValidSnapshot;
-        }
-      }
-
+      // Always call original to obtain a freshly allocated, GC-tracked instance
       void* snapshot = Orig_OfflineProgressService_CreateActivitySnapshot(__this, method_info);
-      if (Menu::Config.bHourglassBypass) {
+      if (Menu::Config.bHourglassBypass && snapshot) {
         if (IsSnapshotValid(snapshot)) {
-          s_LastValidSnapshot = snapshot;
+          void* entityGuid = *(void**) ((uintptr_t) snapshot + Offsets::EntityGuid);
+          if (entityGuid) {
+            auto* s = reinterpret_cast<Unity::System_String*>(entityGuid);
+            if (s->m_iLength > 0 && s->m_iLength < 256) {
+              s_LastEnemyUniqueName = s->ToString();
+            }
+          }
           return snapshot;
         }
 
-        // 3. Fallback: synthesize valid snapshot so Calculate() never returns NULL
-        if (snapshot) {
-          void* enemyUniqueName = nullptr;
+        // Snapshot is invalid (e.g. in town, freshly logged in, or activity not yet recorded).
+        // Patch THIS newly allocated snapshot instance so Calculate() never returns NULL.
+        void* enemyUniqueName = nullptr;
 
-          // Priority A: Target enemy of active stage lock portal trigger
-          {
-            std::lock_guard<std::mutex> lock(s_TriggerMutex);
-            for (void* trigger : s_ActiveTriggers) {
-              if (!trigger)
-                continue;
-              void* enemyCard = *(void**) ((uintptr_t) trigger + Offsets::enemy);
-              if (!enemyCard)
-                continue;
-              void* uName = *(void**) ((uintptr_t) enemyCard + Offsets::uniqueName);
-              if (uName) {
-                enemyUniqueName = uName;
-                break;
-              }
+        // Priority A: Target enemy of active stage lock portal trigger
+        {
+          std::lock_guard<std::mutex> lock(s_TriggerMutex);
+          s_ActiveTriggers.erase(
+            std::remove_if(
+              s_ActiveTriggers.begin(), s_ActiveTriggers.end(), [](void* t) { return !IsUnityObjectAlive(t); }
+            ),
+            s_ActiveTriggers.end()
+          );
+
+          for (void* trigger : s_ActiveTriggers) {
+            if (!trigger || !IsUnityObjectAlive(trigger))
+              continue;
+            void* enemyCard = *(void**) ((uintptr_t) trigger + Offsets::enemy);
+            if (!enemyCard || !IsUnityObjectAlive(enemyCard))
+              continue;
+            void* uName = *(void**) ((uintptr_t) enemyCard + Offsets::uniqueName);
+            if (uName) {
+              enemyUniqueName = uName;
+              break;
             }
           }
+        }
 
-          // Priority B: Target enemy from combatCalculator._currentSpawner
-          if (!enemyUniqueName && __this) {
-            void* combatCalc = *(void**) ((uintptr_t) __this + 0x48);
-            if (combatCalc) {
-              void* spawner = *(void**) ((uintptr_t) combatCalc + 0x38);
-              if (spawner) {
-                void* cardsList = *(void**) ((uintptr_t) spawner + 0x30);
-                if (cardsList) {
-                  void* items = *(void**) ((uintptr_t) cardsList + 0x10);
-                  int   count = *(int*) ((uintptr_t) cardsList + Offsets::Il2Cpp::Array::length);
-                  if (items && count > 0) {
-                    void* card = *(void**) ((uintptr_t) items + Offsets::Il2Cpp::Array::data);
-                    if (card) {
-                      enemyUniqueName = *(void**) ((uintptr_t) card + Offsets::uniqueName);
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          // Priority C: First registered enemy from _cardDatabase
-          if (!enemyUniqueName && __this) {
-            void* cardDb = *(void**) ((uintptr_t) __this + 0x60);
-            if (cardDb) {
-              void* enemiesList = *(void**) ((uintptr_t) cardDb + 0x18);
-              if (enemiesList) {
-                void* items = *(void**) ((uintptr_t) enemiesList + 0x10);
-                int   count = *(int*) ((uintptr_t) enemiesList + Offsets::Il2Cpp::Array::length);
+        // Priority B: Target enemy from combatCalculator._currentSpawner
+        if (!enemyUniqueName && __this) {
+          void* combatCalc = *(void**) ((uintptr_t) __this + 0x48);
+          if (combatCalc) {
+            void* spawner = *(void**) ((uintptr_t) combatCalc + 0x38);
+            if (spawner && IsUnityObjectAlive(spawner)) {
+              void* cardsList = *(void**) ((uintptr_t) spawner + 0x30);
+              if (cardsList) {
+                void* items = *(void**) ((uintptr_t) cardsList + 0x10);
+                int   count = *(int*) ((uintptr_t) cardsList + Offsets::Il2Cpp::Array::length);
                 if (items && count > 0) {
                   void* card = *(void**) ((uintptr_t) items + Offsets::Il2Cpp::Array::data);
-                  if (card) {
+                  if (card && IsUnityObjectAlive(card)) {
                     enemyUniqueName = *(void**) ((uintptr_t) card + Offsets::uniqueName);
                   }
                 }
               }
             }
           }
+        }
 
-          if (enemyUniqueName) {
-            *(void**) ((uintptr_t) snapshot + Offsets::EntityGuid) = enemyUniqueName;
-            float xp = *(float*) ((uintptr_t) snapshot + Offsets::XpPerHour);
-            if (xp <= 0.0f) {
-              *(float*) ((uintptr_t) snapshot + Offsets::XpPerHour) = 50000.0f;
+        // Priority C: Cached enemy name from previous use in this session
+        if (!enemyUniqueName && !s_LastEnemyUniqueName.empty()) {
+          enemyUniqueName = IL2CPP::String::New(s_LastEnemyUniqueName.c_str());
+        }
+
+        // Priority D: First registered enemy from _cardDatabase
+        if (!enemyUniqueName && __this) {
+          void* cardDb = *(void**) ((uintptr_t) __this + 0x60);
+          if (cardDb) {
+            void* enemiesList = *(void**) ((uintptr_t) cardDb + 0x18);
+            if (enemiesList) {
+              void* items = *(void**) ((uintptr_t) enemiesList + 0x10);
+              int   count = *(int*) ((uintptr_t) enemiesList + Offsets::Il2Cpp::Array::length);
+              if (items && count > 0) {
+                void* card = *(void**) ((uintptr_t) items + Offsets::Il2Cpp::Array::data);
+                if (card && IsUnityObjectAlive(card)) {
+                  enemyUniqueName = *(void**) ((uintptr_t) card + Offsets::uniqueName);
+                }
+              }
             }
-            float kills = *(float*) ((uintptr_t) snapshot + Offsets::KillsPerHour);
-            if (kills <= 0.0f) {
-              *(float*) ((uintptr_t) snapshot + Offsets::KillsPerHour) = 250.0f;
-            }
-            float gold = *(float*) ((uintptr_t) snapshot + Offsets::GoldPerHour);
-            if (gold <= 0.0f) {
-              *(float*) ((uintptr_t) snapshot + Offsets::GoldPerHour) = 10000.0f;
-            }
-            *(int32_t*) ((uintptr_t) snapshot + 0x20) = 0;  // SkillName::Combat
-            s_LastValidSnapshot                       = snapshot;
-            return snapshot;
           }
+        }
+
+        if (enemyUniqueName) {
+          *(void**) ((uintptr_t) snapshot + Offsets::EntityGuid) = enemyUniqueName;
+          float xp = *(float*) ((uintptr_t) snapshot + Offsets::XpPerHour);
+          if (xp <= 0.0f) {
+            *(float*) ((uintptr_t) snapshot + Offsets::XpPerHour) = 50000.0f;
+          }
+          float kills = *(float*) ((uintptr_t) snapshot + Offsets::KillsPerHour);
+          if (kills <= 0.0f) {
+            *(float*) ((uintptr_t) snapshot + Offsets::KillsPerHour) = 250.0f;
+          }
+          float gold = *(float*) ((uintptr_t) snapshot + Offsets::GoldPerHour);
+          if (gold <= 0.0f) {
+            *(float*) ((uintptr_t) snapshot + Offsets::GoldPerHour) = 10000.0f;
+          }
+          *(int32_t*) ((uintptr_t) snapshot + 0x20) = 0;  // SkillName::Combat
+          auto* s                                   = reinterpret_cast<Unity::System_String*>(enemyUniqueName);
+          if (s && s->m_iLength > 0 && s->m_iLength < 256) {
+            s_LastEnemyUniqueName = s->ToString();
+          }
+          return snapshot;
         }
       }
       return snapshot;
@@ -198,6 +218,12 @@ namespace Features
         return false;
       auto* sA = reinterpret_cast<Unity::System_String*>(strA);
       auto* sB = reinterpret_cast<Unity::System_String*>(strB);
+      if (sA->m_iLength != sB->m_iLength)
+        return false;
+      if (sA->m_iLength <= 0)
+        return true;
+      if (sA->m_iLength > 256)
+        return false;
       return sA->ToString() == sB->ToString();
     }
 
@@ -256,9 +282,9 @@ namespace Features
         }
       }
 
-      if (Menu::Config.bHourglassBypass && __this && s_PendingTimeskipPortalKills > 0) {
+      if (Menu::Config.bHourglassBypass && __this && IsUnityObjectAlive(__this) && s_PendingTimeskipPortalKills > 0) {
         void* enemyCard = *(void**) ((uintptr_t) __this + Offsets::enemy);
-        if (enemyCard) {
+        if (enemyCard && IsUnityObjectAlive(enemyCard)) {
           void*   portalEnemyId = *(void**) ((uintptr_t) enemyCard + Offsets::uniqueName);
           int32_t portalDiff    = *(int32_t*) ((uintptr_t) __this + Offsets::difficulty);
           if (portalEnemyId) {
@@ -297,16 +323,23 @@ namespace Features
 
       if (Menu::Config.bHourglassBypass && amount > 0) {
         std::lock_guard<std::mutex> lock(s_TriggerMutex);
+        s_ActiveTriggers.erase(
+          std::remove_if(
+            s_ActiveTriggers.begin(), s_ActiveTriggers.end(), [](void* t) { return !IsUnityObjectAlive(t); }
+          ),
+          s_ActiveTriggers.end()
+        );
+
         if (s_ActiveTriggers.empty()) {
           // If in town or a scene without triggers, store pending kills so the next stage entered gets them
           s_PendingTimeskipPortalKills += amount;
         }
         else {
           for (void* trigger : s_ActiveTriggers) {
-            if (!trigger)
+            if (!trigger || !IsUnityObjectAlive(trigger))
               continue;
             void* enemyCard = *(void**) ((uintptr_t) trigger + Offsets::enemy);
-            if (!enemyCard)
+            if (!enemyCard || !IsUnityObjectAlive(enemyCard))
               continue;
             void*   portalEnemyId = *(void**) ((uintptr_t) enemyCard + Offsets::uniqueName);
             int32_t portalDiff    = *(int32_t*) ((uintptr_t) trigger + Offsets::difficulty);
