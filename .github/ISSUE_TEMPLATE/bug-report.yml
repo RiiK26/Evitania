@@ -36,18 +36,9 @@ body:
 
 - type: input
   attributes:
-    label: Evitania Version
+    label: Cheat and game Version
     description: |
-      This can be found on the gui title window
-    placeholder: Evitania v3.x.x
-  validations:
-    required: true
-
-- type: input
-  attributes:
-    label: Game Version
-    description: |
-      This can be found on game loading screen
-    placeholder: e.g., 1.01.04
+      This can be found on the game login screen or ui menu
+    placeholder: v3.x.x
   validations:
     required: true
