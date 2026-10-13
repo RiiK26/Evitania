@@ -42,7 +42,7 @@ namespace Features
     {
       if (!obj)
         return false;
-      void* cachedPtr = *(void**) ((uintptr_t) obj + 0x10);
+      void* cachedPtr = *(void**) ((uintptr_t) obj + Offsets::Il2Cpp::Object::cachedPtr);
       return cachedPtr != nullptr;
     }
 
@@ -142,14 +142,14 @@ namespace Features
 
         // Priority B: Target enemy from combatCalculator._currentSpawner
         if (!enemyUniqueName && __this) {
-          void* combatCalc = *(void**) ((uintptr_t) __this + 0x48);
+          void* combatCalc = *(void**) ((uintptr_t) __this + Offsets::_combatCalculator);
           if (combatCalc) {
-            void* spawner = *(void**) ((uintptr_t) combatCalc + 0x38);
+            void* spawner = *(void**) ((uintptr_t) combatCalc + Offsets::_currentSpawner);
             if (spawner && IsUnityObjectAlive(spawner)) {
-              void* cardsList = *(void**) ((uintptr_t) spawner + 0x30);
+              void* cardsList = *(void**) ((uintptr_t) spawner + Offsets::_enemyCards);
               if (cardsList) {
-                void* items = *(void**) ((uintptr_t) cardsList + 0x10);
-                int   count = *(int*) ((uintptr_t) cardsList + Offsets::Il2Cpp::Array::length);
+                void* items = *(void**) ((uintptr_t) cardsList + Offsets::Il2Cpp::List::items);
+                int   count = *(int*) ((uintptr_t) cardsList + Offsets::Il2Cpp::List::size);
                 if (items && count > 0) {
                   void* card = *(void**) ((uintptr_t) items + Offsets::Il2Cpp::Array::data);
                   if (card && IsUnityObjectAlive(card)) {
@@ -168,12 +168,12 @@ namespace Features
 
         // Priority D: First registered enemy from _cardDatabase
         if (!enemyUniqueName && __this) {
-          void* cardDb = *(void**) ((uintptr_t) __this + 0x60);
+          void* cardDb = *(void**) ((uintptr_t) __this + Offsets::_cardDatabase);
           if (cardDb) {
-            void* enemiesList = *(void**) ((uintptr_t) cardDb + 0x18);
+            void* enemiesList = *(void**) ((uintptr_t) cardDb + Offsets::enemies);
             if (enemiesList) {
-              void* items = *(void**) ((uintptr_t) enemiesList + 0x10);
-              int   count = *(int*) ((uintptr_t) enemiesList + Offsets::Il2Cpp::Array::length);
+              void* items = *(void**) ((uintptr_t) enemiesList + Offsets::Il2Cpp::List::items);
+              int   count = *(int*) ((uintptr_t) enemiesList + Offsets::Il2Cpp::List::size);
               if (items && count > 0) {
                 void* card = *(void**) ((uintptr_t) items + Offsets::Il2Cpp::Array::data);
                 if (card && IsUnityObjectAlive(card)) {
@@ -198,8 +198,8 @@ namespace Features
           if (gold <= 0.0f) {
             *(float*) ((uintptr_t) snapshot + Offsets::GoldPerHour) = 10000.0f;
           }
-          *(int32_t*) ((uintptr_t) snapshot + 0x20) = 0;  // SkillName::Combat
-          auto* s                                   = reinterpret_cast<Unity::System_String*>(enemyUniqueName);
+          *(int32_t*) ((uintptr_t) snapshot + Offsets::Skill) = 0;  // SkillName::Combat
+          auto* s = reinterpret_cast<Unity::System_String*>(enemyUniqueName);
           if (s && s->m_iLength > 0 && s->m_iLength < 256) {
             s_LastEnemyUniqueName = s->ToString();
           }
