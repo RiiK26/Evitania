@@ -11,7 +11,23 @@ void MainThread(HMODULE hModule)
     return;
   }
 
-  IL2CPP::Initialize();
+  // Wait for GameAssembly.dll to be loaded in process memory
+  while (!GetModuleHandleA("GameAssembly.dll")) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+
+  // Auto-resolve IL2CPP: wait until domain is initialized and assemblies are loaded
+  for (int i = 0; i < 200; ++i) {
+    if (IL2CPP::Initialize(false)) {
+      size_t assemblyCount = 0;
+      if (IL2CPP::Domain::GetAssemblies(&assemblyCount) && assemblyCount > 5) {
+        if (IL2CPP::Class::Find("UnityEngine.GameObject") != nullptr) {
+          break;
+        }
+      }
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 
   Menu::Initialize();
   Hooks::Initialize();

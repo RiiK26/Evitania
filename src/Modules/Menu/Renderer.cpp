@@ -466,24 +466,18 @@ namespace Menu
       void** pVTable  = *reinterpret_cast<void***>(pDummySwapChain);
       void*  pPresent = pVTable[8];
 
-      if (MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent) == MH_OK) {
-        MH_EnableHook(pPresent);
-      }
+      MH_CreateHook(pPresent, (void*) hkPresent, (void**) &oPresent);
 
       IDXGISwapChain1* pSwapChain1 = nullptr;
       if (SUCCEEDED(pDummySwapChain->QueryInterface(__uuidof(IDXGISwapChain1), (void**) &pSwapChain1))) {
         void** pVTable1  = *reinterpret_cast<void***>(pSwapChain1);
         void*  pPresent1 = pVTable1[22];
-        if (MH_CreateHook(pPresent1, (void*) hkPresent1, (void**) &oPresent1) == MH_OK) {
-          MH_EnableHook(pPresent1);
-        }
+        MH_CreateHook(pPresent1, (void*) hkPresent1, (void**) &oPresent1);
         pSwapChain1->Release();
       }
 
       void* pResizeBuffers = pVTable[13];
-      if (MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers) == MH_OK) {
-        MH_EnableHook(pResizeBuffers);
-      }
+      MH_CreateHook(pResizeBuffers, (void*) hkResizeBuffers, (void**) &oResizeBuffers);
 
       pDummySwapChain->Release();
       pDummyDevice->Release();
@@ -509,11 +503,7 @@ namespace Menu
         void** pQueueVTable         = *reinterpret_cast<void***>(pDummyQueue);
         void*  pExecuteCommandLists = pQueueVTable[10];
 
-        if (
-          MH_CreateHook(pExecuteCommandLists, (void*) hkExecuteCommandLists, (void**) &oExecuteCommandLists) == MH_OK
-        ) {
-          MH_EnableHook(pExecuteCommandLists);
-        }
+        MH_CreateHook(pExecuteCommandLists, (void*) hkExecuteCommandLists, (void**) &oExecuteCommandLists);
 
         IDXGIFactory4* pFactory = nullptr;
         if (SUCCEEDED(CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**) &pFactory))) {
@@ -537,15 +527,9 @@ namespace Menu
             void*  pPresent1_12     = pVTable12[22];
             void*  pResizeBuffers12 = pVTable12[13];
 
-            if (MH_CreateHook(pPresent12, (void*) hkPresent, (void**) &oPresent) == MH_OK) {
-              MH_EnableHook(pPresent12);
-            }
-            if (MH_CreateHook(pPresent1_12, (void*) hkPresent1, (void**) &oPresent1) == MH_OK) {
-              MH_EnableHook(pPresent1_12);
-            }
-            if (MH_CreateHook(pResizeBuffers12, (void*) hkResizeBuffers, (void**) &oResizeBuffers) == MH_OK) {
-              MH_EnableHook(pResizeBuffers12);
-            }
+            MH_CreateHook(pPresent12, (void*) hkPresent, (void**) &oPresent);
+            MH_CreateHook(pPresent1_12, (void*) hkPresent1, (void**) &oPresent1);
+            MH_CreateHook(pResizeBuffers12, (void*) hkResizeBuffers, (void**) &oResizeBuffers);
             pD12SwapChain->Release();
           }
           pFactory->Release();

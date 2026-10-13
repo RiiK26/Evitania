@@ -141,8 +141,10 @@ namespace IL2CPP
           break;
       }
 
-      std::lock_guard<std::mutex> m_Lock(Cache::m_ClassByNameMutex);
-      Cache::m_ClassByName.emplace(m_pName, m_pClassReturn);
+      if (m_pClassReturn) {
+        std::lock_guard<std::mutex> m_Lock(Cache::m_ClassByNameMutex);
+        Cache::m_ClassByName.emplace(m_pName, m_pClassReturn);
+      }
       return m_pClassReturn;
     }
 

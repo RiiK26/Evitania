@@ -21,12 +21,6 @@ namespace Hooks
       if (createStatus != MH_OK) { \
         Hooks::bHooksFailed = true; \
       } \
-      else { \
-        int enableStatus = MH_EnableHook(target); \
-        if (enableStatus != MH_OK) { \
-          Hooks::bHooksFailed = true; \
-        } \
-      } \
     } \
     else { \
       Hooks::bHooksFailed = true; \
@@ -42,12 +36,6 @@ namespace Hooks
       if (createStatus != MH_OK) { \
         Hooks::bHooksFailed = true; \
       } \
-      else { \
-        int enableStatus = MH_EnableHook(target); \
-        if (enableStatus != MH_OK) { \
-          Hooks::bHooksFailed = true; \
-        } \
-      } \
     } \
     else { \
       Hooks::bHooksFailed = true; \
@@ -61,12 +49,6 @@ namespace Hooks
       int createStatus = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
       if (createStatus != MH_OK) { \
         Hooks::bHooksFailed = true; \
-      } \
-      else { \
-        int enableStatus = MH_EnableHook(target); \
-        if (enableStatus != MH_OK) { \
-          Hooks::bHooksFailed = true; \
-        } \
       } \
     } \
     else { \
