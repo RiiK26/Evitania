@@ -4,5 +4,5 @@
 namespace Menu
 {
   std::string GetConfigPath();
-  void DrawMenuUI();
+  void        DrawMenuUI();
 }  // namespace Menu

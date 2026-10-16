@@ -517,11 +517,9 @@ namespace Menu
           sd1.SampleDesc.Count           = 1;
 
           IDXGISwapChain1* pD12SwapChain = nullptr;
-          if (
-            SUCCEEDED(
-              pFactory->CreateSwapChainForHwnd(pDummyQueue, dummyWindow, &sd1, nullptr, nullptr, &pD12SwapChain)
-            )
-          ) {
+          HRESULT          hr =
+            pFactory->CreateSwapChainForHwnd(pDummyQueue, dummyWindow, &sd1, nullptr, nullptr, &pD12SwapChain);
+          if (SUCCEEDED(hr)) {
             void** pVTable12        = *reinterpret_cast<void***>(pD12SwapChain);
             void*  pPresent12       = pVTable12[8];
             void*  pPresent1_12     = pVTable12[22];

@@ -13,8 +13,8 @@ namespace Features
     void Update();
 
     std::string GetCurrentStage();
-    void SetCurrentStage(const std::string& stageName);
-    bool IsLoopActive();
-    bool IsValidStage(const std::string& stageName);
+    void        SetCurrentStage(const std::string& stageName);
+    bool        IsLoopActive();
+    bool        IsValidStage(const std::string& stageName);
   }  // namespace StageHopper
 }  // namespace Features
