@@ -54,12 +54,12 @@ jobs:
         with:
           category: "/language:${{ matrix.language }}"
           upload: ${{ github.event.repository.private && 'never' || 'always' }}
-          output: ../results
+          output: results
 
       - name: Upload SARIF Report (for Private Repositories)
         if: github.event.repository.private
         uses: actions/upload-artifact@v7
         with:
           name: codeql-report-${{ matrix.language }}
-          path: ../results/*.sarif
+          path: results/*.sarif
           retention-days: 7
