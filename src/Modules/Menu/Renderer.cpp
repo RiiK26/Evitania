@@ -274,12 +274,10 @@ namespace Menu
           return;
       }
 
-      if (
-        pDevice->CreateCommandList(
-          0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_commandAllocators[0], NULL, IID_PPV_ARGS(&g_pd3dCommandList)
-        )
-        != S_OK
-      )
+      HRESULT hrCmdList = pDevice->CreateCommandList(
+        0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_commandAllocators[0], NULL, IID_PPV_ARGS(&g_pd3dCommandList)
+      );
+      if (hrCmdList != S_OK)
         return;
       g_pd3dCommandList->Close();
 
@@ -497,9 +495,9 @@ namespace Menu
       queueDesc.NodeMask                 = 0;
 
       ID3D12CommandQueue* pDummyQueue    = nullptr;
-      if (
-        SUCCEEDED(pDummyD12Device->CreateCommandQueue(&queueDesc, __uuidof(ID3D12CommandQueue), (void**) &pDummyQueue))
-      ) {
+      HRESULT             hrQueue =
+        pDummyD12Device->CreateCommandQueue(&queueDesc, __uuidof(ID3D12CommandQueue), (void**) &pDummyQueue);
+      if (SUCCEEDED(hrQueue)) {
         void** pQueueVTable         = *reinterpret_cast<void***>(pDummyQueue);
         void*  pExecuteCommandLists = pQueueVTable[10];
 

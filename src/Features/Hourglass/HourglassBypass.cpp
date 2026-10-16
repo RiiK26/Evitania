@@ -344,10 +344,9 @@ namespace Features
             void*   portalEnemyId = *(void**) ((uintptr_t) enemyCard + Offsets::uniqueName);
             int32_t portalDiff    = *(int32_t*) ((uintptr_t) trigger + Offsets::difficulty);
             if (portalEnemyId) {
-              if (
-                (!AreStringsEqual(portalEnemyId, enemyId) || portalDiff != difficulty)
-                && Orig_StatisticsService_AddPortalKill
-              ) {
+              bool needPortalKill = (!AreStringsEqual(portalEnemyId, enemyId) || portalDiff != difficulty)
+                                 && Orig_StatisticsService_AddPortalKill;
+              if (needPortalKill) {
                 Orig_StatisticsService_AddPortalKill(__this, portalDiff, portalEnemyId, amount, nullptr);
               }
               int32_t reqKills = *(int32_t*) ((uintptr_t) trigger + Offsets::mobKillsToOpen);
