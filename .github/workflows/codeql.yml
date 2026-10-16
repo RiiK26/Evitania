@@ -45,7 +45,21 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
+      - name: Build Project for CodeQL Tracking (C/C++)
+        if: matrix.language == 'c-cpp'
+        run: ./scripts/build release
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
+          upload: ${{ github.event.repository.private && 'never' || 'always' }}
+          output: ../results
+
+      - name: Upload SARIF Report (for Private Repositories)
+        if: github.event.repository.private
+        uses: actions/upload-artifact@v7
+        with:
+          name: codeql-report-${{ matrix.language }}
+          path: ../results/*.sarif
+          retention-days: 7
