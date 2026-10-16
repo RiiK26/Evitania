@@ -1,10 +1,10 @@
-# Evitania Online - Cheat Release
+# Evitania Online - Quick Start
 
 Instructions
 
 1. Open The Game
 2. Run the provided script for your operating system:
-   - Windows: Double-click `run.bat`
+   - Windows: Double-click `run.bat` or just click the injector as administrator and open the game
    - Linux: Run `./run.sh` in your terminal
 3. The script will automatically launch the game and inject the cheat.
 4. Once you are inside the game, press **`INSERT`** on your keyboard to open or hide the mod menu.

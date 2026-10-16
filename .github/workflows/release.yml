@@ -125,11 +125,11 @@ jobs:
           ZIP_SIZE="${{ steps.package.outputs.zip_size }}"
 
           cat << EOF > release_body.md
-          ## 🎮 Evitania v${VERSION}
+          ## Evitania v${VERSION}
 
           Release build for **Evitania Online**.
 
-          ### 📋 Compatibility
+          ### Compatibility
           | Property | Value |
           |---|---|
           | **Mod Version** | \`v${VERSION}\` |
@@ -138,14 +138,14 @@ jobs:
           | **Commit** | \`${COMMIT}\` (\`${TAG}\`) |
           | **Package Archive** | \`${ZIP}\` (${ZIP_SIZE}) |
 
-          ### 📝 Source Changes
+          ### Source Changes
           EOF
 
           cat src_changes.txt >> release_body.md
 
           cat << 'EOF' >> release_body.md
 
-          ### 📦 File Checksums (SHA-256)
+          ### File Checksums (SHA-256)
           ```text
           EOF
 
@@ -153,14 +153,6 @@ jobs:
 
           cat << 'EOF' >> release_body.md
           ```
-
-          ### 🚀 Quick Start Guide
-          1. Extract the \`.zip\` archive into a folder.
-          2. Launch the game:
-             - **Windows**: Double-click \`run.bat\`
-             - **Linux (Proton / Steam Deck)**: Run \`./run.sh\` in terminal
-          3. Once in-game, press **\`INSERT\`** to open/close the ImGui cheat menu.
-          4. Settings and feature toggles are automatically saved to \`config.txt\`.
 
           > [!NOTE]
           > Antivirus applications may flag injectors or memory hook DLLs as false positives. You can verify package integrity against the SHA-256 checksums above.
@@ -175,7 +167,7 @@ jobs:
           files: |
             ${{ steps.package.outputs.zip_name }}
             checksums.txt
-          name: Evitania v${{ steps.meta.outputs.version }} (Steam Build ${{ steps.meta.outputs.steam_build_id }})
+          name: v${{ steps.meta.outputs.version }}
           tag_name: ${{ github.ref_name }}
           body_path: release_body.md
           generate_release_notes: true

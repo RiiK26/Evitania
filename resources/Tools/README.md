@@ -2,8 +2,6 @@
 
 This directory contains the automated signature scanning, semantic offset extraction, and deobfuscation bridging toolchain for the Evitania project.
 
----
-
 ## 1. Architecture Overview
 
 Evitania operates without relying on fragile static memory offsets or brittle runtime IL2CPP API calls (`IL2CPP::Class::Utils::GetFieldOffset`). Instead, it employs an automated 3-tier update pipeline:
@@ -35,8 +33,6 @@ graph TD
     end
 ```
 
----
-
 ## 2. Core Components & Tool Matrix
 
 | Tool | Path | Primary Role |
@@ -48,8 +44,6 @@ graph TD
 | **Deobfuscator & Symbol Bridge** | [`deobfuscator.py`](deobfuscator.py) | Bridges obfuscated symbols to canonical project names using known AOB signatures as ground truth. |
 | **Field Usage Inspector** | [`find_field_usage.py`](find_field_usage.py) | Developer inspection tool. Disassembles methods to locate field displacements and generates semantic assembly templates. |
 | **Signature DB Builder** | [`build_sig_db.py`](build_sig_db.py) | Developer tool used when establishing new baseline signatures or adding new features from `dump.cs`. |
-
----
 
 ## 3. Step-by-Step Update Workflows
 
@@ -73,8 +67,6 @@ scripts\update.bat
 4. **Header Generation**: Regenerates `src/Modules/Hooks/Signatures.hpp` and `src/Modules/Hooks/Offsets.hpp`.
 5. **Metadata Update**: Records the new `steam_build_id` and `assembly_sha256` in `config.json`.
 6. **Automated Recompilation**: Invokes `scripts/build release` to produce a fresh `build/release/Evitania <version>.dll`.
-
----
 
 ### Workflow B: Obfuscated Game Update (Future-Proofing / Metadata Scrambling)
 
@@ -105,8 +97,6 @@ python3 resources/Tools/find_field_usage.py EnemyNpcController TakeDamage alive
 ```
 The tools will automatically map `EnemyNpcController` to `Class_a19` and `alive` to `field_xyz`.
 
----
-
 ### Workflow C: Hooking a New Feature / Adding New Offsets
 
 When writing a brand new feature that requires a new method hook or field offset:
@@ -135,8 +125,6 @@ python3 resources/Tools/build_sig_db.py
 ./scripts/update --force
 ```
 
----
-
 ### Workflow D: Handling Encrypted Binaries & Missing Dumps (Live Memory Bridge)
 
 If the game updates with binary packing/encryption (e.g. Themida, VMProtect, Steam DRM stub) or if metadata is encrypted/stripped so `dump.cs` cannot be generated:
@@ -157,8 +145,6 @@ If the game updates with binary packing/encryption (e.g. Themida, VMProtect, Ste
 - Dumps the fully decrypted `GameAssembly.dll` from RAM to `resources/dumped/GameAssembly_memory.dll`.
 - Reconstructs PE Section Headers (`PointerToRawData = VirtualAddress`), making the dump 100% valid for Capstone and Ghidra.
 - Scans process memory for the `0xFAB11BAF` magic to dump unencrypted `global-metadata_dumped.dat`.
-
----
 
 ## 4. Semantic Offset Extraction Rules
 
@@ -189,8 +175,6 @@ In `config.json`, extraction rules support human-readable assembly templates wit
 | `op_idx` | `int` | Preferred operand index (0 for destination, 1 for source). |
 | `match_idx` | `int` | *(Optional)* Explicit match occurrence (0 for first occurrence, 1 for second). |
 | `hardcoded` | `int` | Static offset fallback for generic collections (`Il2Cpp_Array`, `Il2Cpp_Dictionary`, `Il2Cpp_List`). |
-
----
 
 ## 5. Command-Line Reference
 
@@ -265,8 +249,6 @@ python3 resources/Tools/find_field_usage.py --list-fields <Class>
 # List methods for a class:
 python3 resources/Tools/find_field_usage.py --list-methods <Class>
 ```
-
----
 
 ## 6. Troubleshooting & Diagnostics
 
