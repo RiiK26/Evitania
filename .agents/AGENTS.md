@@ -11,8 +11,11 @@
 ## Commands
 - **Unified Game Update & Rebuild**: `scripts/update` (Detects Steam update, validates signatures & semantic offsets, updates config.json, and rebuilds)
 - **Check Game Update Status**: `scripts/update --check`
-- **Build Project**: `scripts/build`
-- **Run the Project**: `scripts/run`
+- **Build Project**: `scripts/build [release|clean|debug|no-injector]` (Cross-compiles with MinGW on Linux or builds with MSVC on Windows)
+- **Run the Project**: `scripts/run.sh` (Linux Proton / Steam Deck launch option) or `scripts\run.bat` (Windows)
+- **Verify Code Formatting**:
+  - C/C++: `git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror --Wno-error=unknown`
+  - Python: `ruff format --check resources/Tools/*.py`
 - **Generate Signatures & Offsets**: `python3 resources/Tools/aobgenerator.py`
 - **Build Baseline Signature DB**: `python3 resources/Tools/build_sig_db.py`
 - **Find Field Usage & Disassemble**: `python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> [--disasm]`
@@ -26,9 +29,21 @@
 - **Hooking**: Always prefer `HOOK_SIGNATURE` (AOB pattern scanning) or `HOOK_METHOD` over static `HOOK_OFFSET` where possible. Dynamic resolving and signatures are resilient to game updates and obfuscation, whereas hardcoded offsets break immediately.
 - **Offset Extraction & Centralization**: NEVER use `IL2CPP::Class::Utils::GetFieldOffset` in C++ for field offsets, as it breaks when games are obfuscated. Rely on `aobgenerator.py` which dynamically extracts offsets via Capstone machine-code analysis. Centralize all offsets in `Offsets.hpp`: low-level runtime structures are separated under `Offsets::Il2Cpp::...` (e.g., `Array::data`, `List::items`, `Object::cachedPtr`, `Dictionary::entryStride`), while gameplay field offsets reside under `Offsets::...` (e.g. `Offsets::alive`, `Offsets::_combatCalculator`). Never hardcode magic numbers for structs or collection layouts in hooks or helpers.
 - **Signature Database**: `config.json` at the root of the project serves as the baseline signature and extraction rule database. Generic runtime collections are categorized as `Il2Cpp_<Struct>` (e.g., `Il2Cpp_Array`, `Il2Cpp_Dictionary`, `Il2Cpp_List`, `Il2Cpp_Object`). Constructor methods (`.ctor`) in `targets` are sanitized to `ctor` in C++ identifiers (e.g., `Attack_ctor`, `EntityCardDatabase_ctor`).
-- **Toggles & Config**: Store feature toggles and parameters (like damage values) in `Menu::ConfigData`. Load/save these values using `config.txt` at the project binaries directory. Avoid hardcoding magic numbers for features.
+- **Toggles & Config**: Store feature toggles and parameters (like damage values) in `Menu::ConfigData`. Load/save these values using `config.txt` at the project binaries directory. Avoid hardcoding magic numbers for features. Always use bounded parsing (like `SafeParseInt`) to guard against unhandled exceptions on invalid config tokens.
+- **Injector & Binary Scoping**: `src/Cores/injector.cpp` is strictly restricted to `EvitaniaOnline.exe` (`TARGET_PROCESS_NAME`) and `Evitania*.dll` (`PROJECT_NAME`). Foreign/global DLLs (e.g., `GameAssembly.dll`, `UnityPlayer.dll`, `dxgi.dll`) and non-target processes are rejected. Auto-discovery sorts candidates by `ftLastWriteTime` to always select the latest compiled binary. If the game process is not running, `WaitForProcess` polls every 500ms for up to 60 seconds before timing out.
 - **Initialization**: Every feature file must have an `Initialize()` and `Uninitialize()` function, which is registered in `src/Modules/Hooks/Hooks.cpp`.
 - **Performance**: Game loops and property getters (e.g., `get_Cost`) can be called thousands of times per second (especially during loading screens). **NEVER** use expensive operations like `std::unordered_map` lookups or heap allocations directly in the hot-path of these hooks, as it will cripple boot and framerate times. Cache or aggressively bypass these checks whenever possible.
+- **Windows Header Optimization**: If including `<windows.h>`, always guard with optimization macros:
+```cpp
+#ifndef WIN32_LEAN_AND_MEAN
+  #define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+  #define NOMINMAX
+#endif
+
+#include <windows.h>
+```
 - **IDE Parsing (`clangd`)**: The project uses a `.clangd` file to force-include `IL2CPP_Resolver.hpp` for internal module headers. Do NOT manually add `#include "../../IL2CPP_Resolver.hpp"` to internal headers, as it causes circular dependency "incomplete type" errors in the IDE.
 
 ## Boundaries
@@ -36,6 +51,7 @@
 - Both `dump.cs` and `GameAssembly.dll` are required for maintaining updates. `build_sig_db.py` relies on `dump.cs` to generate the signature database (`config.json`), which `aobgenerator.py` then uses against `GameAssembly.dll`.
 - Do not commit large compiled binaries (`.dll`, `.exe`) to version control.
 - Avoid using `.hpp` to define logic; use `.hpp` for declarations and `.cpp` for implementations.
+- Vendor code in `src/Modules/(ImGui|MinHook|Il2CppResolver)` must not be reformatted or modified directly, and is excluded from CodeQL and PR format checks via `.github/codeql/codeql-config.yml`.
 
 ## Patterns
 
@@ -102,6 +118,8 @@ inline bool IsUnityObjectAlive(void* obj)
 - **Feature Isolation**: Never reuse general store toggles (`bFreeStore`) or currency toggles (`bInfiniteCurrency`) across subsystem progression. `InfiniteCurrency` strictly prevents subtraction of currencies (`CurrencyService::Subtract`, `HourglassService::AddResource` with `delta < 0`), while subsystem upgrade freeing (Engineer, Hunter, Bonfire, Hourglass of Eternity) must reside in its own dedicated feature module under the respective ImGui tab with its own distinct toggle.
 - **GC Managed Object Reuse**: Never cache raw managed instances (e.g. `OfflineActivitySnapshot`) across calls. Unity's garbage collector frees or moves them, causing second-use memory corruption or access violation crashes. Always allow the original method to allocate a fresh, GC-tracked instance, then patch the required fields on that instance.
 - **Timeskip Mob Kill Progression**: Offline timeskip rewards grant monster kills via `StatisticsService::AddKillWithPortalProgress`, but stage lock gates require specific difficulty and enemy ID matches via `MobKillTrigger::Apply` and `StatisticsService::AddPortalKill`. If triggers are inactive (e.g. player in town), queue pending kills to apply upon entering a portal stage.
+- **Multiple Build Versions in Output Folder**: Never assume `ls | head -n 1` or `FindFirstFile` returns the newest build if multiple versioned DLLs exist in the build directory (e.g. `Evitania v0.320.1.dll` vs `Evitania v0.320.2.dll`). Always sort by modification timestamp (`ls -t`, `dir /o:-d`, or `CompareFileTime`) to guarantee the newest binary is loaded.
+- **CodeQL Path Filtering on Manual C++ Builds**: In CodeQL, `paths-ignore` in `.github/codeql/codeql-config.yml` natively applies to interpreted languages, but manual C++ compiler tracing captures all compiled vendor files regardless. To keep CI reports clean, post-process the generated SARIF files in workflow steps to strip vendor URIs before publishing step summaries or uploading artifacts.
 
 ## Game Acknowledge
 - **Trade & Economy Architecture**:
