@@ -1,92 +1,140 @@
 #include "Scanner.hpp"
-#include <vector>
 #include <cstdint>
 #include <cstring>
 
 namespace Scanner
 {
-  std::vector<int> ParsePattern(const char* pattern)
+  struct CodeSectionInfo
   {
-    std::vector<int> bytes;
-    const char*      start = pattern;
-    const char*      end   = pattern + strlen(pattern);
+    HMODULE   hModule   = nullptr;
+    uintptr_t codeStart = 0;
+    size_t    codeSize  = 0;
+  };
 
-    for (const char* current = start; current < end; ++current) {
-      if (*current == '?') {
-        bytes.push_back(-1);
-        if (current + 1 < end && *(current + 1) == '?')
-          ++current;  // Skip second ? in "??"
-      }
-      else if (*current != ' ') {
-        bytes.push_back(strtoul(current, const_cast<char**>(&current), 16));
-      }
-    }
-    return bytes;
-  }
+  static CodeSectionInfo s_cachedCode;
 
   uintptr_t FindPattern(HMODULE hModule, const char* pattern)
   {
-    if (!hModule)
+    if (!hModule || !pattern)
       return 0;
 
-    auto dosHeader = (PIMAGE_DOS_HEADER) hModule;
-    if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE)
+    // Cache executable code section boundaries to eliminate redundant PE traversal
+    if (s_cachedCode.hModule != hModule) {
+      auto dosHeader = (PIMAGE_DOS_HEADER) hModule;
+      if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE)
+        return 0;
+
+      auto ntHeaders = (PIMAGE_NT_HEADERS) ((uint8_t*) hModule + dosHeader->e_lfanew);
+      if (ntHeaders->Signature != IMAGE_NT_SIGNATURE)
+        return 0;
+
+      uintptr_t minExec = 0;
+      uintptr_t maxExec = 0;
+      auto      section = IMAGE_FIRST_SECTION(ntHeaders);
+
+      for (WORD i = 0; i < ntHeaders->FileHeader.NumberOfSections; ++i, ++section) {
+        if (section->Characteristics & IMAGE_SCN_MEM_EXECUTE) {
+          uintptr_t sStart = (uintptr_t) hModule + section->VirtualAddress;
+          uintptr_t sEnd   = sStart + section->Misc.VirtualSize;
+          if (minExec == 0 || sStart < minExec)
+            minExec = sStart;
+          if (sEnd > maxExec)
+            maxExec = sEnd;
+        }
+      }
+
+      if (minExec != 0 && maxExec > minExec) {
+        s_cachedCode.codeStart = minExec;
+        s_cachedCode.codeSize  = maxExec - minExec;
+      }
+      else {
+        s_cachedCode.codeStart = (uintptr_t) hModule;
+        s_cachedCode.codeSize  = ntHeaders->OptionalHeader.SizeOfImage;
+      }
+      s_cachedCode.hModule = hModule;
+    }
+
+    // Stack-allocated pattern buffers (zero heap allocations)
+    uint8_t patBytes[512];
+    uint8_t patMask[512];
+    size_t  patSize              = 0;
+    size_t  firstNonWildcardPos  = SIZE_MAX;
+    uint8_t firstNonWildcardByte = 0;
+
+    const char* curr             = pattern;
+    while (*curr && patSize < 512) {
+      if (*curr == ' ') {
+        curr++;
+        continue;
+      }
+
+      if (*curr == '?') {
+        patBytes[patSize] = 0;
+        patMask[patSize]  = 0x00;
+        patSize++;
+        curr++;
+        if (*curr == '?')
+          curr++;
+      }
+      else {
+        char*         endPtr = nullptr;
+        unsigned long val    = strtoul(curr, &endPtr, 16);
+        if (endPtr == curr)
+          break;
+        patBytes[patSize] = (uint8_t) val;
+        patMask[patSize]  = 0xFF;
+        if (firstNonWildcardPos == SIZE_MAX) {
+          firstNonWildcardPos  = patSize;
+          firstNonWildcardByte = (uint8_t) val;
+        }
+        patSize++;
+        curr = endPtr;
+      }
+    }
+
+    if (patSize == 0 || s_cachedCode.codeSize < patSize)
       return 0;
 
-    auto ntHeaders = (PIMAGE_NT_HEADERS) ((uint8_t*) hModule + dosHeader->e_lfanew);
-    if (ntHeaders->Signature != IMAGE_NT_SIGNATURE)
-      return 0;
+    uint8_t* scanStart = (uint8_t*) s_cachedCode.codeStart;
+    uint8_t* scanEnd   = scanStart + s_cachedCode.codeSize - patSize;
 
-    uintptr_t moduleBase          = (uintptr_t) hModule;
-    size_t    moduleSize          = ntHeaders->OptionalHeader.SizeOfImage;
+    if (firstNonWildcardPos != SIZE_MAX) {
+      uint8_t* p    = scanStart + firstNonWildcardPos;
+      uint8_t* pEnd = scanEnd + firstNonWildcardPos;
 
-    std::vector<int> patternBytes = ParsePattern(pattern);
-    if (patternBytes.empty())
-      return 0;
-
-    size_t patternSize = patternBytes.size();
-    int*   pat         = patternBytes.data();
-
-    if (moduleSize < patternSize)
-      return 0;
-
-    uint8_t* start = (uint8_t*) moduleBase;
-    uint8_t* end   = start + moduleSize - patternSize;
-
-    if (pat[0] != -1) {
-      uint8_t firstByte = (uint8_t) pat[0];
-      while (start <= end) {
-        start = (uint8_t*) memchr(start, firstByte, end - start + 1);
-        if (!start)
+      while (p <= pEnd) {
+        p = (uint8_t*) memchr(p, firstNonWildcardByte, pEnd - p + 1);
+        if (!p)
           return 0;
 
-        bool found = true;
-        for (size_t j = 1; j < patternSize; ++j) {
-          if (pat[j] != -1 && pat[j] != start[j]) {
-            found = false;
+        uint8_t* candidate = p - firstNonWildcardPos;
+        bool     match     = true;
+        for (size_t j = 0; j < patSize; ++j) {
+          if ((candidate[j] ^ patBytes[j]) & patMask[j]) {
+            match = false;
             break;
           }
         }
-        if (found) {
-          return (uintptr_t) start;
-        }
-        start++;
+        if (match)
+          return (uintptr_t) candidate;
+
+        p++;
       }
     }
     else {
-      for (uint8_t* curr = start; curr <= end; ++curr) {
-        bool found = true;
-        for (size_t j = 0; j < patternSize; ++j) {
-          if (pat[j] != -1 && pat[j] != curr[j]) {
-            found = false;
+      for (uint8_t* p = scanStart; p <= scanEnd; ++p) {
+        bool match = true;
+        for (size_t j = 0; j < patSize; ++j) {
+          if ((p[j] ^ patBytes[j]) & patMask[j]) {
+            match = false;
             break;
           }
         }
-        if (found) {
-          return (uintptr_t) curr;
-        }
+        if (match)
+          return (uintptr_t) p;
       }
     }
+
     return 0;
   }
 
@@ -100,8 +148,11 @@ namespace Scanner
     if (VirtualQuery((LPCVOID) targetAddr, &mbi, sizeof(mbi)) == 0)
       return defaultValue;
 
-    if (!(mbi.State == MEM_COMMIT
-          && (mbi.Protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))))
+    DWORD invalidMask  = PAGE_GUARD | PAGE_NOACCESS;
+    DWORD readableMask = PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE
+                       | PAGE_EXECUTE_WRITECOPY;
+
+    if (mbi.State != MEM_COMMIT || (mbi.Protect & readableMask) == 0 || (mbi.Protect & invalidMask) != 0)
       return defaultValue;
 
     if (dispSize == 1) {
@@ -126,8 +177,11 @@ namespace Scanner
     if (VirtualQuery((LPCVOID) dispAddr, &mbi, sizeof(mbi)) == 0)
       return 0;
 
-    if (!(mbi.State == MEM_COMMIT
-          && (mbi.Protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))))
+    DWORD invalidMask  = PAGE_GUARD | PAGE_NOACCESS;
+    DWORD readableMask = PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE
+                       | PAGE_EXECUTE_WRITECOPY;
+
+    if (mbi.State != MEM_COMMIT || (mbi.Protect & readableMask) == 0 || (mbi.Protect & invalidMask) != 0)
       return 0;
 
     int32_t relOffset = *(int32_t*) dispAddr;
