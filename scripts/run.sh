@@ -1,29 +1,28 @@
 #!/bin/bash
 # scripts/run.sh
-# Run this script to inject the built Evitania.dll into the running Evitania Online game.
-
+# Run this script to inject the built Evitania.dll into the running Evitania Online
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # For end user that just download from Release
-if ls "$SCRIPT_DIR/"*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/injector.exe" ]; then
-    DLL_PATH=$(ls "$SCRIPT_DIR/"*.dll | head -n 1)
+if ls "$SCRIPT_DIR/"Evitania*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/injector.exe" ]; then
+    DLL_PATH=$(ls -t "$SCRIPT_DIR/"Evitania*.dll | head -n 1)
     INJECTOR_EXE="$SCRIPT_DIR/injector.exe"
 # For user who build from source code (Release)
-elif ls "$SCRIPT_DIR/../build/release/"*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/release/injector.exe" ]; then
-    DLL_PATH=$(ls "$SCRIPT_DIR/../build/release/"*.dll | head -n 1)
+elif ls "$SCRIPT_DIR/../build/release/"Evitania*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/release/injector.exe" ]; then
+    DLL_PATH=$(ls -t "$SCRIPT_DIR/../build/release/"Evitania*.dll | head -n 1)
     INJECTOR_EXE="$SCRIPT_DIR/../build/release/injector.exe"
 # For user who build from source code (RelWithDebInfo / Clean)
-elif ls "$SCRIPT_DIR/../build/relwithdebinfo/"*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/relwithdebinfo/injector.exe" ]; then
-    DLL_PATH=$(ls "$SCRIPT_DIR/../build/relwithdebinfo/"*.dll | head -n 1)
+elif ls "$SCRIPT_DIR/../build/relwithdebinfo/"Evitania*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/relwithdebinfo/injector.exe" ]; then
+    DLL_PATH=$(ls -t "$SCRIPT_DIR/../build/relwithdebinfo/"Evitania*.dll | head -n 1)
     INJECTOR_EXE="$SCRIPT_DIR/../build/relwithdebinfo/injector.exe"
 # For user who build from source code (Debug)
-elif ls "$SCRIPT_DIR/../build/debug/"*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/debug/injector.exe" ]; then
-    DLL_PATH=$(ls "$SCRIPT_DIR/../build/debug/"*.dll | head -n 1)
+elif ls "$SCRIPT_DIR/../build/debug/"Evitania*.dll 1> /dev/null 2>&1 && [ -f "$SCRIPT_DIR/../build/debug/injector.exe" ]; then
+    DLL_PATH=$(ls -t "$SCRIPT_DIR/../build/debug/"Evitania*.dll | head -n 1)
     INJECTOR_EXE="$SCRIPT_DIR/../build/debug/injector.exe"
 else
-    echo "Error: Could not find any .dll and injector.exe. Please build the project or extract the release archive."
+    echo "Error: Could not find any Evitania*.dll and injector.exe. Please build the project or extract the release archive."
     exit 1
 fi
 
