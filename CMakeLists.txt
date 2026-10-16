@@ -72,6 +72,7 @@ endif()
 
 add_compile_definitions(
     PROJECT_VERSION=\"${PROJECT_VERSION}\"
+    PROJECT_NAME=\"${PARSED_PROJECT_NAME}\"
     $<$<NOT:$<CONFIG:Debug>>:NDEBUG> # Disables asserts in non-Debug builds
     $<$<CONFIG:Debug>:_DEBUG>
 )
@@ -99,6 +100,7 @@ add_library(Evitania MODULE
 if(BUILD_INJECTOR)
     add_executable(injector WIN32 src/Cores/injector.cpp)
     set_target_properties(injector PROPERTIES SUFFIX ".exe")
+    target_link_libraries(injector PRIVATE shell32)
     if(NOT MSVC)
         target_link_options(injector PRIVATE "-static" "-static-libgcc" "-static-libstdc++")
     endif()
