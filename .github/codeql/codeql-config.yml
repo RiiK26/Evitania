@@ -1,0 +1,8 @@
+name: "CodeQL Custom Configuration"
+
+disable-default-queries: false
+
+paths-ignore:
+  - "src/Modules/ImGui/**"
+  - "src/Modules/MinHook/**"
+  - "src/Modules/Il2CppResolver/**"
