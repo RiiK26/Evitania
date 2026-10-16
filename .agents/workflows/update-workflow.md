@@ -24,8 +24,9 @@ graph TD
 | Tool | Path | Role |
 | :--- | :--- | :--- |
 | **`scripts/update`** | `scripts/update` | **Primary Entry Point**: Detects Steam updates, scans signatures, extracts semantic offsets, updates config.json, and compiles `Evitania.dll`. |
-| **`updater.py`** | `resources/Tools/updater.py` | Python engine behind `scripts/update`. Handles build ID tracking, signature validation, and build automation. |
-| **`aobgenerator.py`** | `resources/Tools/aobgenerator.py` | Pattern scans `GameAssembly.dll` against `config.json` and dynamically outputs `Signatures.hpp` and `Offsets.hpp`. |
+| **`updater.py`** | `resources/Tools/updater.py` | Python engine behind `scripts/update`. Handles build ID tracking, signature validation, live RAM dumping, and build automation. |
+| **`dump_memory.py`** | `resources/Tools/dump_memory.py` | Live process RAM dumper. Extracts decrypted `GameAssembly.dll` and metadata from running game (Linux/Wine and Windows). |
+| **`aobgenerator.py`** | `resources/Tools/aobgenerator.py` | Pattern scans `GameAssembly.dll` against `config.json` and dynamically outputs `Signatures.hpp` and `Offsets.hpp` using two-pass semantic matching. |
 | **`find_field_usage.py`** | `resources/Tools/find_field_usage.py` | Disassembles methods to locate exact instruction and operand indices where fields are accessed and emits semantic patterns. |
 | **`build_sig_db.py`** | `resources/Tools/build_sig_db.py` | Scans `dump.cs` + `GameAssembly.dll` to generate unique AOB signatures and extraction rules into `config.json`. |
 | **`Il2CppDumper`** | External tool | Generates `dump.cs` and `script.json` from `GameAssembly.dll` and `global-metadata.dat` (only needed when adding brand new features). |

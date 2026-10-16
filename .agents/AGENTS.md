@@ -17,7 +17,8 @@
 - **Build Baseline Signature DB**: `python3 resources/Tools/build_sig_db.py`
 - **Find Field Usage & Disassemble**: `python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> [--disasm]`
 - **Deobfuscator & Symbol Bridge**: `python3 resources/Tools/deobfuscator.py [--all|--ghidra|--ida|--patch-dump]` (Maps obfuscated names to canonical symbols and exports Ghidra/IDA renamers)
-- **Update Workflow Guide**: Reference [.agents/workflows/update-workflow.md](file:///home/riik/Projects/Evitania/.agents/workflows/update-workflow.md) for full update procedure.
+- **Live Memory Dumper**: `python3 resources/Tools/dump_memory.py` (Dumps decrypted GameAssembly.dll & metadata from running process RAM for encrypted binary resilience; or run `scripts/update --from-mem`)
+- **Update Workflow Guide**: Reference [.agents/workflows/update-workflow.md](/.agents/workflows/update-workflow.md) for full update procedure.
 
 ## Code Conventions
 - **Modular Architecture**: 1 Feature = 1 `.hpp`/`.cpp` pair located inside `src/Features/<Domain>/` (e.g. `src/Features/Combat/GodMode.cpp`). **No god files.**

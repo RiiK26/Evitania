@@ -42,8 +42,9 @@ graph TD
 | Tool | Path | Primary Role |
 | :--- | :--- | :--- |
 | **Unified Runner** | [`scripts/update`](../../scripts/update) | **Primary Entry Point**: Detects Steam update, validates signatures, extracts semantic offsets, updates metadata, and rebuilds the DLL. |
-| **Update Engine** | [`updater.py`](updater.py) | Python backend powering `scripts/update`. Inspects Steam `appmanifest_4119420.acf` and binary SHA-256 hash. |
-| **AOB & Offset Generator** | [`aobgenerator.py`](aobgenerator.py) | Scans raw machine code in `GameAssembly.dll` and extracts field offsets via Capstone assembly disassembler. |
+| **Update Engine** | [`updater.py`](updater.py) | Python backend powering `scripts/update`. Inspects Steam `appmanifest_4119420.acf` and binary SHA-256 hash. Supports `--from-mem` and custom `--dll`. |
+| **Memory Dumper** | [`dump_memory.py`](dump_memory.py) | Extracts decrypted `GameAssembly.dll` and `global-metadata.dat` from live process RAM (Linux/Wine/Proton and Windows). Rebuilds PE section headers. |
+| **AOB & Offset Generator** | [`aobgenerator.py`](aobgenerator.py) | Scans raw machine code in `GameAssembly.dll` and extracts field offsets via two-pass semantic matching (strict + register-relaxed). |
 | **Deobfuscator & Symbol Bridge** | [`deobfuscator.py`](deobfuscator.py) | Bridges obfuscated symbols to canonical project names using known AOB signatures as ground truth. |
 | **Field Usage Inspector** | [`find_field_usage.py`](find_field_usage.py) | Developer inspection tool. Disassembles methods to locate field displacements and generates semantic assembly templates. |
 | **Signature DB Builder** | [`build_sig_db.py`](build_sig_db.py) | Developer tool used when establishing new baseline signatures or adding new features from `dump.cs`. |
@@ -136,6 +137,29 @@ python3 resources/Tools/build_sig_db.py
 
 ---
 
+### Workflow D: Handling Encrypted Binaries & Missing Dumps (Live Memory Bridge)
+
+If the game updates with binary packing/encryption (e.g. Themida, VMProtect, Steam DRM stub) or if metadata is encrypted/stripped so `dump.cs` cannot be generated:
+
+1. **Launch the Game**: Run `Evitania.exe` through Steam. The game's native loader will unpack the code and decrypt IL2CPP metadata into RAM.
+2. **Execute In-Memory Extraction**:
+   ```bash
+   # Automatically dumps GameAssembly.dll from RAM and runs the full update pipeline:
+   scripts/update --from-mem
+
+   # Or run the dumper manually:
+   python3 resources/Tools/dump_memory.py
+   scripts/update --dll resources/dumped/GameAssembly_memory.dll
+   ```
+
+**What the Dumper Does:**
+- Introspects the running game process (Linux `/proc/<pid>/mem` or Windows `ReadProcessMemory`).
+- Dumps the fully decrypted `GameAssembly.dll` from RAM to `resources/dumped/GameAssembly_memory.dll`.
+- Reconstructs PE Section Headers (`PointerToRawData = VirtualAddress`), making the dump 100% valid for Capstone and Ghidra.
+- Scans process memory for the `0xFAB11BAF` magic to dump unencrypted `global-metadata_dumped.dat`.
+
+---
+
 ## 4. Semantic Offset Extraction Rules
 
 In `config.json`, extraction rules support human-readable assembly templates with `?` as the displacement placeholder:
@@ -152,6 +176,10 @@ In `config.json`, extraction rules support human-readable assembly templates wit
     }
 }
 ```
+
+### Two-Pass Semantic Engine:
+- **Pass 1 (Strict)**: Matches exact register names specified in `pattern` (e.g. `rcx`, `rdi`).
+- **Pass 2 (Relaxed-Register)**: If the compiler swapped registers (e.g. `rcx` -> `rax`, `rdi` -> `rbx`, `xmm6` -> `xmm1`), automatically relaxes register constraints while preserving mnemonic, operands, and memory displacement structures. This prevents updates from breaking on compiler optimization shifts.
 
 ### Rule Properties:
 | Property | Type | Description |
@@ -185,6 +213,24 @@ In `config.json`, extraction rules support human-readable assembly templates wit
 
 # Generate JSON summary report (update_report.json):
 ./scripts/update --force --report
+
+# Extract from live game RAM when disk binary is encrypted:
+./scripts/update --from-mem
+
+# Extract from a custom dumped binary:
+./scripts/update --dll resources/dumped/GameAssembly_memory.dll
+```
+
+### `dump_memory.py`
+```bash
+# Auto-detect running Evitania process, dump GameAssembly.dll and global-metadata.dat:
+python3 resources/Tools/dump_memory.py
+
+# Attach to a specific PID:
+python3 resources/Tools/dump_memory.py --pid 12345
+
+# Target a custom process name or output folder:
+python3 resources/Tools/dump_memory.py --name Evitania.exe --output-dir resources/dumped
 ```
 
 ### `deobfuscator.py`
