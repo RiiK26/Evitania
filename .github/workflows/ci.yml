@@ -1,0 +1,91 @@
+name: Codebase Check & CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  format-check:
+    name: Code Formatting (C/C++ & Python)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Check Python Code Formatting (Ruff)
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ruff
+          ruff format --check resources/Tools/*.py
+          echo "[+] Python code formatting verified via Ruff."
+
+      - name: Check C/C++ Code Formatting (clang-format)
+        run: |
+          if ! command -v clang-format &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y clang-format
+          fi
+          git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror
+          echo "[+] C/C++ code formatting verified against .clang-format."
+
+  validate:
+    name: Codebase & Config Validation
+    runs-on: ubuntu-latest
+    needs: format-check
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Validate config.json Schema
+        run: |
+          python3 -c "
+          import json
+          with open('config.json') as f:
+              cfg = json.load(f)
+          assert 'signatures' in cfg, 'Missing signatures dictionary in config.json'
+          assert 'version' in cfg, 'Missing version in config.json'
+          assert 'steam_build_id' in cfg, 'Missing steam_build_id in config.json'
+          print(f'[+] config.json valid: {len(cfg[\"signatures\"])} signatures tracked.')
+          "
+
+      - name: Validate Python Scripts Syntax
+        run: |
+          python3 -m py_compile resources/Tools/*.py
+          echo "[+] Python tooling syntax verified."
+
+  build-check:
+    name: Cross-Compile Build Check
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Install MinGW-w64 & Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 cmake zip jq
+
+      - name: Build Evitania Release
+        run: ./scripts/build release
+
+      - name: Build Evitania Clean (No Injector)
+        run: ./scripts/build clean no-injector
+
+      - name: Verify Output Artifact
+        run: |
+          VERSION=$(jq -r .version config.json)
+          test -f "build/release/Evitania v${VERSION}.dll"
+          echo "[+] Build verification passed: Evitania v${VERSION}.dll compiled successfully."
