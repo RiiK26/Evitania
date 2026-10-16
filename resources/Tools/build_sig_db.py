@@ -164,7 +164,9 @@ def get_offsets():
                     canon_cls, canon_f = canon_field_full.split("::", 1)
                     if canon_cls in class_data and raw_cls in class_data:
                         if raw_f in class_data[raw_cls]["fields"]:
-                            class_data[canon_cls]["fields"][canon_f] = class_data[raw_cls]["fields"][raw_f]
+                            class_data[canon_cls]["fields"][canon_f] = class_data[
+                                raw_cls
+                            ]["fields"][raw_f]
         except Exception:
             pass
 
@@ -272,7 +274,7 @@ def find_usage(pe, pe_data, md, rva, target_offset):
 
 def main():
     class_data = get_offsets()
-    pe = pefile.PE(DLL_PATH)
+    pe = pefile.PE(DLL_PATH, fast_load=True)
     pe_data = pe.get_memory_mapped_image()
     md = Cs(CS_ARCH_X86, CS_MODE_64)
     md.detail = True

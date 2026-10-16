@@ -103,14 +103,17 @@ def compile_pattern_to_regex(pattern, relaxed_registers=False):
     # Escape regex specials except ? and *
     p = pattern.replace("?", "__DISP__").replace("*", "__WILDCARD__")
     if relaxed_registers:
-        reg_pattern = r"\b(?:r[a-d]x|r[s|b]p|r[s|d]i|r[8-9][a-z0-9]?|r1[0-5][a-z0-9]?|e[a-d]x|e[s|b]p|e[s|d]i|xmm\d+|ymm\d+)\b"
+        reg_pattern = r"\b(?:r[a-d]x|r[s|b]p|r[s|d]i|r[8-9][a-z0-9]?|r1[0-5][a-z0-9]?|e[a-d]x|e[s|b]p|e[s|d]i|[a-d][lh]|[s|d]il|[b|s]pl|r[8-9]b|r1[0-5]b|xmm\d+|ymm\d+)\b"
         p = re.sub(reg_pattern, "__REG__", p, flags=re.IGNORECASE)
 
     p = re.escape(p)
     p = p.replace("__DISP__", r"(?:0x[0-9a-fA-F]+|\d+)")
     p = p.replace("__WILDCARD__", r"[a-zA-Z0-9_]+")
     if relaxed_registers:
-        p = p.replace("__REG__", r"(?:r[a-z0-9]+|e[a-z0-9]+|xmm\d+|ymm\d+)")
+        p = p.replace(
+            "__REG__",
+            r"(?:r[a-z0-9]+|e[a-z0-9]+|[a-d][lh]|[s|d]il|[b|s]pl|xmm\d+|ymm\d+)",
+        )
     p = re.sub(r"\\ ", r"\\s+", p)
     p = re.sub(r"\\\[", r"\\[\\s*", p)
     p = re.sub(r"\\\]", r"\\s*\\]", p)
@@ -236,7 +239,7 @@ def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=Tru
 
     if verbose:
         print("[*] Loading GameAssembly.dll...")
-    pe = pefile.PE(target_dll)
+    pe = pefile.PE(target_dll, fast_load=True)
     pe_data = pe.get_memory_mapped_image()
 
     md = Cs(CS_ARCH_X86, CS_MODE_64)

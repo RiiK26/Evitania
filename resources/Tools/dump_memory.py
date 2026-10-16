@@ -263,20 +263,38 @@ def dump_from_linux(pid, module_name, output_dir, fix_pe=True):
     print(f"[+] Found {module_name} in RAM:")
     print(f"    - Base Address: 0x{base_addr:X}")
     print(f"    - End Address:  0x{max_addr:X}")
-    print(f"    - Mapped Size:  {total_size / (1024*1024):.2f} MB ({total_size} bytes)")
+    print(
+        f"    - Mapped Size:  {total_size / (1024 * 1024):.2f} MB ({total_size} bytes)"
+    )
 
-    # 2. Read PE Module from Memory
-    print("[*] Reading module memory space...")
-    raw_pe = read_process_memory_linux(pid, base_addr, total_size)
-    if not raw_pe or len(raw_pe) < 0x1000:
-        print(f"[-] Failed to read module memory from /proc/{pid}/mem.")
+    # 2. Read PE Module from Memory (Segment-by-Segment into a contiguous image)
+    print(
+        f"[*] Reading module memory space across {len(mod_regions)} mapped segments..."
+    )
+    raw_pe_buf = bytearray(total_size)
+    bytes_read_total = 0
+
+    for seg in mod_regions:
+        seg_start = seg["start"]
+        seg_size = seg["end"] - seg_start
+        seg_offset = seg_start - base_addr
+        if "r" in seg["perms"]:
+            chunk = read_process_memory_linux(pid, seg_start, seg_size)
+            if chunk:
+                raw_pe_buf[seg_offset : seg_offset + len(chunk)] = chunk
+                bytes_read_total += len(chunk)
+
+    if bytes_read_total < 0x1000 or raw_pe_buf[:2] != b"MZ":
+        print(
+            f"[-] Failed to read valid PE image from /proc/{pid}/mem (Read {bytes_read_total} bytes)."
+        )
         return False
 
-    # Verify PE signature
-    if raw_pe[:2] != b"MZ":
-        print("[-] Warning: Memory at base does not start with MZ header.")
-    else:
-        print("[+] Validated PE MZ header in RAM.")
+    print(
+        f"[+] Successfully read {bytes_read_total / (1024 * 1024):.2f} MB across all valid segments."
+    )
+    print("[+] Validated PE MZ header in RAM.")
+    raw_pe = bytes(raw_pe_buf)
 
     # 3. Apply PE Fixup
     if fix_pe:

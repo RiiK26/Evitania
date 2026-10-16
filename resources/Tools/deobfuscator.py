@@ -125,7 +125,7 @@ def build_bridge(dll_path, config_path, script_json_path, dump_cs_path=None):
         return None
 
     print("[*] Loading GameAssembly.dll...")
-    pe = pefile.PE(dll_path)
+    pe = pefile.PE(dll_path, fast_load=True)
     pe_data = pe.get_memory_mapped_image()
 
     print("[*] Loading config.json...")
@@ -237,9 +237,9 @@ def build_bridge(dll_path, config_path, script_json_path, dump_cs_path=None):
                     # Find which field in raw_cls has target_offset
                     for r_fname, r_off in raw_cls_fields.items():
                         if r_off == target_offset:
-                            deobf_map["fields"][
-                                f"{raw_cls}::{r_fname}"
-                            ] = f"{canon_class}::{field_name}"
+                            raw_field_key = f"{raw_cls}::{r_fname}"
+                            canon_field_key = f"{canon_class}::{field_name}"
+                            deobf_map["fields"][raw_field_key] = canon_field_key
                             deobf_map["fields"][r_fname] = field_name
                             print(
                                 f"[+] Field: {raw_cls}::{r_fname} (0x{target_offset:X}) <===> {canon_class}::{field_name}"
@@ -339,9 +339,10 @@ def generate_deobfuscated_dump(dump_path, deobf_map, output_path):
     class_map = deobf_map.get("classes", {})
     field_map = deobf_map.get("fields", {})
 
-    with open(dump_path, "r", encoding="utf-8", errors="ignore") as f_in, open(
-        output_path, "w", encoding="utf-8"
-    ) as f_out:
+    with (
+        open(dump_path, "r", encoding="utf-8", errors="ignore") as f_in,
+        open(output_path, "w", encoding="utf-8") as f_out,
+    ):
         for line in f_in:
             replaced_line = line
             # Replace mapped class names

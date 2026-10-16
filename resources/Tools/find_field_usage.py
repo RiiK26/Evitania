@@ -392,7 +392,7 @@ def main():
         print(f"[-] GameAssembly.dll not found at: {dll_path}")
         sys.exit(1)
 
-    pe = pefile.PE(dll_path)
+    pe = pefile.PE(dll_path, fast_load=True)
     pe_data = pe.get_memory_mapped_image()
     md = Cs(CS_ARCH_X86, CS_MODE_64)
     md.detail = True
