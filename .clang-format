@@ -10,7 +10,6 @@ AlignConsecutiveDeclarations:
   Enabled: true
   AcrossEmptyLines: false
   AcrossComments: false
-  AlignFunctionDeclarations: false
 
 AlignConsecutiveMacros:
   Enabled: true
@@ -28,7 +27,7 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortEnumsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: Never
 
-BreakTemplateDeclarations: Yes
+AlwaysBreakTemplateDeclarations: true
 BasedOnStyle: WebKit
 BitFieldColonSpacing: After
 BinPackParameters: false
