@@ -1,10 +1,8 @@
 name: "CodeQL Analysis"
 
 on:
-  push:
-    branches: [ "main" ]
   schedule:
-    - cron: '17 18 * * 1'
+    - cron: '0 0 1 * *'
   workflow_dispatch:
 
 concurrency:
@@ -54,7 +52,57 @@ jobs:
         with:
           category: "/language:${{ matrix.language }}"
           upload: ${{ github.event.repository.private && 'never' || 'always' }}
+          upload-database: false
           output: results
+
+      - name: Render CodeQL Findings in Summary
+        if: always()
+        run: |
+          python3 -c "
+          import json, glob, os
+
+          sarif_files = glob.glob('results/*.sarif')
+          if not sarif_files:
+              print('[+] No SARIF files found.')
+              exit(0)
+
+          summary_lines = []
+          summary_lines.append('### 🛡️ CodeQL Analysis Report (${{ matrix.language }})')
+
+          total_issues = 0
+          for sf in sarif_files:
+              with open(sf) as f:
+                  data = json.load(f)
+              for run in data.get('runs', []):
+                  results = run.get('results', [])
+                  total_issues += len(results)
+                  if not results:
+                      summary_lines.append('✅ **0 security vulnerabilities or code defects detected.**')
+                  else:
+                      summary_lines.append(f'⚠️ **Found {len(results)} potential issue(s):**\n')
+                      summary_lines.append('| Severity | Rule ID | Description | Location |')
+                      summary_lines.append('|---|---|---|---|')
+                      for r in results[:20]:
+                          rule_id = r.get('ruleId', 'N/A')
+                          level = r.get('level', 'warning')
+                          msg = r.get('message', {}).get('text', '').replace('\n', ' ')[:80]
+                          locs = r.get('locations', [])
+                          loc_str = 'N/A'
+                          if locs:
+                              phys = locs[0].get('physicalLocation', {})
+                              uri = phys.get('artifactLocation', {}).get('uri', '')
+                              line = phys.get('region', {}).get('startLine', 0)
+                              loc_str = f'{uri}:{line}'
+                          summary_lines.append(f'| {level} | \`{rule_id}\` | {msg} | \`{loc_str}\` |')
+
+          summary_text = '\n'.join(summary_lines)
+          print(summary_text)
+
+          step_summary = os.environ.get('GITHUB_STEP_SUMMARY')
+          if step_summary:
+              with open(step_summary, 'a') as f:
+                  f.write(summary_text + '\n\n')
+          "
 
       - name: Upload SARIF Report (for Private Repositories)
         if: github.event.repository.private
