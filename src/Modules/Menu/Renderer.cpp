@@ -69,7 +69,7 @@ namespace Menu
       ID3D12Resource* pBackBuffer = nullptr;
       pSwapChain->GetBuffer(i, __uuidof(ID3D12Resource), (void**) &pBackBuffer);
       D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = g_pd3dRtvDescHeap->GetCPUDescriptorHandleForHeapStart();
-      rtvHandle.ptr += i * pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      rtvHandle.ptr += (SIZE_T) i * pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
       pDevice->CreateRenderTargetView(pBackBuffer, nullptr, rtvHandle);
       g_mainRenderTargetResource[i] = pBackBuffer;
     }
@@ -348,7 +348,7 @@ namespace Menu
     g_pd3dCommandList->ResourceBarrier(1, &barrier);
 
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = g_pd3dRtvDescHeap->GetCPUDescriptorHandleForHeapStart();
-    rtvHandle.ptr += backBufferIdx * pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    rtvHandle.ptr += (SIZE_T) backBufferIdx * pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     g_pd3dCommandList->OMSetRenderTargets(1, &rtvHandle, FALSE, NULL);
     g_pd3dCommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
 
