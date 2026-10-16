@@ -22,7 +22,9 @@ namespace Features
       ToTarget,
       ToStart
     };
-    static LoopState g_LoopState = LoopState::ToTarget;
+    static LoopState g_LoopState           = LoopState::ToTarget;
+    using PfnGetCurScene                   = Unity::System_String* (*)(void*, void*);
+    static PfnGetCurScene s_pfnGetCurScene = nullptr;
 
     void (*Orig_PositionerService_TryChangeScene)(void* __this, void* sceneName, bool atSpawn, void* method_info) =
       nullptr;
@@ -76,18 +78,15 @@ namespace Features
       if (g_CurrentStage.empty() || g_CurrentStage == "Unknown") {
         void* pPositioner = GetPositioner();
         if (pPositioner) {
-          using PfnGetCurScene                   = Unity::System_String* (*)(void*, void*);
-          static PfnGetCurScene s_pfnGetCurScene = nullptr;
           if (!s_pfnGetCurScene) {
             Unity::il2cppClass* pClass = IL2CPP::Class::Find("Services.PositionerService");
             if (pClass) {
-              s_pfnGetCurScene =
-                reinterpret_cast<PfnGetCurScene>(IL2CPP::Class::Utils::GetMethodPointer(pClass, "get_CurrentScene", 0));
+              s_pfnGetCurScene = (PfnGetCurScene) IL2CPP::Class::Utils::GetMethodPointer(pClass, "get_CurrentScene", 0);
             }
             if (!s_pfnGetCurScene) {
-              uintptr_t base = reinterpret_cast<uintptr_t>(GetModuleHandleA("GameAssembly.dll"));
+              uintptr_t base = (uintptr_t) GetModuleHandleA("GameAssembly.dll");
               if (base) {
-                s_pfnGetCurScene = reinterpret_cast<PfnGetCurScene>(base + 0x7C6920);
+                s_pfnGetCurScene = (PfnGetCurScene) (base + 0x7C6920);
               }
             }
           }

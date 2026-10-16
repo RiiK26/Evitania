@@ -13,8 +13,11 @@ namespace Features
     void (*Orig_SteamPurchaseService_InitiatePurchase)(void* __this, void* productId, void* method_info);
     void (*Orig_MobilePurchaseService_InitiatePurchase)(void* __this, void* productId, void* method_info);
 
-    void* (*FindLot)(void*, void*, void*)           = nullptr;
-    bool (*Reward)(void*, void*, bool, bool, void*) = nullptr;
+    using PfnFindLot   = void* (*)(void*, void*, void*);
+    using PfnReward    = bool (*)(void*, void*, bool, bool, void*);
+
+    PfnFindLot FindLot = nullptr;
+    PfnReward  Reward  = nullptr;
 
     void Hook_SteamPurchaseService_InitiatePurchase(void* __this, void* productId, void* method_info)
     {
@@ -71,13 +74,13 @@ namespace Features
       uintptr_t findLotAddr =
         Scanner::FindPattern((HMODULE) IL2CPP::Globals.m_GameAssembly, Signatures::SteamPurchaseService_FindLot);
       if (findLotAddr) {
-        FindLot = (void* (*)(void*, void*, void*) ) findLotAddr;
+        FindLot = (PfnFindLot) findLotAddr;
       }
 
       uintptr_t rewardAddr =
         Scanner::FindPattern((HMODULE) IL2CPP::Globals.m_GameAssembly, Signatures::IAPRewarder_Reward);
       if (rewardAddr) {
-        Reward = (bool (*)(void*, void*, bool, bool, void*)) rewardAddr;
+        Reward = (PfnReward) rewardAddr;
       }
 
       HOOK_SIGNATURE(

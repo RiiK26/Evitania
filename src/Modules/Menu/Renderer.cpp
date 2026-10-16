@@ -268,9 +268,9 @@ namespace Menu
         return;
 
       for (UINT i = 0; i < g_NUM_FRAMES_IN_FLIGHT; i++) {
-        if (
-          pDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_commandAllocators[i])) != S_OK
-        )
+        HRESULT hrAlloc =
+          pDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_commandAllocators[i]));
+        if (hrAlloc != S_OK)
           return;
       }
 
@@ -363,8 +363,9 @@ namespace Menu
     g_pd3dCommandQueue->ExecuteCommandLists(1, ppCommandLists);
   }
 
-  void __stdcall
-  hkExecuteCommandLists(ID3D12CommandQueue* queue, UINT NumCommandLists, ID3D12CommandList* const* ppCommandLists)
+  using CmdLists = ID3D12CommandList* const*;
+
+  void __stdcall hkExecuteCommandLists(ID3D12CommandQueue* queue, UINT NumCommandLists, CmdLists ppCommandLists)
   {
     if (!g_pd3dCommandQueue && queue->GetDesc().Type == D3D12_COMMAND_LIST_TYPE_DIRECT) {
       g_pd3dCommandQueue = queue;
