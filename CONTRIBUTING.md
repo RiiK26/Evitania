@@ -89,7 +89,7 @@ When writing a feature that requires hooking a new game method or reading a new 
 4. **Follow Formatting**: Keep code clean and properly formatted before opening a PR:
    - **C/C++ Formatting** (`.clang-format`):
      ```bash
-     git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror
+     git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror --Wno-error=unknown
      ```
    - **Python Formatting** (`ruff` / `black`):
      ```bash

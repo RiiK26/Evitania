@@ -32,7 +32,7 @@ jobs:
           if ! command -v clang-format &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y clang-format
           fi
-          git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror
+          git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror --Wno-error=unknown
           echo "[+] C/C++ code formatting verified against .clang-format."
 
   validate:

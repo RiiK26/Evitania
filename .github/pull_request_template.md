@@ -18,7 +18,7 @@
 - [ ] **Object Lifetime**: Managed Unity objects dereference `m_CachedPtr` only after `IsUnityObjectAlive` validation.
 
 ## Formatting & Build Verification
-- [ ] **C/C++ Formatting**: Verified against `.clang-format` (`git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror`).
+- [ ] **C/C++ Formatting**: Verified against `.clang-format` (`git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror --Wno-error=unknown`).
 - [ ] **Python Formatting**: Verified with Ruff / Black (`ruff format --check resources/Tools/*.py`).
 - [ ] **Syntax & Schema**: `config.json` schema validated, and `python3 -m py_compile resources/Tools/*.py` passes.
 - [ ] **Build Check**: `./scripts/build release` compiles cleanly with 0 errors.
@@ -26,7 +26,7 @@
 
 ## In-Game Testing
 <!-- Describe how this change was tested in the running game, including any edge cases verified (e.g. stage transition, inventory sync, store pricing). -->
-- Tested on Steam Build: 
+- Tested on Steam Build:
 - Verification Steps:
-  1. 
-  2. 
+  1.
+  2.
