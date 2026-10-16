@@ -1,0 +1,113 @@
+name: Code Formatting Check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+    paths:
+      - "**.cpp"
+      - "**.c"
+      - "**.h"
+      - "**.hpp"
+      - "**.py"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  format-check:
+    name: Code Formatting (C/C++ & Python)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check Python Code Formatting (Ruff)
+        id: ruff_check
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ruff
+          ruff format --check resources/Tools/*.py
+          echo "[+] Python code formatting verified via Ruff."
+
+      - name: Check C/C++ Code Formatting (clang-format)
+        id: clang_check
+        if: always()
+        run: |
+          if ! command -v clang-format &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y clang-format
+          fi
+          git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror --Wno-error=unknown
+          echo "[+] C/C++ code formatting verified against .clang-format."
+
+      - name: Automatically Comment on PR
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const tag = "<!-- evitania-code-format-bot -->";
+            const isRuffOk = "${{ steps.ruff_check.outcome }}" === "success";
+            const isClangOk = "${{ steps.clang_check.outcome }}" === "success";
+            const isSuccess = isRuffOk && isClangOk;
+
+            const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+            const issueNumber = context.issue.number || context.payload.pull_request.number;
+
+            let body = "";
+            if (isSuccess) {
+              body = `${tag}\n### 🎨 Code Formatting Check: Passed ✅\n\nAll modified code meets the project's formatting standards!\n\n- **C/C++ (\`.clang-format\`)**: Passed\n- **Python (\`ruff format\`)**: Passed\n\n[View Run Details](${runUrl})`;
+            } else {
+              let failureDetails = [];
+              if (!isClangOk) failureDetails.push("- **C/C++**: Found style violations against \`.clang-format\`");
+              if (!isRuffOk) failureDetails.push("- **Python**: Found style violations against \`ruff format\`");
+
+              body = `${tag}\n### 🎨 Code Formatting Check: Failed ❌\n\n${failureDetails.join("\n")}\n\n#### 🛠️ How to fix locally:\n\`\`\`bash\n# Format C/C++ files:\ngit ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format -i\n\n# Format Python files:\nruff format resources/Tools/*.py\n\`\`\`\n\nPlease apply formatting, commit, and push your updates to this PR branch.\n\n[View Detailed Error Log](${runUrl})`;
+            }
+
+            // Check if comment already exists to avoid duplicate comments
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber
+            });
+
+            const existingComment = comments.data.find(c => c.body && c.body.includes(tag));
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: body
+              });
+            }
+
+      - name: Enforce Check Status
+        if: always()
+        run: |
+          if [ "${{ steps.ruff_check.outcome }}" != "success" ] || [ "${{ steps.clang_check.outcome }}" != "success" ]; then
+            echo "[-] Formatting checks failed. Please see the PR comment and job logs."
+            exit 1
+          fi
+          echo "[+] All formatting checks passed successfully."

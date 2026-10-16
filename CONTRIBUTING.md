@@ -95,4 +95,3 @@ When writing a feature that requires hooking a new game method or reading a new 
      ```bash
      ruff format --check resources/Tools/*.py
      ```
-5. **Clear Descriptions**: In your pull request description, fill out the pull request template, explain what the feature does, how it was tested in-game, and any new signatures/offsets introduced.
