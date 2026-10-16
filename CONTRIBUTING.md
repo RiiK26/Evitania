@@ -86,5 +86,13 @@ When writing a feature that requires hooking a new game method or reading a new 
 1. **Keep Changes Focused**: One pull request per feature or bug fix.
 2. **Verify Clean Compilation**: Ensure `./scripts/build release` compiles cleanly without warnings or errors.
 3. **Validate Signatures**: Ensure `./scripts/update --check` succeeds.
-4. **Follow Formatting**: Keep code clean, readable, and consistent with surrounding files.
-5. **Clear Descriptions**: In your pull request description, explain what the feature does, how it was tested in-game, and any new signatures/offsets introduced.
+4. **Follow Formatting**: Keep code clean and properly formatted before opening a PR:
+   - **C/C++ Formatting** (`.clang-format`):
+     ```bash
+     git ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format --dry-run --Werror
+     ```
+   - **Python Formatting** (`ruff` / `black`):
+     ```bash
+     ruff format --check resources/Tools/*.py
+     ```
+5. **Clear Descriptions**: In your pull request description, fill out the pull request template, explain what the feature does, how it was tested in-game, and any new signatures/offsets introduced.
