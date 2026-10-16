@@ -7,44 +7,177 @@ on:
 
 jobs:
   release:
+    name: Build & Publish Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
-      - name: Install MinGW-w64
-        run: sudo apt-get update && sudo apt-get install -y mingw-w64 cmake zip jq
+      - name: Install Toolchain & Dependencies
+        run: |
+          echo "[+] Installing MinGW-w64, CMake, zip, jq..."
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 cmake zip jq tree
 
-      - name: Build Evitania
-        run: ./scripts/build
+          echo "[+] MinGW GCC: $(x86_64-w64-mingw32-gcc --version | head -n 1)"
+          echo "[+] CMake:     $(cmake --version | head -n 1)"
 
-      - name: Get Version
-        id: get_version
+      - name: Extract Project Metadata & Source Changes
+        id: meta
         run: |
           VERSION=$(jq -r .version config.json)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          STEAM_BUILD_ID=$(jq -r .steam_build_id config.json)
+          SIG_COUNT=$(jq '.signatures | length' config.json)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          TAG_NAME="${{ github.ref_name }}"
 
-      - name: Prepare Release Artifacts
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "steam_build_id=$STEAM_BUILD_ID" >> $GITHUB_OUTPUT
+          echo "sig_count=$SIG_COUNT" >> $GITHUB_OUTPUT
+          echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+
+          echo "[+] Project Version:      v$VERSION"
+          echo "[+] Target Steam Build:   $STEAM_BUILD_ID"
+          echo "[+] Tracked Signatures:   $SIG_COUNT"
+          echo "[+] Release Commit:       $COMMIT_HASH"
+          echo "[+] Release Tag:          $TAG_NAME"
+
+          # Extract concise commit messages affecting src/ since previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 "${TAG_NAME}^" 2>/dev/null || git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+
+          if [ -n "$PREV_TAG" ]; then
+            echo "[+] Extracting source commits from $PREV_TAG to $TAG_NAME..."
+            git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (%h)" -- src/ > src_changes.txt
+          else
+            echo "[+] No prior tag found. Extracting recent source commits..."
+            git log -n 15 --pretty=format:"- %s (%h)" -- src/ > src_changes.txt
+          fi
+
+          if [ ! -s src_changes.txt ]; then
+            echo "- Maintenance updates and signature synchronization." > src_changes.txt
+          fi
+
+          echo "[+] Source Changes Summary:"
+          cat src_changes.txt
+
+      - name: Build Evitania Binaries
         run: |
-          VERSION="${{ steps.get_version.outputs.version }}"
+          echo "[+] Compiling Evitania Release Build..."
+          ./scripts/build release
+
+          test -f "build/release/Evitania v${{ steps.meta.outputs.version }}.dll"
+          test -f "build/release/injector.exe"
+          echo "[+] Verified output artifacts in build/release/:"
+          ls -lh build/release/*.dll build/release/*.exe
+
+      - name: Stage Release Package & Calculate Checksums
+        id: package
+        run: |
+          VERSION="${{ steps.meta.outputs.version }}"
           FOLDER_NAME="Evitania v$VERSION"
+          ZIP_NAME="Evitania-v$VERSION.zip"
+
+          echo "[+] Staging files into release package: $FOLDER_NAME"
           mkdir -p "release_pkg/$FOLDER_NAME"
-          cp build/release/*.dll "release_pkg/$FOLDER_NAME/"
+          cp "build/release/Evitania v$VERSION.dll" "release_pkg/$FOLDER_NAME/"
           cp build/release/injector.exe "release_pkg/$FOLDER_NAME/"
           cp scripts/run.sh "release_pkg/$FOLDER_NAME/"
           cp scripts/run.bat "release_pkg/$FOLDER_NAME/"
           cp resources/template/README.md "release_pkg/$FOLDER_NAME/README.md"
-          cd release_pkg
-          zip -r ../Evitania-v$VERSION.zip .
 
-      - name: Create Release
+          chmod +x "release_pkg/$FOLDER_NAME/run.sh"
+          chmod +x "release_pkg/$FOLDER_NAME/injector.exe"
+
+          # Generate checksums of files inside package
+          cd "release_pkg/$FOLDER_NAME"
+          sha256sum * > ../../checksums.txt
+          cd ../..
+
+          # Create distribution zip
+          cd release_pkg
+          zip -9 -r "../$ZIP_NAME" .
+          cd ..
+
+          ZIP_SIZE=$(ls -lh "$ZIP_NAME" | awk '{print $5}')
+          ZIP_SHA=$(sha256sum "$ZIP_NAME" | awk '{print $1}')
+
+          echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
+          echo "zip_size=$ZIP_SIZE" >> $GITHUB_OUTPUT
+          echo "zip_sha=$ZIP_SHA" >> $GITHUB_OUTPUT
+
+          echo "[+] Created $ZIP_NAME ($ZIP_SIZE) - SHA256: $ZIP_SHA"
+
+      - name: Generate Release Notes & Summary
+        id: notes
+        run: |
+          VERSION="${{ steps.meta.outputs.version }}"
+          BUILD_ID="${{ steps.meta.outputs.steam_build_id }}"
+          SIGS="${{ steps.meta.outputs.sig_count }}"
+          COMMIT="${{ steps.meta.outputs.commit_hash }}"
+          TAG="${{ github.ref_name }}"
+          PREV_TAG="${{ steps.meta.outputs.prev_tag }}"
+          ZIP="${{ steps.package.outputs.zip_name }}"
+          ZIP_SIZE="${{ steps.package.outputs.zip_size }}"
+
+          cat << EOF > release_body.md
+          ## 🎮 Evitania v${VERSION}
+
+          Release build for **Evitania Online**.
+
+          ### 📋 Compatibility
+          | Property | Value |
+          |---|---|
+          | **Mod Version** | \`v${VERSION}\` |
+          | **Compatible Steam Build ID** | \`${BUILD_ID}\` |
+          | **Tracked Signatures** | \`${SIGS}\` signatures |
+          | **Commit** | \`${COMMIT}\` (\`${TAG}\`) |
+          | **Package Archive** | \`${ZIP}\` (${ZIP_SIZE}) |
+
+          ### 📝 Source Changes
+          EOF
+
+          cat src_changes.txt >> release_body.md
+
+          cat << 'EOF' >> release_body.md
+
+          ### 📦 File Checksums (SHA-256)
+          ```text
+          EOF
+
+          cat checksums.txt >> release_body.md
+
+          cat << 'EOF' >> release_body.md
+          ```
+
+          ### 🚀 Quick Start Guide
+          1. Extract the \`.zip\` archive into a folder.
+          2. Launch the game:
+             - **Windows**: Double-click \`run.bat\`
+             - **Linux (Proton / Steam Deck)**: Run \`./run.sh\` in terminal
+          3. Once in-game, press **\`INSERT\`** to open/close the ImGui cheat menu.
+          4. Settings and feature toggles are automatically saved to \`config.txt\`.
+
+          > [!NOTE]
+          > Antivirus applications may flag injectors or memory hook DLLs as false positives. You can verify package integrity against the SHA-256 checksums above.
+          EOF
+
+          # Append to GitHub Actions Job Summary
+          cat release_body.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          files: Evitania-v${{ steps.get_version.outputs.version }}.zip
-          name: v${{ steps.get_version.outputs.version }}
+          files: |
+            ${{ steps.package.outputs.zip_name }}
+            checksums.txt
+          name: Evitania v${{ steps.meta.outputs.version }} (Steam Build ${{ steps.meta.outputs.steam_build_id }})
           tag_name: ${{ github.ref_name }}
+          body_path: release_body.md
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
