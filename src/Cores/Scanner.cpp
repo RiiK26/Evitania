@@ -89,4 +89,48 @@ namespace Scanner
     }
     return 0;
   }
+
+  int32_t ExtractDisplacement(uintptr_t funcAddr, size_t offset, size_t dispSize, int32_t defaultValue)
+  {
+    if (!funcAddr)
+      return defaultValue;
+
+    uintptr_t                targetAddr = funcAddr + offset;
+    MEMORY_BASIC_INFORMATION mbi;
+    if (VirtualQuery((LPCVOID) targetAddr, &mbi, sizeof(mbi)) == 0)
+      return defaultValue;
+
+    if (!(mbi.State == MEM_COMMIT
+          && (mbi.Protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))))
+      return defaultValue;
+
+    if (dispSize == 1) {
+      return *(int8_t*) targetAddr;
+    }
+    else if (dispSize == 2) {
+      return *(int16_t*) targetAddr;
+    }
+    else if (dispSize == 4) {
+      return *(int32_t*) targetAddr;
+    }
+    return defaultValue;
+  }
+
+  uintptr_t ResolveRelativeAddress(uintptr_t instructionAddr, size_t instructionSize, size_t ripOffset)
+  {
+    if (!instructionAddr)
+      return 0;
+
+    uintptr_t                dispAddr = instructionAddr + ripOffset;
+    MEMORY_BASIC_INFORMATION mbi;
+    if (VirtualQuery((LPCVOID) dispAddr, &mbi, sizeof(mbi)) == 0)
+      return 0;
+
+    if (!(mbi.State == MEM_COMMIT
+          && (mbi.Protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))))
+      return 0;
+
+    int32_t relOffset = *(int32_t*) dispAddr;
+    return instructionAddr + instructionSize + relOffset;
+  }
 }  // namespace Scanner
