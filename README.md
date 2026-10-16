@@ -201,6 +201,48 @@ All build targets are automatically placed into their respective configuration d
 3. **In-Game Overlay**:
    Press <kbd>INSERT</kbd> to toggle the ImGui menu. Configuration is automatically saved to `config.txt`.
 
+---
+
+### Updating for Game Patches
+
+Evitania features an automated update engine that scans for Steam updates, validates byte signatures, extracts semantic instruction offsets, and recompiles the mod automatically:
+
+#### 1. Check if the Game Updated
+```bash
+# Linux
+./scripts/update --check
+
+# Windows
+scripts\update --check
+```
+
+#### 2. Perform End-to-End Update & Rebuild
+When an update is detected, run the unified update script:
+```bash
+# Linux
+./scripts/update
+
+# Windows
+scripts\update
+```
+This automatically:
+- Scans and validates all 105+ AOB method signatures against the updated `GameAssembly.dll`.
+- Extracts field offsets using two-pass register-relaxed semantic assembly pattern matching.
+- Re-baselines `config.json` with the new Steam Build ID and assembly hash.
+- Compiles the updated `build/release/Evitania v<version>.dll`.
+
+#### 3. Live RAM Extraction (For Encrypted / Packed Binaries)
+If the game updates with binary packing or protection, launch the game and extract directly from memory:
+```bash
+# Linux
+./scripts/update --from-mem
+
+# Windows
+scripts\update --from-mem
+```
+
+*For more details on reverse engineering tools and obfuscation bridging, see [README](resources/Tools/README.md).*
+
 
 ## Disclaimer
 

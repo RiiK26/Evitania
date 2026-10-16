@@ -175,7 +175,7 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
    ./scripts/build release
    ```
    *(For debugging symbols and verbose logs: `./scripts/build debug`).*
-2. Verify that the output DLL exists at `build/release/Evitania v0.320.1.dll`.
+2. Verify that the output DLL exists at `build/release/Evitania v0.320.2.dll`.
 3. Test in-game:
    ```bash
    ./scripts/run
@@ -195,12 +195,21 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
 # 3. Force re-scan and rebuild:
 ./scripts/update --force
 
-# 4. Inspect field usage / find instruction indices for new features:
+# 4. Extract from Live RAM (For Encrypted/Packed Binaries):
+./scripts/update --from-mem
+
+# 5. Standalone Live Process RAM Dumper:
+python3 resources/Tools/dump_memory.py
+
+# 6. Deobfuscator & Symbol Bridge (Auto-map obfuscated classes/fields):
+python3 resources/Tools/deobfuscator.py --all
+
+# 7. Inspect field usage / find instruction indices for new features:
 python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> --disasm
 
-# 5. Build baseline signature database (new features only):
+# 8. Build baseline signature database (new features only):
 python3 resources/Tools/build_sig_db.py
 
-# 6. Launch game & inject:
+# 9. Launch game & inject:
 ./scripts/run
 ```
