@@ -1,19 +1,104 @@
-# Evitania Online
+# Evitania
 
-![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FRiiK26%2FEvitania%2Fmain%2Fconfig.json&query=%24.version&label=Version&color=green)
-![Build Status](https://img.shields.io/github/actions/workflow/status/RiiK26/Evitania/release.yml?branch=main)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20-orange)
+<div align="center">
+
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FRiiK26%2FEvitania%2Fmain%2Fconfig.json&query=%24.version&label=Version&color=22c55e&style=flat-square)](config.json)
+[![Latest Release](https://img.shields.io/github/v/release/RiiK26/Evitania?style=flat-square&color=3b82f6)](https://github.com/RiiK26/Evitania/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/RiiK26/Evitania/release.yml?branch=main&label=Build&style=flat-square)](https://github.com/RiiK26/Evitania/actions/workflows/release.yml)
+[![CodeQL Status](https://img.shields.io/github/actions/workflow/status/RiiK26/Evitania/codeql.yml?branch=main&label=CodeQL&style=flat-square)](https://github.com/RiiK26/Evitania/actions/workflows/codeql.yml)
+[![C++ Standard](https://img.shields.io/badge/C%2B%2B-20-blue?style=flat-square&logo=c%2B%2B)](CMakeLists.txt)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20-orange?style=flat-square)](#running--injection)
+[![Security Policy](https://img.shields.io/badge/Security-Policy-brightgreen?style=flat-square&logo=github)](.github/SECURITY.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](license)
+
+</div>
+
+## Table of Contents
+
+- [Features](#features)
+- [Architecture & Tech Stack](#architecture--tech-stack)
+- [Quick Start Guide](#quick-start-guide)
+- [Build Instructions](#build-instructions)
+  - [Prerequisites](#prerequisites)
+  - [Unified Build Script](#quick-build-recommended)
+  - [Manual CMake Build](#manual-cmake-build)
+  - [Output Binaries](#output-binaries)
+- [Running & Injection](#running--injection)
+- [In-Game Controls](#in-game-controls)
+- [Automated Update Workflow](#automated-update-workflow)
+- [Community & Contributing](#community--contributing)
+- [Security](#security)
+- [Disclaimer](#disclaimer)
+- [License](#license)
 
 ## Features
 
-The architecture is strictly modularized into distinct feature categories located within the `src/Features/` directory.
+Evitania is engineered with a strict modular architecture (located within `src/Features/`), categorized 1:1 with the in-game ImGui interface tabs:
 
 <details>
-<summary> Image Preview </summary>
+<summary><b>Click to view In-Game Menu Preview</b></summary>
+<br>
+
+<div align="center">
 
 ![image](resources/images/Preview.png)
 
+</div>
+
 </details>
+
+### Feature Matrix
+
+| Category | Feature | Description |
+|---|---|---|
+| **Combat** | **Aura Kill** | Automatically defeats surrounding monsters within a customizable radius with configurable tick rates and mob/elite/boss target filters. |
+| | **God Mode** | Complete invulnerability; cancels damage calculations and prevents player health depletion. |
+| **Player** | **SpeedHack** | Real-time game engine timescale multiplier for accelerated movement and actions. |
+| | **Exp Multiplier** | Custom experience gain multiplier for rapid player leveling. |
+| | **Stage Hopper** | Direct stage, act, and boss warp selector bypassing progression locks. |
+| | **Free Enhancement** | Equipment enhancement and upgrading without consuming enhancement stones or materials. |
+| **Economy** | **Infinite Currency** | Freezes currency subtraction on transactions and allows adding gold/gems. |
+| | **Infinite Items** | Prevents consumable depletion and inventory stack decrement. |
+| | **Free Store** | Bypasses item purchase costs in general marketplace shops. |
+| **Subsystems** | **Curio Hacks** | Free curio rolls, upgrades, and progression unlocks. |
+| | **Engineer Hacks** | Zero-cost building construction, workshop expansion, and stockpile upgrades. |
+| | **Hunter Hacks** | Instant hunter rank unlocking and bounty reward progression. |
+| | **Hourglass of Eternity**| Offline timeskip acceleration, instant progress bypass, and free upgrades. |
+| | **Bonfire Hacks** | Free ash sacrifice and enhancement tree unlocks. |
+| **AntiCheat** | **Bypass AntiCheat** | Neutralizes runtime integrity scans, memory monitors, and telemetry callbacks. |
+
+## Architecture & Tech Stack
+
+- **Modern C++20 Core**: Clean, modular codebase organized into feature domains without monolithic god-classes.
+- **Dynamic Il2Cpp Resolution**: Uses `Il2CppResolver` to resolve managed classes, fields, and methods dynamically at runtime, remaining resilient to code relocation.
+- **Assembly Detouring (MinHook)**: Ultra-low-overhead function interception at the machine-code level.
+- **Dual-Mode Rendering (DirectX 11 & DirectX 12)**: Native Dear ImGui overlay supporting both DX11 and DX12 backends with DPI-aware font scaling.
+- **Dual-Mode Purchasing Engine**: Context-scoped spending resolution via `thread_local` state tracking, enabling zero-cost transactions while preserving UI currency icons.
+- **Automated Update Engine (Capstone)**: Python-driven AOB signature scanning and machine-code semantic disassembly that automatically extracts class and field offsets across game patches.
+
+## Quick Start Guide
+
+For end-users who downloaded a pre-compiled release from [Releases](https://github.com/RiiK26/Evitania/releases):
+
+### Windows
+1. Extract the release `.zip` archive to a folder.
+2. Launch the game: `EvitaniaOnline.exe`.
+3. Run `scripts\run.bat` (or open a terminal and run `injector.exe EvitaniaOnline.exe "Evitania v<version>.dll"`).
+4. In-game, press <kbd>INSERT</kbd> to toggle the cheat overlay.
+
+### Linux (Steam Proton / Steam Deck)
+1. Extract the release archive.
+2. Launch the game through Steam.
+3. In a terminal, run:
+   ```bash
+   ./scripts/run.sh
+   ```
+4. *Alternatively*, set Steam Launch Options:
+   ```text
+   /path/to/scripts/run.sh %command%
+   ```
+5. Press <kbd>INSERT</kbd> to toggle the menu.
+
 
 ## Build Instructions
 
@@ -22,7 +107,7 @@ The architecture is strictly modularized into distinct feature categories locate
 | Requirement | Linux (Cross-Compile) | Windows (Native) |
 | :--- | :--- | :--- |
 | **CMake** | `>= 3.20` | `>= 3.20` |
-| **Compiler** | MinGW-w64 (`x86_64-w64-mingw32-g++` C++20) | MSVC (Visual Studio 2019/2022/2026 C++20) or MinGW-w64 |
+| **Compiler** | MinGW-w64 (`x86_64-w64-mingw32-g++` C++20) | MSVC (VS 2019/2022/2026 C++20) or MinGW-w64 |
 | **Python** *(Optional)* | Python 3 + `capstone` (for updating offsets) | Python 3 + `capstone` (for updating offsets) |
 
 #### Installing Dependencies
@@ -43,66 +128,51 @@ The architecture is strictly modularized into distinct feature categories locate
   - Install [CMake](https://cmake.org/download/) and ensure it is added to your system `PATH`.
   - Install **Visual Studio** (with the *Desktop development with C++* workload) or [MinGW-w64 (WinLibs / MSYS2)](https://winlibs.com/).
 
----
 
 ### Quick Build (Recommended)
+
+Clone the repository and run the cross-platform wrapper script:
 
 ```bash
 git clone https://github.com/RiiK26/Evitania.git
 cd Evitania
 ```
 
-The repository provides a unified build script ([`scripts/build`](scripts/build)) that works seamlessly on both Linux and Windows.
+The unified build script ([`scripts/build`](scripts/build)) handles compilation on both Linux and Windows:
 
-#### Linux
 ```bash
-./scripts/build
-```
+# Linux
+./scripts/build release
 
-#### Windows
-Run from Command Prompt (`cmd.exe`) or PowerShell:
-```cmd
-scripts\build
+# Windows
+scripts\build release
 ```
 
 #### Build Flags
-You can pass arguments to customize the build:
 
 | Flag | Description |
 | :--- | :--- |
-| `release` | (Default) Builds optimized and stripped binaries into `build/release/`. |
-| `clean` | Builds clean binaries with debug symbols and full optimization (`RelWithDebInfo`) into `build/relwithdebinfo/`. |
-| `debug` | Builds unoptimized binaries with debug symbols (`Debug`) into `build/debug/`. |
-| `no-injector` | Skips building `injector.exe`, only compiling the mod DLL. |
+| `release` | *(Default)* Builds optimized, stripped binaries into `build/release/`. |
+| `clean` | Builds optimized binaries with debug symbols (`RelWithDebInfo`) into `build/relwithdebinfo/`. |
+| `debug` | Builds unoptimized binaries with full debug symbols (`Debug`) into `build/debug/`. |
+| `no-injector` | Skips building `injector.exe`, compiling only the mod DLL. |
 
 **Examples:**
 ```bash
 # Build clean binary with debug symbols (outputs to build/relwithdebinfo/)
-./scripts/build clean no-injector
+./scripts/build clean
 
-# Build unoptimized debug binary (outputs to build/debug/)
-./scripts/build debug
-
-# Build optimized release binary (outputs to build/release/)
-./scripts/build release
-
-# Windows equivalents
-scripts\build clean no-injector
-scripts\build debug
-scripts\build release
+# Build without injector
+./scripts/build release no-injector
 ```
 
----
-
 ### Manual CMake Build
-
-If you prefer building manually without the wrapper script:
 
 #### Linux (Cross-Compiling for Windows via MinGW)
 ```bash
 mkdir -p build && cd build
 
-# Release build (outputs to build/release/)
+# Release build
 cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_SYSTEM_NAME=Windows \
@@ -110,143 +180,127 @@ cmake .. \
   -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
   -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres
 cmake --build . -j$(nproc)
-
-# Clean / RelWithDebInfo build (outputs to build/relwithdebinfo/)
-cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build . -j$(nproc)
-
-# Pure Debug build (outputs to build/debug/)
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-cmake --build . -j$(nproc)
 ```
 
 #### Windows (MSVC)
 ```cmd
-mkdir build
-cd build
+mkdir build && cd build
 cmake ..
-
-:: Release build (outputs to build\release\)
 cmake --build . --config Release -j %NUMBER_OF_PROCESSORS%
-
-:: Clean / RelWithDebInfo build (outputs to build\relwithdebinfo\)
-cmake --build . --config RelWithDebInfo -j %NUMBER_OF_PROCESSORS%
-
-:: Debug build (outputs to build\debug\)
-cmake --build . --config Debug -j %NUMBER_OF_PROCESSORS%
 ```
 
 #### Windows (MinGW-w64)
 ```cmd
-mkdir build
-cd build
-
-:: Release build
+mkdir build && cd build
 cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . -j %NUMBER_OF_PROCESSORS%
-
-:: Clean / RelWithDebInfo build
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-cmake --build . -j %NUMBER_OF_PROCESSORS%
-
-:: Debug build
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
-cmake --build . -j %NUMBER_OF_PROCESSORS%
 ```
-
-#### CMake Options Reference
-
-| Option | Default | Description |
-| :--- | :--- | :--- |
-| `-DCMAKE_BUILD_TYPE=Release\|RelWithDebInfo\|Debug` | `Release` | Target configuration type. |
-| `-DBUILD_CLEAN=ON\|OFF` | `OFF` | Build clean binary with symbols (`RelWithDebInfo`) instead of stripped `Release`. |
-| `-DBUILD_INJECTOR=ON\|OFF` | `ON` | Build the standalone injector executable (`injector.exe`). |
-
----
 
 ### Output Binaries
 
-All build targets are automatically placed into their respective configuration directory:
+All build outputs are cleanly separated by configuration:
 
 - **Release (`build/release/`)**:
-  - `Evitania v<version>.dll` — Optimized and stripped mod library.
-  - `injector.exe` — Standalone DLL injector (if enabled).
-
-- **Clean / RelWithDebInfo (`build/relwithdebinfo/`)**:
-  - `Evitania v<version>.dll` — Optimized mod library with full debug symbols.
-  - `injector.exe` — Standalone DLL injector with symbols (if enabled).
-
+  - `Evitania v<version>.dll` — Optimized and stripped production mod library.
+  - `injector.exe` — Standalone injector executable.
+- **RelWithDebInfo (`build/relwithdebinfo/`)**:
+  - `Evitania v<version>.dll` — Optimized mod library with PDB / debug symbols.
+  - `injector.exe` — Injector with debug symbols.
 - **Debug (`build/debug/`)**:
-  - `Evitania v<version>.dll` — Unoptimized mod library with full debug symbols.
-  - `injector.exe` — Standalone DLL injector with debug symbols (if enabled).
+  - `Evitania v<version>.dll` — Unoptimized debug binary with complete symbols.
+  - `injector.exe` — Debug injector.
 
----
 
-### Running & Injection
+## Running & Injection
 
-1. **Linux (Steam Proton)**:
-   Start the game through Steam, then run:
+### 1. Linux (Steam Proton / Steam Deck)
+Start the game through Steam, then run:
+```bash
+./scripts/run.sh
+
+```
+*The script automatically detects the running game process and its Wine/Proton prefix.*
+
+### 2. Windows
+Run the launcher script:
+```cmd
+scripts\run.bat
+```
+*Or inject manually from command line:*
+```cmd
+injector.exe EvitaniaOnline.exe "build\release\Evitania v<version>.dll"
+```
+
+## In-Game Controls
+
+| Key | Action |
+|:---:|---|
+| <kbd>INSERT</kbd> | Toggle the ImGui cheat menu overlay. |
+
+> [!NOTE]
+> All feature toggles, sliders, and hotkeys are automatically persisted across game sessions in `config.txt` inside the .dll directory.
+
+## Automated Update Workflow
+
+Evitania includes an automated update pipeline designed to survive game updates with minimal manual effort:
+
+```
+Steam Update Detected
+         │
+         ▼
+[ scripts/update --check ]  ──> Checks Steam Build ID & assembly hash
+         │
+         ▼
+[ scripts/update ]          ──> Validates 105+ AOB byte signatures
+         │                  ──> Disassembles instructions via Capstone
+         │                  ──> Re-extracts semantic field offsets
+         │                  ──> Updates config.json & recompiles DLL
+         ▼
+Ready to Play!
+```
+
+### Update Commands
+
+1. **Check Game Update Status**:
    ```bash
-   ./scripts/run.sh
+   ./scripts/update --check       # Linux
+   scripts\update --check         # Windows
    ```
-   *The script automatically detects the running game process and Proton environment.*
 
-2. **Windows**:
-   Run the launcher script:
-   ```cmd
-   scripts\run.bat
+2. **Run End-to-End Update & Rebuild**:
+   ```bash
+   ./scripts/update               # Linux
+   scripts\update                 # Windows
    ```
-   *Or launch the game manually and run `injector.exe EvitaniaOnline.exe "build\release\Evitania v<version>.dll"`.*
 
-3. **In-Game Overlay**:
-   Press <kbd>INSERT</kbd> to toggle the ImGui menu. Configuration is automatically saved to `config.txt`.
+3. **Live RAM Extraction (For Packed / Encrypted Updates)**:
+   If the game executable is protected or encrypted on disk, run the game and extract directly from memory:
+   ```bash
+   ./scripts/update --from-mem    # Linux
+   scripts\update --from-mem      # Windows
+   ```
 
----
+*For more details on reverse engineering tools and symbol deobfuscation, see [Tools Documentation](resources/Tools/README.md).*
 
-### Updating for Game Patches
+## Community & Contributing
 
-Evitania features an automated update engine that scans for Steam updates, validates byte signatures, extracts semantic instruction offsets, and recompiles the mod automatically:
+Contributions are welcome! Please read our contributing guidelines before submitting code:
 
-#### 1. Check if the Game Updated
-```bash
-# Linux
-./scripts/update --check
+- **[Contributing Guide](CONTRIBUTING.md)**: Development workflow, modular architecture conventions, and offset centralization rules.
+- **[Code of Conduct](CODE_OF_CONDUCT.md)**: Community standards and expectations.
+- **[Pull Request Template](.github/pull_request_template.md)**: Standard template and PR verification checklist.
+- **[Issue Templates](.github/ISSUE_TEMPLATE/)**: Bug reports and game update requests.
 
-# Windows
-scripts\update --check
-```
+## Security
 
-#### 2. Perform End-to-End Update & Rebuild
-When an update is detected, run the unified update script:
-```bash
-# Linux
-./scripts/update
+We take software security and integrity seriously. For vulnerability reporting guidelines, threat model details, and supported versions, please consult our **[Security Policy](.github/SECURITY.md)**.
 
-# Windows
-scripts\update
-```
-This automatically:
-- Scans and validates all 105+ AOB method signatures against the updated `GameAssembly.dll`.
-- Extracts field offsets using two-pass register-relaxed semantic assembly pattern matching.
-- Re-baselines `config.json` with the new Steam Build ID and assembly hash.
-- Compiles the updated `build/release/Evitania v<version>.dll`.
-
-#### 3. Live RAM Extraction (For Encrypted / Packed Binaries)
-If the game updates with binary packing or protection, launch the game and extract directly from memory:
-```bash
-# Linux
-./scripts/update --from-mem
-
-# Windows
-scripts\update --from-mem
-```
-
-*For more details on reverse engineering tools and obfuscation bridging, see [README](resources/Tools/README.md).*
-
+Please report suspected vulnerabilities privately via **[GitHub Private Advisories](https://github.com/RiiK26/Evitania/security/advisories/new)** rather than filing public issues.
 
 ## Disclaimer
 
-> I am not responsible for any actions taken by users of this cheat, including but not limited to violations of game terms of service or other regulations. Users should use this cheat at their own risk and be aware of the potential consequences.
+> This project is developed strictly for educational and reverse-engineering research purposes. The developers do not promote cheating in online environments and assume no responsibility for any actions taken by users, including account suspensions or bans by game publishers. Use at your own discretion.
 
 ## License
-This project licensed under [MIT License](license).
+
+This project is licensed under the [MIT License](license).
