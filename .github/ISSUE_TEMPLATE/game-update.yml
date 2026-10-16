@@ -1,0 +1,41 @@
+name: Game Update / Broken Signatures
+description: Report a new game update or broken signature/offset
+labels: ["game-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when Evitania Online receives a Steam update or when a signature fails during `./scripts/update`.
+
+  - type: input
+    attributes:
+      label: Steam Build ID & Game Version
+      description: The new build ID from Steam or `scripts/update --check`.
+      placeholder: e.g. Steam Build 25903000, Game Version v0.320.3
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Operating System
+      options:
+        - Linux (Steam Proton / Wine)
+        - Windows
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Updater Output or Broken Targets
+      description: Paste the output of `./scripts/update` or the names of broken signatures.
+      render: shell
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Troubleshooting Checklist
+      options:
+        - label: I tried running `./scripts/update --force`
+        - label: If on Linux, I checked that `GameAssembly.dll` exists in SteamLibrary
+        - label: I tried running `./scripts/update --from-mem` with the game open in RAM
