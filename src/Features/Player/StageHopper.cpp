@@ -22,8 +22,9 @@ namespace Features
       ToTarget,
       ToStart
     };
-    static LoopState g_LoopState           = LoopState::ToTarget;
-    using PfnGetCurScene                   = Unity::System_String* (*)(void*, void*);
+    static LoopState g_LoopState = LoopState::ToTarget;
+
+    typedef Unity::System_String* (*PfnGetCurScene)(void*, void*);
     static PfnGetCurScene s_pfnGetCurScene = nullptr;
 
     void (*Orig_PositionerService_TryChangeScene)(void* __this, void* sceneName, bool atSpawn, void* method_info) =

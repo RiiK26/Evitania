@@ -13,8 +13,8 @@ namespace Features
     void (*Orig_SteamPurchaseService_InitiatePurchase)(void* __this, void* productId, void* method_info);
     void (*Orig_MobilePurchaseService_InitiatePurchase)(void* __this, void* productId, void* method_info);
 
-    using PfnFindLot   = void* (*)(void*, void*, void*);
-    using PfnReward    = bool (*)(void*, void*, bool, bool, void*);
+    typedef void* (*PfnFindLot)(void*, void*, void*);
+    typedef bool (*PfnReward)(void*, void*, bool, bool, void*);
 
     PfnFindLot FindLot = nullptr;
     PfnReward  Reward  = nullptr;
