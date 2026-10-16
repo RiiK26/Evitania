@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+ cd "$(dirname "$0")/.."
+
+ if command -v python3 &>/dev/null; then
+     python3 resources/Tools/updater.py "$@"
+ else
+     python resources/Tools/updater.py "$@"
+fi
+exit 0

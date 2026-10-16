@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import argparse
 import json
 import os
@@ -151,6 +152,28 @@ def get_offsets():
                         class_data[current_class]["methods"][method_name] = []
                     class_data[current_class]["methods"][method_name].append(rva_val)
 
+    # If deobfuscation map exists, register canonical aliases
+    deobf_map_path = os.path.join(DUMP_DIR, "deobfuscation_map.json")
+    if os.path.exists(deobf_map_path):
+        try:
+            with open(deobf_map_path, "r", encoding="utf-8") as f:
+                deobf = json.load(f)
+            class_map = deobf.get("classes", {})
+            for raw_cls, canon_cls in class_map.items():
+                if raw_cls in class_data and canon_cls not in class_data:
+                    class_data[canon_cls] = class_data[raw_cls]
+            for raw_field_full, canon_field_full in deobf.get("fields", {}).items():
+                if "::" in raw_field_full and "::" in canon_field_full:
+                    raw_cls, raw_f = raw_field_full.split("::", 1)
+                    canon_cls, canon_f = canon_field_full.split("::", 1)
+                    if canon_cls in class_data and raw_cls in class_data:
+                        if raw_f in class_data[raw_cls]["fields"]:
+                            class_data[canon_cls]["fields"][canon_f] = class_data[
+                                raw_cls
+                            ]["fields"][raw_f]
+        except Exception:
+            pass
+
     return class_data
 
 
@@ -256,6 +279,13 @@ DEFAULT_TARGETS = [
 ]
 
 
+def generate_pattern_from_instr_text(instr_text, offset):
+    hex_str = f"0x{offset:x}"
+    HEX_str = f"0x{offset:X}"
+    dec_str = f"{offset}"
+    return re.sub(rf"\b(?:{hex_str}|{HEX_str}|{dec_str})\b", "?", instr_text)
+
+
 def print_rule_snippets(field_name, field_cls, meth_cls, meth_name, offset, match):
     output_name = field_name.replace("<", "").replace(">k__BackingField", "")
     print("\n[+] Suggested build_sig_db.py Target:")
@@ -269,11 +299,12 @@ def print_rule_snippets(field_name, field_cls, meth_cls, meth_name, offset, matc
         )
 
     print("\n[+] Suggested config.json Extraction Rule:")
+    pattern = generate_pattern_from_instr_text(match["instr_text"], offset)
     rule = {
         output_name: {
+            "pattern": pattern,
             "instr_idx": match["instr_idx"],
             "op_idx": match["op_idx"],
-            "hardcoded": offset,
         }
     }
     print("    " + json.dumps(rule, indent=8).strip())

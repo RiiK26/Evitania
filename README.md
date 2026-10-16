@@ -201,20 +201,6 @@ All build targets are automatically placed into their respective configuration d
 3. **In-Game Overlay**:
    Press <kbd>INSERT</kbd> to toggle the ImGui menu. Configuration is automatically saved to `config.txt`.
 
----
-
-### Updating Signatures & Offsets
-
-When the game receives an update, update the offsets and signatures dynamically without full decompilation:
-
-```bash
-# Linux
-./scripts/update_offsets.sh
-
-# Windows
-scripts\update_offsets.bat
-```
-*(Requires Python 3 and Capstone: `pip install capstone`)*
 
 ## Disclaimer
 

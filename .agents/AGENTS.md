@@ -9,16 +9,19 @@
 - CMake, MinGW-w64 (Build System)
 
 ## Commands
+- **Unified Game Update & Rebuild**: `scripts/update` (Detects Steam update, validates signatures & semantic offsets, updates config.json, and rebuilds)
+- **Check Game Update Status**: `scripts/update --check`
 - **Build Project**: `scripts/build`
 - **Run the Project**: `scripts/run`
 - **Generate Signatures & Offsets**: `python3 resources/Tools/aobgenerator.py`
 - **Build Baseline Signature DB**: `python3 resources/Tools/build_sig_db.py`
 - **Find Field Usage & Disassemble**: `python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> [--disasm]`
+- **Deobfuscator & Symbol Bridge**: `python3 resources/Tools/deobfuscator.py [--all|--ghidra|--ida|--patch-dump]` (Maps obfuscated names to canonical symbols and exports Ghidra/IDA renamers)
 - **Update Workflow Guide**: Reference [.agents/workflows/update-workflow.md](file:///home/riik/Projects/Evitania/.agents/workflows/update-workflow.md) for full update procedure.
 
 ## Code Conventions
 - **Modular Architecture**: 1 Feature = 1 `.hpp`/`.cpp` pair located inside `src/Features/<Domain>/` (e.g. `src/Features/Combat/GodMode.cpp`). **No god files.**
-- **UI/Feature Sync**: The `src/Features/<Domain>/` directory structure MUST map exactly 1:1 with the ImGui Tab names defined in `Menu.cpp` (e.g., `Combat`, `Player`, `Economy`, `Curio`, `Engineer`, `Hunter`, `Timeline`). If a feature is displayed in the "Player" tab, its source code MUST reside in `src/Features/Player/`.
+- **UI/Feature Sync**: The `src/Features/<Domain>/` directory structure MUST map exactly 1:1 with the ImGui Tab names defined in `UI.cpp` (e.g., `Combat`, `Player`, `Economy`, `Curio`, `Engineer`, `Hunter`, `Hourglass`, `Bonfire`). If a feature is displayed in the "Hourglass" tab, its source code MUST reside in `src/Features/Hourglass/`.
 - **Hooking**: Always prefer `HOOK_SIGNATURE` (AOB pattern scanning) or `HOOK_METHOD` over static `HOOK_OFFSET` where possible. Dynamic resolving and signatures are resilient to game updates and obfuscation, whereas hardcoded offsets break immediately.
 - **Offset Extraction & Centralization**: NEVER use `IL2CPP::Class::Utils::GetFieldOffset` in C++ for field offsets, as it breaks when games are obfuscated. Rely on `aobgenerator.py` which dynamically extracts offsets via Capstone machine-code analysis. Centralize all offsets in `Offsets.hpp`: low-level runtime structures are separated under `Offsets::Il2Cpp::...` (e.g., `Array::data`, `List::items`, `Object::cachedPtr`, `Dictionary::entryStride`), while gameplay field offsets reside under `Offsets::...` (e.g. `Offsets::alive`, `Offsets::_combatCalculator`). Never hardcode magic numbers for structs or collection layouts in hooks or helpers.
 - **Signature Database**: `config.json` at the root of the project serves as the baseline signature and extraction rule database. Generic runtime collections are categorized as `Il2Cpp_<Struct>` (e.g., `Il2Cpp_Array`, `Il2Cpp_Dictionary`, `Il2Cpp_List`, `Il2Cpp_Object`). Constructor methods (`.ctor`) in `targets` are sanitized to `ctor` in C++ identifiers (e.g., `Attack_ctor`, `EntityCardDatabase_ctor`).
@@ -95,7 +98,7 @@ inline bool IsUnityObjectAlive(void* obj)
   - However, game spend resolvers (e.g. `SpendResolver`, `Trader::Spend`) enforce `if (amount <= 0) return false;`, blocking zero-cost purchases.
   - Solution: Use a `thread_local bool` flag during the purchase method (e.g. `EngineerSystemUI::TryBuyUpgrade`, `EnhancementTreeUI::Buy`) to provide an empty dictionary during the transaction (bypassing spend checks), while providing zeroed float values (`Utils::Il2Cpp::ZeroDictionaryFloatValues`) during UI rendering so icons remain visible with `0` cost.
   - **Context Isolation on Shared Pricing Methods**: When multiple game systems share a common pricing method (e.g., `MarketLotScriptableObject::CurrentPrice` shared by `EnhancementTreeUI` / Bonfire Ash and `SacrificeUI` / Sacrifice), never check both feature toggles blindly in the price getter. Track the active caller using a `thread_local` context enum set in `Select` and `Buy` hooks so each toggle only affects its own prices and spend resolvers.
-- **Feature Isolation**: Never reuse general store toggles (`bFreeStore`) across in-game skill systems (Combat, Woodcutting, Mining talent points, or Bonfire upgrades). Keep store purchases (`SteamPurchaseService` / `MobilePurchaseService`) strictly segregated from progression mechanics.
+- **Feature Isolation**: Never reuse general store toggles (`bFreeStore`) or currency toggles (`bInfiniteCurrency`) across subsystem progression. `InfiniteCurrency` strictly prevents subtraction of currencies (`CurrencyService::Subtract`, `HourglassService::AddResource` with `delta < 0`), while subsystem upgrade freeing (Engineer, Hunter, Bonfire, Hourglass of Eternity) must reside in its own dedicated feature module under the respective ImGui tab with its own distinct toggle.
 - **GC Managed Object Reuse**: Never cache raw managed instances (e.g. `OfflineActivitySnapshot`) across calls. Unity's garbage collector frees or moves them, causing second-use memory corruption or access violation crashes. Always allow the original method to allocate a fresh, GC-tracked instance, then patch the required fields on that instance.
 - **Timeskip Mob Kill Progression**: Offline timeskip rewards grant monster kills via `StatisticsService::AddKillWithPortalProgress`, but stage lock gates require specific difficulty and enemy ID matches via `MobKillTrigger::Apply` and `StatisticsService::AddPortalKill`. If triggers are inactive (e.g. player in town), queue pending kills to apply upon entering a portal stage.
 

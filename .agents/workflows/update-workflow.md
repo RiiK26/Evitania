@@ -23,10 +23,12 @@ graph TD
 ### Key Tool Roles
 | Tool | Path | Role |
 | :--- | :--- | :--- |
-| **`Il2CppDumper`** | External tool | Generates `dump.cs` and `script.json` from `GameAssembly.dll` and `global-metadata.dat`. |
-| **`find_field_usage.py`** | `resources/Tools/find_field_usage.py` | Disassembles methods to locate exact instruction and operand indices (`instr_idx`, `op_idx`) where fields are accessed. |
-| **`build_sig_db.py`** | `resources/Tools/build_sig_db.py` | Scans `dump.cs` + `GameAssembly.dll` to generate unique AOB signatures and extraction rules into `config.json`. |
+| **`scripts/update`** | `scripts/update` | **Primary Entry Point**: Detects Steam updates, scans signatures, extracts semantic offsets, updates config.json, and compiles `Evitania.dll`. |
+| **`updater.py`** | `resources/Tools/updater.py` | Python engine behind `scripts/update`. Handles build ID tracking, signature validation, and build automation. |
 | **`aobgenerator.py`** | `resources/Tools/aobgenerator.py` | Pattern scans `GameAssembly.dll` against `config.json` and dynamically outputs `Signatures.hpp` and `Offsets.hpp`. |
+| **`find_field_usage.py`** | `resources/Tools/find_field_usage.py` | Disassembles methods to locate exact instruction and operand indices where fields are accessed and emits semantic patterns. |
+| **`build_sig_db.py`** | `resources/Tools/build_sig_db.py` | Scans `dump.cs` + `GameAssembly.dll` to generate unique AOB signatures and extraction rules into `config.json`. |
+| **`Il2CppDumper`** | External tool | Generates `dump.cs` and `script.json` from `GameAssembly.dll` and `global-metadata.dat` (only needed when adding brand new features). |
 | **`scripts/build`** | `scripts/build` | CMake + MinGW-w64 build runner producing `release/Evitania <version>.dll`. |
 | **`scripts/run`** | `scripts/run` | Launches the game and handles DLL injection. |
 
@@ -85,6 +87,20 @@ When hooking a new feature or if a field offset changed, use `find_field_usage.p
 
 ---
 
+### Step 2.2.1: Handling Obfuscated Updates (Deobfuscator & Symbol Bridge)
+If the game update introduces obfuscation (scrambled class/method/field names in `dump.cs` or `script.json`):
+1. Run the Deobfuscator & Symbol Bridge:
+   ```bash
+   python3 resources/Tools/deobfuscator.py --all
+   ```
+   This tool uses your established AOB signatures in `config.json` as ground truth to locate method RVAs in the obfuscated `GameAssembly.dll`. It then cross-references these RVAs with `script.json` and `dump.cs` to:
+   - Generate `resources/dumped/deobfuscation_map.json` mapping obfuscated classes, methods, and field offsets to canonical names.
+   - Generate `resources/dumped/rename_ghidra.py` and `resources/dumped/rename_ida.py` to auto-rename functions in decompilers.
+   - Generate `resources/dumped/dump_deobfuscated.cs` with clean, human-readable names.
+2. Both `build_sig_db.py` and `find_field_usage.py` automatically load `deobfuscation_map.json` to translate canonical queries transparently!
+
+---
+
 ### Step 2.3: Update Baseline Signatures (`build_sig_db.py`)
 Add any new or changed methods/fields to the `targets` list in [resources/Tools/build_sig_db.py](file:///home/riik/Projects/Evitania/resources/Tools/build_sig_db.py):
 
@@ -124,8 +140,10 @@ This updates:
 2. `src/Modules/Hooks/Offsets.hpp` – Contains centralized field offsets under `namespace Offsets`.
 
 > [!IMPORTANT]
-> **Check the output for warnings!**
-> If an offset displays `(hardcoded fallback)`, verify whether the instruction layout changed in the new game binary. Use `find_field_usage.py <Class> <Method> <Field> --disasm` to check the new instruction index.
+> **Check the output for status notifications!**
+> - `(semantic match at idx N)`: Exact match confirmed via assembly pattern.
+> - `(semantic shift (idx A -> B))`: Instruction moved due to compiler changes, but was automatically and correctly resolved by the semantic pattern!
+> - `(hardcoded fallback)` or `(fallback instr_idx N)`: Verify whether the instruction layout changed. If needed, update the pattern using `find_field_usage.py <Class> <Method> <Field> --disasm`.
 
 ---
 
@@ -167,18 +185,21 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
 ## 3. Quick Reference & Command Cheat Sheet
 
 ```bash
-# 1. Inspect field usage / find instruction indices:
+# 1. Routine Game Update (One-Step Automated Pipeline):
+./scripts/update
+
+# 2. Check update status without building:
+./scripts/update --check
+
+# 3. Force re-scan and rebuild:
+./scripts/update --force
+
+# 4. Inspect field usage / find instruction indices for new features:
 python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> --disasm
 
-# 2. Build baseline signature database:
+# 5. Build baseline signature database (new features only):
 python3 resources/Tools/build_sig_db.py
 
-# 3. Generate Signatures.hpp and Offsets.hpp:
-python3 resources/Tools/aobgenerator.py
-
-# 4. Build DLL:
-./scripts/build release
-
-# 5. Launch game & inject:
+# 6. Launch game & inject:
 ./scripts/run
 ```

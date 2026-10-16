@@ -99,35 +99,129 @@ def parse_pattern_to_regex(pattern):
     return regex_str
 
 
-def extract_offset_from_instruction(pe_data, rva, md, instr_idx, op_idx):
-    code = pe_data[rva : rva + 800]
-    for i, instr in enumerate(md.disasm(code, rva)):
-        if i == instr_idx:
-            if op_idx < len(instr.operands):
-                op = instr.operands[op_idx]
-                if op.type == CS_OP_MEM:
-                    return op.mem.disp
-                elif op.type == CS_OP_IMM:
-                    return op.imm
-    return None
+def compile_pattern_to_regex(pattern):
+    # Escape regex specials except ? and *
+    p = pattern.replace("?", "__DISP__").replace("*", "__WILDCARD__")
+    p = re.escape(p)
+    p = p.replace("__DISP__", r"(?:0x[0-9a-fA-F]+|\d+)")
+    p = p.replace("__WILDCARD__", r"[a-zA-Z0-9_]+")
+    p = re.sub(r"\\ ", r"\\s+", p)
+    p = re.sub(r"\\\[", r"\\[\\s*", p)
+    p = re.sub(r"\\\]", r"\\s*\\]", p)
+    p = re.sub(r"\\\+", r"\\s*\\+\\s*", p)
+    p = re.sub(r"\\,", r"\\s*,\\s*", p)
+    return re.compile(f"^{p}$", re.IGNORECASE)
 
 
-def main():
-    if not os.path.exists(DLL_PATH):
-        print(f"[-] Error: GameAssembly.dll not found at {DLL_PATH}")
-        return
+def extract_offset_semantic(instructions, rule):
+    """
+    Extracts field offset using semantic assembly pattern matching with fallback to instr_idx/op_idx.
+    Returns: (offset_val, status_str)
+    """
+    if "hardcoded" in rule:
+        return rule["hardcoded"], "hardcoded fallback"
 
-    if not os.path.exists(SIG_DB_PATH):
-        print(f"[-] Error: config.json not found at {SIG_DB_PATH}")
-        return
+    pattern = rule.get("pattern")
+    fallback_idx = rule.get("instr_idx")
+    fallback_op_idx = rule.get("op_idx", 0)
 
-    print("[*] Loading config.json...")
-    with open(SIG_DB_PATH, "r") as f:
+    if pattern:
+        is_mem_disp = bool(re.search(r"\[[^\]]*\?[^\]]*\]", pattern))
+        pat_rgx = compile_pattern_to_regex(pattern)
+        candidates = []
+
+        for i, ins in enumerate(instructions):
+            text = f"{ins.mnemonic} {ins.op_str}"
+            if pat_rgx.match(text):
+                disp = None
+                if "op_idx" in rule and rule["op_idx"] < len(ins.operands):
+                    target_op = ins.operands[rule["op_idx"]]
+                    if target_op.type == CS_OP_MEM:
+                        disp = target_op.mem.disp
+                    elif target_op.type == CS_OP_IMM:
+                        disp = target_op.imm
+
+                if disp is None:
+                    if is_mem_disp:
+                        for op in ins.operands:
+                            if op.type == CS_OP_MEM:
+                                disp = op.mem.disp
+                                break
+                    else:
+                        for op in ins.operands:
+                            if op.type == CS_OP_IMM:
+                                disp = op.imm
+                                break
+
+                if disp is not None:
+                    candidates.append((i, text, disp))
+
+        if candidates:
+            if "match_idx" in rule and rule["match_idx"] < len(candidates):
+                best = candidates[rule["match_idx"]]
+            elif fallback_idx is not None:
+                best = min(candidates, key=lambda c: abs(c[0] - fallback_idx))
+            else:
+                best = candidates[0]
+
+            idx, _, val = best
+            if fallback_idx is not None and idx != fallback_idx:
+                status = f"semantic shift (idx {fallback_idx} -> {idx})"
+            else:
+                status = f"semantic match at idx {idx}"
+            return val, status
+
+    # Fallback to direct instruction index if pattern not provided or not matched
+    if fallback_idx is not None and fallback_idx < len(instructions):
+        ins = instructions[fallback_idx]
+        if fallback_op_idx < len(ins.operands):
+            op = ins.operands[fallback_op_idx]
+            if op.type == CS_OP_MEM:
+                return op.mem.disp, f"fallback instr_idx {fallback_idx}"
+            elif op.type == CS_OP_IMM:
+                return op.imm, f"fallback instr_idx {fallback_idx}"
+
+    return None, "failed"
+
+
+def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=True):
+    target_dll = dll_path or DLL_PATH
+    target_config = sig_db_path or SIG_DB_PATH
+
+    results = {
+        "success": False,
+        "total_signatures": 0,
+        "matched_signatures": 0,
+        "broken_signatures": [],
+        "ambiguous_signatures": [],
+        "total_offsets": 0,
+        "semantic_matches": 0,
+        "semantic_shifts": [],
+        "hardcoded_offsets": 0,
+        "failed_offsets": [],
+        "sig_path": None,
+        "off_path": None,
+    }
+
+    if not os.path.exists(target_dll):
+        if verbose:
+            print(f"[-] Error: GameAssembly.dll not found at {target_dll}")
+        return results
+
+    if not os.path.exists(target_config):
+        if verbose:
+            print(f"[-] Error: config.json not found at {target_config}")
+        return results
+
+    if verbose:
+        print("[*] Loading config.json...")
+    with open(target_config, "r") as f:
         config = json.load(f)
         sig_db = config.get("signatures", {})
 
-    print("[*] Loading GameAssembly.dll...")
-    pe = pefile.PE(DLL_PATH)
+    if verbose:
+        print("[*] Loading GameAssembly.dll...")
+    pe = pefile.PE(target_dll)
     pe_data = pe.get_memory_mapped_image()
 
     md = Cs(CS_ARCH_X86, CS_MODE_64)
@@ -140,17 +234,11 @@ def main():
         "{",
     ]
 
-    offsets_content = [
-        "#pragma once",
-        "",
-        "namespace Offsets",
-        "{",
-    ]
-
     il2cpp_offsets = {}
     game_offsets = {}
 
-    print("\n--- Scanning & Extracting ---")
+    if verbose:
+        print("\n--- Scanning & Extracting ---")
     for method_key, data in sig_db.items():
         pattern = data["signature"]
         extract_rules = data.get("extract", {})
@@ -162,27 +250,36 @@ def main():
             for field_name, rule in extract_rules.items():
                 if "hardcoded" in rule:
                     il2cpp_offsets[struct_name][field_name] = rule["hardcoded"]
-                    print(
-                        f"    -> Extracted Il2Cpp::{struct_name}::{field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
-                    )
+                    results["total_offsets"] += 1
+                    results["hardcoded_offsets"] += 1
+                    if verbose:
+                        print(
+                            f"    -> Extracted Il2Cpp::{struct_name}::{field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
+                        )
             continue
 
         if not pattern:
             for field_name, rule in extract_rules.items():
                 if "hardcoded" in rule:
                     game_offsets[field_name] = rule["hardcoded"]
-                    print(
-                        f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
-                    )
+                    results["total_offsets"] += 1
+                    results["hardcoded_offsets"] += 1
+                    if verbose:
+                        print(
+                            f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
+                        )
             continue
 
+        results["total_signatures"] += 1
         regex_str = parse_pattern_to_regex(pattern)
         regex = re.compile(regex_str, re.DOTALL)
 
         matches = list(regex.finditer(pe_data))
         if len(matches) == 1:
+            results["matched_signatures"] += 1
             rva = matches[0].start()
-            print(f"[+] Found {method_key} at RVA: 0x{rva:X}")
+            if verbose:
+                print(f"[+] Found {method_key} at RVA: 0x{rva:X}")
 
             signatures_content.append(f"  // 0x{rva:X}")
             signatures_content.append(
@@ -190,27 +287,39 @@ def main():
             )
             signatures_content.append("")
 
+            code = pe_data[rva : rva + 1200]
+            instructions = list(md.disasm(code, rva))
+
             for field_name, rule in extract_rules.items():
-                if "hardcoded" in rule:
-                    game_offsets[field_name] = rule["hardcoded"]
-                    print(
-                        f"    -> Extracted {field_name}: 0x{rule['hardcoded']:X} (hardcoded fallback)"
-                    )
+                results["total_offsets"] += 1
+                val, status = extract_offset_semantic(instructions, rule)
+                if val is not None:
+                    game_offsets[field_name] = val
+                    if "semantic shift" in status:
+                        results["semantic_shifts"].append(
+                            f"{method_key}::{field_name} ({status})"
+                        )
+                    elif "semantic match" in status:
+                        results["semantic_matches"] += 1
+                    elif "hardcoded" in status:
+                        results["hardcoded_offsets"] += 1
+
+                    if verbose:
+                        print(f"    -> Extracted {field_name}: 0x{val:X} ({status})")
                 else:
-                    instr_idx = rule["instr_idx"]
-                    op_idx = rule["op_idx"]
-                    val = extract_offset_from_instruction(
-                        pe_data, rva, md, instr_idx, op_idx
-                    )
-                    if val is not None:
-                        game_offsets[field_name] = val
-                        print(f"    -> Extracted {field_name}: 0x{val:X}")
-                    else:
+                    results["failed_offsets"].append(f"{method_key}::{field_name}")
+                    if verbose:
                         print(f"    [-] Failed to extract {field_name}")
+        elif len(matches) == 0:
+            results["broken_signatures"].append(method_key)
+            if verbose:
+                print(f"[-] Could not find match for {method_key} (Broken)")
         else:
-            print(
-                f"[-] Could not find unique match for {method_key} (Matches: {len(matches)})"
-            )
+            results["ambiguous_signatures"].append((method_key, len(matches)))
+            if verbose:
+                print(
+                    f"[-] Could not find unique match for {method_key} (Matches: {len(matches)})"
+                )
 
     signatures_content.append("}  // namespace Signatures")
 
@@ -261,8 +370,23 @@ def main():
     with open(off_path, "w") as f:
         f.write("\n".join(offsets_content))
 
-    print(f"\n[+] Generated {sig_path}")
-    print(f"[+] Generated {off_path}")
+    results["sig_path"] = sig_path
+    results["off_path"] = off_path
+    results["success"] = (
+        len(results["broken_signatures"]) == 0
+        and len(results["ambiguous_signatures"]) == 0
+        and len(results["failed_offsets"]) == 0
+    )
+
+    if verbose:
+        print(f"\n[+] Generated {sig_path}")
+        print(f"[+] Generated {off_path}")
+
+    return results
+
+
+def main():
+    generate_signatures_and_offsets()
 
 
 if __name__ == "__main__":

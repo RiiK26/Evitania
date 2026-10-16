@@ -148,6 +148,26 @@ def get_offsets():
                         class_data[current_class]["methods"][method_name] = []
                     class_data[current_class]["methods"][method_name].append(rva_val)
 
+    # If deobfuscation map exists, register canonical aliases
+    deobf_map_path = os.path.join(DUMP_DIR, "deobfuscation_map.json")
+    if os.path.exists(deobf_map_path):
+        try:
+            with open(deobf_map_path, "r", encoding="utf-8") as f:
+                deobf = json.load(f)
+            class_map = deobf.get("classes", {})
+            for raw_cls, canon_cls in class_map.items():
+                if raw_cls in class_data and canon_cls not in class_data:
+                    class_data[canon_cls] = class_data[raw_cls]
+            for raw_field_full, canon_field_full in deobf.get("fields", {}).items():
+                if "::" in raw_field_full and "::" in canon_field_full:
+                    raw_cls, raw_f = raw_field_full.split("::", 1)
+                    canon_cls, canon_f = canon_field_full.split("::", 1)
+                    if canon_cls in class_data and raw_cls in class_data:
+                        if raw_f in class_data[raw_cls]["fields"]:
+                            class_data[canon_cls]["fields"][canon_f] = class_data[raw_cls]["fields"][raw_f]
+        except Exception:
+            pass
+
     return class_data
 
 
@@ -226,14 +246,28 @@ def generate_signature(pe, md, pe_data, rva, initial_min_length=8):
     return None
 
 
+def generate_pattern_from_instr(instr, offset):
+    hex_str = f"0x{offset:x}"
+    HEX_str = f"0x{offset:X}"
+    dec_str = f"{offset}"
+    return re.sub(
+        rf"\b(?:{hex_str}|{HEX_str}|{dec_str})\b",
+        "?",
+        f"{instr.mnemonic} {instr.op_str}",
+    )
+
+
 def find_usage(pe, pe_data, md, rva, target_offset):
     code = pe_data[rva : rva + 800]
     for i, instr in enumerate(md.disasm(code, rva)):
         for op_idx, op in enumerate(instr.operands):
-            if op.type == CS_OP_MEM:
-                if op.mem.disp == target_offset:
-                    return i, op_idx
-    return None, None
+            if op.type == CS_OP_MEM and op.mem.disp == target_offset:
+                pattern = generate_pattern_from_instr(instr, target_offset)
+                return i, op_idx, pattern
+            elif op.type == CS_OP_IMM and op.imm == target_offset:
+                pattern = generate_pattern_from_instr(instr, target_offset)
+                return i, op_idx, pattern
+    return None, None, None
 
 
 def main():
@@ -293,6 +327,7 @@ def main():
         ("BaseStorageService", "Remove", 0, []),
         ("BaseStorageService", "TryRemove", 0, []),
         ("HourglassService", "CostFactor", 0, []),
+        ("HourglassService", "AddResource", 0, []),
         ("HourglassService", "UpgradeCost", 0, []),
         ("HourglassService", "LevelCost", 0, []),
         ("HourglassTalentConfig", "get_Cost", 0, [("cost", "HourglassTalentConfig")]),
@@ -468,9 +503,10 @@ def main():
                         class_data.get(field_cls, {}).get("fields", {}).get(field_name)
                     )
                     if offset is not None:
-                        idx, op_idx = find_usage(pe, pe_data, md, rva, offset)
+                        idx, op_idx, pattern = find_usage(pe, pe_data, md, rva, offset)
                         if idx is not None:
                             extract_rules[output_name] = {
+                                "pattern": pattern,
                                 "instr_idx": idx,
                                 "op_idx": op_idx,
                             }
@@ -566,7 +602,7 @@ def main():
     config["signatures"] = dict(sorted(sig_db.items()))
 
     with open(config_path, "w") as f:
-        json.dump(config, f, indent=4)
+        json.dump(config, f, indent="\t")
     print("Database built successfully -> config.json")
 
 
