@@ -99,12 +99,18 @@ def parse_pattern_to_regex(pattern):
     return regex_str
 
 
-def compile_pattern_to_regex(pattern):
+def compile_pattern_to_regex(pattern, relaxed_registers=False):
     # Escape regex specials except ? and *
     p = pattern.replace("?", "__DISP__").replace("*", "__WILDCARD__")
+    if relaxed_registers:
+        reg_pattern = r"\b(?:r[a-d]x|r[s|b]p|r[s|d]i|r[8-9][a-z0-9]?|r1[0-5][a-z0-9]?|e[a-d]x|e[s|b]p|e[s|d]i|xmm\d+|ymm\d+)\b"
+        p = re.sub(reg_pattern, "__REG__", p, flags=re.IGNORECASE)
+
     p = re.escape(p)
     p = p.replace("__DISP__", r"(?:0x[0-9a-fA-F]+|\d+)")
     p = p.replace("__WILDCARD__", r"[a-zA-Z0-9_]+")
+    if relaxed_registers:
+        p = p.replace("__REG__", r"(?:r[a-z0-9]+|e[a-z0-9]+|xmm\d+|ymm\d+)")
     p = re.sub(r"\\ ", r"\\s+", p)
     p = re.sub(r"\\\[", r"\\[\\s*", p)
     p = re.sub(r"\\\]", r"\\s*\\]", p)
@@ -116,6 +122,9 @@ def compile_pattern_to_regex(pattern):
 def extract_offset_semantic(instructions, rule):
     """
     Extracts field offset using semantic assembly pattern matching with fallback to instr_idx/op_idx.
+    Supports two passes:
+      Pass 1: Strict register matching (exact registers as written in config.json)
+      Pass 2: Relaxed register matching (immune to compiler register reassignment)
     Returns: (offset_val, status_str)
     """
     if "hardcoded" in rule:
@@ -127,49 +136,55 @@ def extract_offset_semantic(instructions, rule):
 
     if pattern:
         is_mem_disp = bool(re.search(r"\[[^\]]*\?[^\]]*\]", pattern))
-        pat_rgx = compile_pattern_to_regex(pattern)
-        candidates = []
 
-        for i, ins in enumerate(instructions):
-            text = f"{ins.mnemonic} {ins.op_str}"
-            if pat_rgx.match(text):
-                disp = None
-                if "op_idx" in rule and rule["op_idx"] < len(ins.operands):
-                    target_op = ins.operands[rule["op_idx"]]
-                    if target_op.type == CS_OP_MEM:
-                        disp = target_op.mem.disp
-                    elif target_op.type == CS_OP_IMM:
-                        disp = target_op.imm
+        # Two-pass match: Pass 1 (Strict), Pass 2 (Relaxed Registers)
+        for pass_num, relaxed in [(1, False), (2, True)]:
+            pat_rgx = compile_pattern_to_regex(pattern, relaxed_registers=relaxed)
+            candidates = []
 
-                if disp is None:
-                    if is_mem_disp:
-                        for op in ins.operands:
-                            if op.type == CS_OP_MEM:
-                                disp = op.mem.disp
-                                break
-                    else:
-                        for op in ins.operands:
-                            if op.type == CS_OP_IMM:
-                                disp = op.imm
-                                break
+            for i, ins in enumerate(instructions):
+                text = f"{ins.mnemonic} {ins.op_str}"
+                if pat_rgx.match(text):
+                    disp = None
+                    if "op_idx" in rule and rule["op_idx"] < len(ins.operands):
+                        target_op = ins.operands[rule["op_idx"]]
+                        if target_op.type == CS_OP_MEM:
+                            disp = target_op.mem.disp
+                        elif target_op.type == CS_OP_IMM:
+                            disp = target_op.imm
 
-                if disp is not None:
-                    candidates.append((i, text, disp))
+                    if disp is None:
+                        if is_mem_disp:
+                            for op in ins.operands:
+                                if op.type == CS_OP_MEM:
+                                    disp = op.mem.disp
+                                    break
+                        else:
+                            for op in ins.operands:
+                                if op.type == CS_OP_IMM:
+                                    disp = op.imm
+                                    break
 
-        if candidates:
-            if "match_idx" in rule and rule["match_idx"] < len(candidates):
-                best = candidates[rule["match_idx"]]
-            elif fallback_idx is not None:
-                best = min(candidates, key=lambda c: abs(c[0] - fallback_idx))
-            else:
-                best = candidates[0]
+                    if disp is not None:
+                        candidates.append((i, text, disp))
 
-            idx, _, val = best
-            if fallback_idx is not None and idx != fallback_idx:
-                status = f"semantic shift (idx {fallback_idx} -> {idx})"
-            else:
-                status = f"semantic match at idx {idx}"
-            return val, status
+            if candidates:
+                if "match_idx" in rule and rule["match_idx"] < len(candidates):
+                    best = candidates[rule["match_idx"]]
+                elif fallback_idx is not None:
+                    best = min(candidates, key=lambda c: abs(c[0] - fallback_idx))
+                else:
+                    best = candidates[0]
+
+                idx, matched_text, val = best
+                mode_str = "strict" if not relaxed else "relaxed-reg"
+                if fallback_idx is not None and idx != fallback_idx:
+                    status = (
+                        f"semantic shift [{mode_str}] (idx {fallback_idx} -> {idx})"
+                    )
+                else:
+                    status = f"semantic match [{mode_str}] at idx {idx}"
+                return val, status
 
     # Fallback to direct instruction index if pattern not provided or not matched
     if fallback_idx is not None and fallback_idx < len(instructions):

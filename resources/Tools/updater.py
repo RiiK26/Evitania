@@ -24,6 +24,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
 sys.path.insert(0, SCRIPT_DIR)
 
 from aobgenerator import find_game_assembly, generate_signatures_and_offsets
+from dump_memory import find_pids_linux, find_pids_windows
 
 CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.json")
 APP_ID = "4119420"
@@ -128,13 +129,38 @@ def main():
         action="store_true",
         help="Save a JSON summary report to update_report.json",
     )
+    parser.add_argument(
+        "--dll",
+        type=str,
+        default=None,
+        help="Path to custom GameAssembly.dll (e.g. dumped from RAM)",
+    )
+    parser.add_argument(
+        "--from-mem",
+        action="store_true",
+        help="Dump unpacked GameAssembly.dll from live game process before updating",
+    )
 
     args = parser.parse_args()
 
     print_banner("EVITANIA AUTOMATED UPDATE RUNNER")
 
     # 1. Locate Game Assembly & Steam Manifest
-    dll_path = find_game_assembly()
+    if args.from_mem:
+        print("[*] '--from-mem' specified. Invoking live process memory dumper...")
+        dumper_script = os.path.join(SCRIPT_DIR, "dump_memory.py")
+        ret = subprocess.run([sys.executable, dumper_script], cwd=PROJECT_ROOT)
+        if ret.returncode != 0:
+            print("[-] Failed to dump module from live process RAM.")
+            sys.exit(1)
+        dll_path = os.path.join(
+            PROJECT_ROOT, "resources", "dumped", "GameAssembly_memory.dll"
+        )
+    elif args.dll:
+        dll_path = os.path.abspath(args.dll)
+    else:
+        dll_path = find_game_assembly()
+
     if not os.path.exists(dll_path):
         print(f"[-] Error: GameAssembly.dll not found at: {dll_path}")
         sys.exit(1)
@@ -199,7 +225,50 @@ def main():
     )
     elapsed = time.time() - start_time
 
-    # 4. Validation Gate
+    # 4. Validation Gate & Intelligent In-Memory Fallback
+    if not results["success"] and not args.from_mem and not args.dll:
+        broken_count = len(results.get("broken_signatures", []))
+        if broken_count > 0:
+            print(
+                f"\n[!] Detected {broken_count} signature scan failures on disk binary."
+            )
+            pids = (
+                find_pids_linux("Evitania")
+                if platform.system() == "Linux"
+                else find_pids_windows("Evitania")
+            )
+            if pids:
+                pid, name = pids[0]
+                print(f"[!] Active game process detected: PID {pid} ({name})")
+                print(
+                    "[*] Initiating intelligent fallback: Dumping decrypted GameAssembly.dll from live process RAM..."
+                )
+                dumper_script = os.path.join(SCRIPT_DIR, "dump_memory.py")
+                ret = subprocess.run(
+                    [sys.executable, dumper_script, "--pid", str(pid)], cwd=PROJECT_ROOT
+                )
+                if ret.returncode == 0:
+                    mem_dll = os.path.join(
+                        PROJECT_ROOT, "resources", "dumped", "GameAssembly_memory.dll"
+                    )
+                    if os.path.exists(mem_dll):
+                        print(
+                            "[+] RAM dump completed. Re-running signature & semantic offset extraction against memory image..."
+                        )
+                        results = generate_signatures_and_offsets(
+                            dll_path=mem_dll, sig_db_path=CONFIG_PATH, verbose=True
+                        )
+                        if results["success"]:
+                            print(
+                                "\n[+] Intelligent Fallback Succeeded: 100% signatures & offsets resolved from live RAM!"
+                            )
+                            dll_path = mem_dll
+                            current_sha256 = get_file_sha256(mem_dll)
+            else:
+                print(
+                    "[*] Game is not currently running. If the disk binary is encrypted/packed, launch Evitania and run `scripts/update --from-mem`."
+                )
+
     if not results["success"]:
         print_banner("UPDATE FAILED - SIGNATURE / OFFSET MISMATCH")
         if results["broken_signatures"]:
@@ -217,10 +286,13 @@ def main():
 
         print("\n[*] Recommended Actions:")
         print(
-            "    1. Run `python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> --disasm` to check changes."
+            "    1. If disk binary is packed or encrypted, launch the game and run: `scripts/update --from-mem`."
         )
         print(
-            "    2. If the game is obfuscated, run the Deobfuscator Bridge to correlate RVAs."
+            "    2. Run `python3 resources/Tools/find_field_usage.py <Class> <Method> <Field> --disasm` to inspect changes."
+        )
+        print(
+            "    3. If the game is obfuscated, run the Deobfuscator Bridge (`python3 resources/Tools/deobfuscator.py --all`)."
         )
         sys.exit(1)
 
