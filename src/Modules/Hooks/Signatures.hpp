@@ -180,6 +180,10 @@ namespace Signatures
     "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? "
     "E8 ? ? ? ? C6 05 ? ? ? ? 01 45 33 C9";
 
+  // 0x829400
+  constexpr const char* HourglassService_AddResource =
+    "48 89 5C 24 10 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B DA 0F 29 7C 24 30";
+
   // 0x82BCC0
   constexpr const char* HourglassService_BuyGenerator =
     "48 89 6C 24 18 48 89 74 24 20 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8";

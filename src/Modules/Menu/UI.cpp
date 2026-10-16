@@ -137,13 +137,18 @@ namespace Menu
           ImGui::EndTabItem();
         }
 
-        // Timeline Tab menu
-        if (ImGui::BeginTabItem("Timeline")) {
-          ImGui::BeginChild("TimelineChild", ImVec2(0, -50), 0);
+        // Hourglass Tab menu
+        if (ImGui::BeginTabItem("Hourglass")) {
+          ImGui::BeginChild("HourglassChild", ImVec2(0, -50), 0);
 
           ImGui::Checkbox("Use Timeskip hourglass anywhere", &Config.bHourglassBypass);
           ImGui::Checkbox("Free Timeline upgrade tree", &Config.bFreeTimelineNodes);
-          ImGui::Checkbox("Free Restoration of Eternity tree", &Config.bFreeRestorationNodes);
+          ImGui::Checkbox("Free Hourglass upgrades", &Config.bFreeHourglassUpgrades);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Free generators, upgrades, hard upgrades, talents, and shop items");
+          }
 
           ImGui::EndChild();
           ImGui::EndTabItem();

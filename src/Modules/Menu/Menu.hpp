@@ -29,6 +29,7 @@ namespace Menu
     bool  bHourglassBypass        = false;
     bool  bFreeTimelineNodes      = false;
     bool  bFreeRestorationNodes   = false;
+    bool  bFreeHourglassUpgrades  = false;
     bool  bFreeEngineerUpgrades   = false;
     bool  bFreeHunterUpgrades     = false;
     bool  bAlwaysLitBonfire       = false;

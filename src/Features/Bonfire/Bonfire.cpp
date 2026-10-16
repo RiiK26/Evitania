@@ -88,8 +88,7 @@ namespace Features
         return dict;
       }
 
-      if (currentContext == BonfireContext::AshUpgrade || currentContext == BonfireContext::None) {
-        // Talent tree updates without active selection run in None context and belong strictly to Ash Upgrades
+      if (currentContext == BonfireContext::AshUpgrade) {
         if (Menu::Config.bFreeAshUpgrade) {
           if (bIsBuying) {
             Utils::Il2Cpp::ClearDictionary(dict);

@@ -9,7 +9,8 @@
 #include "../../Features/Economy/FreeStore.hpp"
 #include "../../Features/Player/SpeedHack.hpp"
 #include "../../Features/AntiCheat/AntiCheat.hpp"
-#include "../../Features/Timeline/HourglassBypass.hpp"
+#include "../../Features/Hourglass/HourglassBypass.hpp"
+#include "../../Features/Hourglass/HourglassUpgrades.hpp"
 #include "../../Features/Curio/CurioHacks.hpp"
 #include "../../Features/Engineer/EngineerHacks.hpp"
 #include "../../Features/Hunter/HunterHacks.hpp"
@@ -38,6 +39,7 @@ void Hooks::Initialize()
   Features::SpeedHack::Initialize();
   Features::AntiCheat::Initialize();
   Features::HourglassBypass::Initialize();
+  Features::HourglassUpgrades::Initialize();
   Features::CurioHacks::Initialize();
   Features::EngineerHacks::Initialize();
   Features::HunterHacks::Initialize();
@@ -52,6 +54,7 @@ void Hooks::Uninitialize()
   Features::Bonfire::Uninitialize();
   Features::EngineerHacks::Uninitialize();
   Features::CurioHacks::Uninitialize();
+  Features::HourglassUpgrades::Uninitialize();
   Features::HourglassBypass::Uninitialize();
   Features::GodMode::Uninitialize();
   Features::AuraKill::Uninitialize();
