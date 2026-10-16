@@ -1,6 +1,9 @@
 {
 	"project_name": "Evitania",
 	"version": "0.320.2",
+	"steam_build_id": "25902990",
+	"assembly_sha256": "e1b2f3d71e7ab7505a9667419d6583bd3841008308572391e5fae241f7724b3a",
+	"last_updated_timestamp": 1792116585,
 	"signatures": {
 		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
 			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
@@ -46,6 +49,7 @@
 			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? 48 8B CB E8 ? ? ? ? 48 8D 4B 38 48 89 43 38 48 8B D0 E8 ? ? ? ? 4C 8B 53 38",
 			"extract": {
 				"isPlayer": {
+					"pattern": "mov byte ptr [rbx + ?], al",
 					"instr_idx": 36,
 					"op_idx": 0
 				}
@@ -63,6 +67,7 @@
 			"signature": "48 89 5C 24 08 57 48 83 EC 40 0F 29 74 24 30 48 8B DA 0F 29 7C 24 20 33 D2 0F 28 FB 0F 28 F2 48 8B F9 E8 ? ? ? ? 48 8D 4F 18",
 			"extract": {
 				"AttackDamage": {
+					"pattern": "movss dword ptr [rdi + ?], xmm6",
 					"instr_idx": 16,
 					"op_idx": 0
 				}
@@ -104,6 +109,7 @@
 			"signature": "48 89 51 38 48 83 C1 38 E9 ? ? ? ? CC CC CC 48 89 5C 24 18",
 			"extract": {
 				"_currentSpawner": {
+					"pattern": "mov qword ptr [rcx + ?], rdx",
 					"instr_idx": 0,
 					"op_idx": 0
 				}
@@ -133,6 +139,7 @@
 			"signature": "48 8B 41 20 C3 CC CC CC CC CC CC CC CC CC CC CC 48 89 51 20",
 			"extract": {
 				"uniqueName": {
+					"pattern": "mov rax, qword ptr [rcx + ?]",
 					"instr_idx": 0,
 					"op_idx": 1
 				}
@@ -142,6 +149,7 @@
 			"signature": "40 53 48 83 EC 20 80 79 3C 00 48 8B D9 74 4C F3 0F 10 91 90 00 00 00",
 			"extract": {
 				"alive": {
+					"pattern": "cmp byte ptr [rcx + ?], 0",
 					"instr_idx": 2,
 					"op_idx": 0
 				}
@@ -151,6 +159,7 @@
 			"signature": "40 53 48 83 EC 40 80 79 20 00",
 			"extract": {
 				"alive": {
+					"pattern": "cmp byte ptr [rcx + ?], 0",
 					"instr_idx": 5,
 					"op_idx": 0
 				}
@@ -160,6 +169,7 @@
 			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 30 48 85 C9 74 13 4C 8B 05 ? ? ? ? 33 D2 48 83 C4 20 5B E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 0F B6 41 4D",
 			"extract": {
 				"_enemyCards": {
+					"pattern": "mov rcx, qword ptr [rbx + ?]",
 					"instr_idx": 8,
 					"op_idx": 1
 				}
@@ -193,6 +203,7 @@
 			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 48 8B 15 ? ? ? ? 48 8B C8 48 8B D8 E8 ? ? ? ? 48 8D 4F 18 48 89 5F 18 48 8B D3 E8 ? ? ? ? 33 D2 48 8B CF 48 8B 5C 24 30 48 83 C4 20 5F E9 ? ? ? ? CC CC CC CC CC CC CC CC CC 48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F9 75 13 48 8D 0D ? ? ? ?",
 			"extract": {
 				"enemies": {
+					"pattern": "lea rcx, [rdi + ?]",
 					"instr_idx": 17,
 					"op_idx": 1
 				}
@@ -204,6 +215,10 @@
 		},
 		"HourglassLevelConfig_SandCost": {
 			"signature": "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 45 33 C9",
+			"extract": {}
+		},
+		"HourglassService_AddResource": {
+			"signature": "48 89 5C 24 10 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B DA 0F 29 7C 24 30",
 			"extract": {}
 		},
 		"HourglassService_BuyGenerator": {
@@ -254,6 +269,7 @@
 			"signature": "F2 0F 10 41 48 C3 CC CC",
 			"extract": {
 				"cost": {
+					"pattern": "movsd xmm0, qword ptr [rcx + ?]",
 					"instr_idx": 0,
 					"op_idx": 1
 				}
@@ -325,6 +341,7 @@
 			"signature": "48 8B 41 18 C3 CC CC CC CC CC CC CC CC CC CC CC F3 0F 11 44 24 08",
 			"extract": {
 				"itemAmount": {
+					"pattern": "mov rax, qword ptr [rcx + ?]",
 					"instr_idx": 0,
 					"op_idx": 1
 				}
@@ -350,6 +367,7 @@
 			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F2 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 63 43 20",
 			"extract": {
 				"_portal": {
+					"pattern": "mov qword ptr [rsp + ?], rdi",
 					"instr_idx": 13,
 					"op_idx": 0
 				}
@@ -359,6 +377,7 @@
 			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 28 48 89 7C 24 30 48 85 C9 74 42 48 8B 05 ? ? ? ?",
 			"extract": {
 				"difficulty": {
+					"pattern": "mov qword ptr [rsp + ?], rdi",
 					"instr_idx": 9,
 					"op_idx": 0
 				}
@@ -376,10 +395,12 @@
 			"signature": "40 53 48 83 EC 20 83 79 20 00 48 8B D9 7E 21 48 83 79 28 00",
 			"extract": {
 				"mobKillsToOpen": {
+					"pattern": "cmp dword ptr [rcx + ?], 0",
 					"instr_idx": 2,
 					"op_idx": 0
 				},
 				"enemy": {
+					"pattern": "cmp qword ptr [rcx + ?], 0",
 					"instr_idx": 5,
 					"op_idx": 0
 				}
@@ -389,6 +410,7 @@
 			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 4C 00 48 C7 44 24 30 ? ? ? ? 75 78",
 			"extract": {
 				"_rewarder": {
+					"pattern": "cmp byte ptr [rax + ?], 0",
 					"instr_idx": 97,
 					"op_idx": 0
 				}
@@ -398,6 +420,7 @@
 			"signature": "40 53 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B D9 0F 29 BC 24 E0 00 00 00",
 			"extract": {
 				"_view": {
+					"pattern": "mov rax, qword ptr [rbx + ?]",
 					"instr_idx": 14,
 					"op_idx": 1
 				},
@@ -405,6 +428,7 @@
 					"hardcoded": 136
 				},
 				"_isNet": {
+					"pattern": "cmp qword ptr [rbx + ?], 0",
 					"instr_idx": 35,
 					"op_idx": 0
 				}
@@ -434,26 +458,32 @@
 			"signature": "48 89 5C 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B F9 75 4F 48 8D 0D ? ? ? ?",
 			"extract": {
 				"EntityGuid": {
+					"pattern": "mov qword ptr [rsp + ?], rbx",
 					"instr_idx": 0,
 					"op_idx": 0
 				},
 				"Skill": {
+					"pattern": "mov rax, qword ptr [rdi + ?]",
 					"instr_idx": 26,
 					"op_idx": 1
 				},
 				"XpPerHour": {
+					"pattern": "mov dword ptr [rbx + ?], eax",
 					"instr_idx": 103,
 					"op_idx": 0
 				},
 				"KillsPerHour": {
+					"pattern": "mov dword ptr [rbx + ?], eax",
 					"instr_idx": 121,
 					"op_idx": 0
 				},
 				"GoldPerHour": {
+					"pattern": "mov dword ptr [rbx + ?], eax",
 					"instr_idx": 142,
 					"op_idx": 0
 				},
 				"_cardDatabase": {
+					"pattern": "mov eax, dword ptr [rax + ?]",
 					"instr_idx": 102,
 					"op_idx": 1
 				}
@@ -467,6 +497,7 @@
 			"signature": "48 8B 41 48 C3 CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 58",
 			"extract": {
 				"_combatCalculator": {
+					"pattern": "mov rax, qword ptr [rcx + ?]",
 					"instr_idx": 0,
 					"op_idx": 1
 				}
@@ -532,6 +563,7 @@
 			"signature": "40 53 48 83 EC 40 80 79 50 00",
 			"extract": {
 				"discount": {
+					"pattern": "movss dword ptr [rcx + ?], xmm6",
 					"instr_idx": 10,
 					"op_idx": 0
 				}
@@ -565,6 +597,7 @@
 			"signature": "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 73 48 8D 0D ? ? ? ?",
 			"extract": {
 				"_rewarder": {
+					"pattern": "mov qword ptr [rsp + ?], rbx",
 					"instr_idx": 0,
 					"op_idx": 0
 				}
