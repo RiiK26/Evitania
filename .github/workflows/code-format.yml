@@ -69,13 +69,13 @@ jobs:
 
             let body = "";
             if (isSuccess) {
-              body = `${tag}\n### 🎨 Code Formatting Check: Passed ✅\n\nAll modified code meets the project's formatting standards!\n\n- **C/C++ (\`.clang-format\`)**: Passed\n- **Python (\`ruff format\`)**: Passed\n\n[View Run Details](${runUrl})`;
+              body = `${tag}\n### Code Formatting Check: Passed ✅\n\nAll modified code meets the project's formatting standards!\n\n- **C/C++ (\`.clang-format\`)**: Passed\n- **Python (\`ruff format\`)**: Passed\n\n[View Run Details](${runUrl})`;
             } else {
               let failureDetails = [];
               if (!isClangOk) failureDetails.push("- **C/C++**: Found style violations against \`.clang-format\`");
               if (!isRuffOk) failureDetails.push("- **Python**: Found style violations against \`ruff format\`");
 
-              body = `${tag}\n### 🎨 Code Formatting Check: Failed ❌\n\n${failureDetails.join("\n")}\n\n#### 🛠️ How to fix locally:\n\`\`\`bash\n# Format C/C++ files:\ngit ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format -i\n\n# Format Python files:\nruff format resources/Tools/*.py\n\`\`\`\n\nPlease apply formatting, commit, and push your updates to this PR branch.\n\n[View Detailed Error Log](${runUrl})`;
+              body = `${tag}\n### Code Formatting Check: Failed ❌\n\n${failureDetails.join("\n")}\n\n#### How to fix locally:\n\`\`\`bash\n# Format C/C++ files:\ngit ls-files '*.cpp' '*.hpp' '*.h' | grep -vE 'src/Modules/(ImGui|MinHook|Il2CppResolver)/' | xargs clang-format -i\n\n# Format Python files:\nruff format resources/Tools/*.py\n\`\`\`\n\nPlease apply formatting, commit, and push your updates to this PR branch.\n\n[View Detailed Error Log](${runUrl})`;
             }
 
             // Check if comment already exists to avoid duplicate comments
