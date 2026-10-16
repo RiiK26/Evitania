@@ -36,6 +36,15 @@ namespace Menu
     }
   }
 
+  static int SafeParseInt(const std::string& value, int defaultValue)
+  {
+    try {
+      return std::stoi(value);
+    } catch (...) {
+      return defaultValue;
+    }
+  }
+
   void ConfigData::LoadConfig()
   {
     std::ifstream f(GetConfigPath());
@@ -100,7 +109,7 @@ namespace Menu
           else if (key == "force_curio_rarity")
             bForceCurioRarity = (value == "1");
           else if (key == "curio_rarity")
-            iCurioRarity = std::stoi(value);
+            iCurioRarity = SafeParseInt(value, iCurioRarity);
           else if (key == "stage_hopper_loop")
             bStageHopperLoop = (value == "1");
           else if (key == "stage_hopper_delay")

@@ -38,6 +38,17 @@ namespace Features
           if (it == damageCooldowns.end() || currentTick - it->second > 1000) {
             Orig_EnemyNpcController_TakeDamage(__this, Menu::Config.fGodModeDamage, method_info);
             damageCooldowns[__this] = currentTick;
+
+            if (damageCooldowns.size() > 256) {
+              for (auto cleanIt = damageCooldowns.begin(); cleanIt != damageCooldowns.end();) {
+                if (currentTick - cleanIt->second > 3000) {
+                  cleanIt = damageCooldowns.erase(cleanIt);
+                }
+                else {
+                  ++cleanIt;
+                }
+              }
+            }
           }
         }
       }

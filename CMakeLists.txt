@@ -76,8 +76,8 @@ add_compile_definitions(
     $<$<CONFIG:Debug>:_DEBUG>
 )
 if(NOT MSVC)
-    add_compile_options(-fpermissive -ffunction-sections -fdata-sections)
-    add_link_options(-Wl,--gc-sections)
+    add_compile_options(-fpermissive -ffunction-sections -fdata-sections -fstack-protector-strong)
+    add_link_options(-Wl,--gc-sections -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va)
 endif()
 
 file(GLOB MINHOOK_SRC "src/Modules/MinHook/*.c" "src/Modules/MinHook/hde/*.c")

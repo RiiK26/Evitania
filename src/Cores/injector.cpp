@@ -34,24 +34,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 1;
 
   // Convert wide strings back to multibyte
-  char procName[MAX_PATH];
-  char dllPath[MAX_PATH];
+  char procName[MAX_PATH] = {};
+  char dllPath[MAX_PATH]  = {};
 
   if (argc < 3) {
     LocalFree(argvW);
     return 1;
   }
-  WideCharToMultiByte(CP_UTF8, 0, argvW[1], -1, procName, MAX_PATH, NULL, NULL);
-  WideCharToMultiByte(CP_UTF8, 0, argvW[2], -1, dllPath, MAX_PATH, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, argvW[1], -1, procName, MAX_PATH - 1, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, argvW[2], -1, dllPath, MAX_PATH - 1, NULL, NULL);
   LocalFree(argvW);
+  procName[MAX_PATH - 1]      = '\0';
+  dllPath[MAX_PATH - 1]       = '\0';
 
-  if (argc < 3) {
-    return 1;
-  }
-
-  char fullDllPath[MAX_PATH];
-  if (!GetFullPathNameA(dllPath, MAX_PATH, fullDllPath, nullptr)) {
-    std::cerr << "Failed to resolve absolute path for DLL.\n";
+  char  fullDllPath[MAX_PATH] = {};
+  DWORD pathLen               = GetFullPathNameA(dllPath, MAX_PATH, fullDllPath, nullptr);
+  if (pathLen == 0 || pathLen >= MAX_PATH) {
+    std::cerr << "Failed to resolve absolute path for DLL (or path exceeds MAX_PATH).\n";
     return 1;
   }
 
@@ -79,14 +78,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 1;
   }
 
-  void* loc = VirtualAllocEx(hProc, 0, strlen(fullDllPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+  size_t fullDllPathLen = strlen(fullDllPath) + 1;
+  void*  loc            = VirtualAllocEx(hProc, 0, fullDllPathLen, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
   if (!loc) {
     std::cerr << "VirtualAllocEx failed!\n";
     CloseHandle(hProc);
     return 1;
   }
 
-  WriteProcessMemory(hProc, loc, fullDllPath, strlen(fullDllPath) + 1, 0);
+  if (!WriteProcessMemory(hProc, loc, fullDllPath, fullDllPathLen, nullptr)) {
+    std::cerr << "WriteProcessMemory failed! Error: " << GetLastError() << "\n";
+    VirtualFreeEx(hProc, loc, 0, MEM_RELEASE);
+    CloseHandle(hProc);
+    return 1;
+  }
 
   HANDLE hThread = CreateRemoteThread(hProc, 0, 0, (LPTHREAD_START_ROUTINE) LoadLibraryA, loc, 0, 0);
   if (!hThread) {
