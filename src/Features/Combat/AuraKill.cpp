@@ -5,6 +5,14 @@
 #include "../../Modules/Menu/Menu.hpp"
 #include <cstdint>
 #include <unordered_map>
+
+#ifndef WIN32_LEAN_AND_MEAN
+  #define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+  #define NOMINMAX
+#endif
+
 #include <windows.h>
 
 namespace Features
