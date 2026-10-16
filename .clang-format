@@ -1,3 +1,4 @@
+BasedOnStyle: WebKit
 AccessModifierOffset: -2
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Left
@@ -28,7 +29,6 @@ AllowShortEnumsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: Never
 
 AlwaysBreakTemplateDeclarations: true
-BasedOnStyle: WebKit
 BitFieldColonSpacing: After
 BinPackParameters: false
 BreakBeforeBinaryOperators: NonAssignment
@@ -74,5 +74,5 @@ SpaceAfterTemplateKeyword: false
 SpaceBeforeCaseColon: true
 SpaceBeforeCpp11BracedList: false
 SpaceBeforeInheritanceColon: false
-SpaceInEmptyBlock: false
+SpaceInEmptyBlock: true
 SpacesBeforeTrailingComments: 2
