@@ -24,7 +24,7 @@ Evitania is an internal game modification and research tool for *Evitania Online
 
 ### Out of Scope
 - **Game Anti-Cheat Bans**: Client-side game modifications carry an inherent risk of detection by game servers. Anticheat detections or server-side bans do not constitute security vulnerabilities in this project.
-- **Signature Invalidation**: Signatures or semantic offset extraction failures caused by game updates (please use the [Game Update Issue Template](ISSUE_TEMPLATE/game-update.yml) instead).
+- **Signature Invalidation**: Signatures or semantic offset extraction failures caused by game updates (please use the [Game Update Issue Template](.github/ISSUE_TEMPLATE/game-update.yml) instead).
 - **Physical Device Access**: Attacks requiring local physical access to an unlocked operating system.
 - **Upstream Vendor Vulnerabilities**: Vulnerabilities in unmodified third-party libraries (`ImGui`, `MinHook`, `Il2CppResolver`) unless they are exposed or weaponized through Evitania's implementation.
 
