@@ -143,14 +143,28 @@ def get_offsets():
                 continue
 
             rva_match = rva_regex.search(line)
-            if rva_match and i + 1 < len(lines):
-                m_match = method_regex.search(lines[i + 1])
-                if m_match:
-                    method_name = m_match.group(1)
-                    rva_val = int(rva_match.group(1), 16)
-                    if method_name not in class_data[current_class]["methods"]:
-                        class_data[current_class]["methods"][method_name] = []
-                    class_data[current_class]["methods"][method_name].append(rva_val)
+            if rva_match:
+                k = 1
+                while i + k < len(lines):
+                    nl = lines[i + k].strip()
+                    if not nl:
+                        k += 1
+                        continue
+                    if nl.startswith("// RVA:") or class_regex.search(lines[i + k]):
+                        break
+                    if nl.startswith("//"):
+                        k += 1
+                        continue
+                    m_match = method_regex.search(lines[i + k])
+                    if m_match:
+                        method_name = m_match.group(1)
+                        rva_val = int(rva_match.group(1), 16)
+                        if method_name not in class_data[current_class]["methods"]:
+                            class_data[current_class]["methods"][method_name] = []
+                        class_data[current_class]["methods"][method_name].append(
+                            rva_val
+                        )
+                    break
 
     # If deobfuscation map exists, register canonical aliases
     deobf_map_path = os.path.join(DUMP_DIR, "deobfuscation_map.json")

@@ -1,9 +1,9 @@
 {
 	"project_name": "Evitania",
-	"version": "0.320.2",
-	"steam_build_id": "25902990",
-	"assembly_sha256": "e1b2f3d71e7ab7505a9667419d6583bd3841008308572391e5fae241f7724b3a",
-	"last_updated_timestamp": 1792116585,
+	"version": "0.321.0",
+	"steam_build_id": "26110386",
+	"assembly_sha256": "8fd088375b1458b36b9b2d34d54e4e66c5c2c1d86bc09b1fb2d50a674eef4669",
+	"last_updated_timestamp": 1792626643,
 	"signatures": {
 		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
 			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
@@ -56,7 +56,7 @@
 			}
 		},
 		"AttackReceiver_Recieve": {
-			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 5B 48 8D 0D ? ? ? ?",
+			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00",
 			"extract": {
 				"AttackDamage": {
 					"hardcoded": 16
@@ -78,7 +78,7 @@
 			"extract": {}
 		},
 		"BaseStorageService_TryRemove": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B D8 48 8B FA 48 8B F1 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00",
+			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B F8 48 8B DA 48 8B F1 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00",
 			"extract": {}
 		},
 		"BonfireFuelBurner_get_Fuel": {
@@ -86,7 +86,7 @@
 			"extract": {}
 		},
 		"BonfireFuelBurner_get_MaxFuel": {
-			"signature": "F3 0F 10 41 34 C3 CC CC CC CC CC CC CC CC CC CC F3 0F 10 41 28",
+			"signature": "F3 0F 10 41 34 C3 CC CC CC CC CC CC CC CC CC CC F3 0F 10 41 2C",
 			"extract": {}
 		},
 		"BonfireService_TryIgnite": {
@@ -132,7 +132,7 @@
 			"extract": {}
 		},
 		"EasterAttackReceiver_Recieve": {
-			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 67 48 8D 0D ? ? ? ?",
+			"signature": "48 89 6C 24 18 48 89 74 24 20 41 56 48 83 EC 60 80 3D ? ? ? ? 00 48 8B F2 4C 8B F1",
 			"extract": {}
 		},
 		"EnemyCard_get_UniqueName": {
@@ -184,7 +184,7 @@
 			}
 		},
 		"EngineerSystemUI_TryBuyUpgrade": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF 90 01 00 00 00",
+			"signature": "48 89 5C 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF 98 01 00 00 00",
 			"extract": {}
 		},
 		"EngineerUpgradeConfig_GetPrice": {
@@ -348,7 +348,7 @@
 			}
 		},
 		"MapUi_UpdatePlayerLocation": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 8B 08 01 00 00",
+			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 8B 18 01 00 00",
 			"extract": {}
 		},
 		"MarketLotScriptableObject_CurrentPrice": {
@@ -395,9 +395,9 @@
 			"signature": "40 53 48 83 EC 20 83 79 20 00 48 8B D9 7E 21 48 83 79 28 00",
 			"extract": {
 				"mobKillsToOpen": {
-					"pattern": "cmp dword ptr [rcx + ?], 0",
-					"instr_idx": 2,
-					"op_idx": 0
+					"pattern": "sub rsp, ?",
+					"instr_idx": 1,
+					"op_idx": 1
 				},
 				"enemy": {
 					"pattern": "cmp qword ptr [rcx + ?], 0",
@@ -410,9 +410,9 @@
 			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 4C 00 48 C7 44 24 30 ? ? ? ? 75 78",
 			"extract": {
 				"_rewarder": {
-					"pattern": "cmp byte ptr [rax + ?], 0",
-					"instr_idx": 97,
-					"op_idx": 0
+					"pattern": "sub rsp, ?",
+					"instr_idx": 2,
+					"op_idx": 1
 				}
 			}
 		},
@@ -420,17 +420,15 @@
 			"signature": "40 53 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 48 8B D9 0F 29 BC 24 E0 00 00 00",
 			"extract": {
 				"_view": {
-					"pattern": "mov rax, qword ptr [rbx + ?]",
-					"instr_idx": 14,
-					"op_idx": 1
+					"pattern": "movss dword ptr [rsp + ?], xmm8",
+					"instr_idx": 105,
+					"op_idx": 0
 				},
 				"networkPlayerSync": {
 					"hardcoded": 136
 				},
 				"_isNet": {
-					"pattern": "cmp qword ptr [rbx + ?], 0",
-					"instr_idx": 35,
-					"op_idx": 0
+					"hardcoded": 88
 				}
 			}
 		},
@@ -544,7 +542,7 @@
 			"extract": {}
 		},
 		"SacrificeUI_TryRollSacrificeHalfCost": {
-			"signature": "48 83 EC 38 33 D2 0F 29 74 24 20 B9 ? ? ? ? E8 ? ? ? ? 33 C9",
+			"signature": "48 83 EC 38 33 D2 0F 29 74 24 20 B9 ? ? ? ? E8 ? ? ? ? 33 C9 0F 28 F0 E8 ? ? ? ? 0F 2F F0 0F 28 74 24 20 0F 97 C0 48 83 C4 38 C3 CC 40 53 48 83 EC 20",
 			"extract": {}
 		},
 		"ShopSpendingService_CanSpend": {
@@ -612,7 +610,7 @@
 			"extract": {}
 		},
 		"TimeskipItem_get_CanUseImpl": {
-			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 53 48 83 EC 20 8B 41 18",
+			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 10",
 			"extract": {}
 		},
 		"WorldElite_Update": {

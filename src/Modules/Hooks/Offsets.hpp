@@ -53,9 +53,9 @@ namespace Offsets
   constexpr int mobKillsToOpen    = 0x20;
   constexpr int enemy             = 0x28;
   constexpr int _rewarder         = 0x20;
-  constexpr int _view             = 0x28;
+  constexpr int _view             = 0x30;
   constexpr int networkPlayerSync = 0x88;
-  constexpr int _isNet            = 0x50;
+  constexpr int _isNet            = 0x58;
   constexpr int EntityGuid        = 0x10;
   constexpr int Skill             = 0x20;
   constexpr int XpPerHour         = 0x24;

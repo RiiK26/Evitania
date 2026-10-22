@@ -56,11 +56,18 @@ def find_pids_linux(process_pattern):
                 # Check cmdline
                 cmdline_path = f"/proc/{pid}/cmdline"
                 with open(cmdline_path, "rb") as f:
-                    cmdline = (
-                        f.read().replace(b"\x00", b" ").decode("utf-8", errors="ignore")
+                    cmdline_parts = (
+                        f.read().decode("utf-8", errors="ignore").split("\x00")
                     )
-                if pattern_re.search(cmdline):
-                    pids.append((pid, cmdline.split()[0] if cmdline else comm))
+                exe = cmdline_parts[0] if cmdline_parts else ""
+                exe_name = os.path.basename(exe.replace("\\", "/"))
+                # Match against executable name or any .exe binary argument (e.g. Wine/Proton launching EvitaniaOnline.exe)
+                if pattern_re.search(exe_name) or any(
+                    pattern_re.search(os.path.basename(arg.replace("\\", "/")))
+                    and arg.lower().endswith(".exe")
+                    for arg in cmdline_parts
+                ):
+                    pids.append((pid, exe if exe else comm))
             except (FileNotFoundError, PermissionError):
                 continue
     except Exception as e:
