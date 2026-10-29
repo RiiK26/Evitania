@@ -1,9 +1,8 @@
 {
 	"project_name": "Evitania",
-	"version": "0.321.0",
-	"steam_build_id": "26110386",
-	"assembly_sha256": "8fd088375b1458b36b9b2d34d54e4e66c5c2c1d86bc09b1fb2d50a674eef4669",
-	"last_updated_timestamp": 1792626643,
+	"version": "0.321.1",
+	"steam_build_id": "26138857",
+	"assembly_sha256": "923544dce49751af79b1e4133f2a6da4e5bddef1a1eab8583c4680a4ecca9cf1",
 	"signatures": {
 		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
 			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
@@ -90,7 +89,7 @@
 			"extract": {}
 		},
 		"BonfireService_TryIgnite": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 0F 84 ? ? ? ? 48 8B 40 50",
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 0F 84 ? ? ? ?",
 			"extract": {}
 		},
 		"BonfireService_get_CanIgnite": {
@@ -530,7 +529,7 @@
 			"extract": {}
 		},
 		"RealmAttackReceiver_Recieve": {
-			"signature": "48 89 74 24 20 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 67 48 8D 0D ? ? ? ?",
+			"signature": "48 89 74 24 20 41 56 48 83 EC 60 80 3D ? ? ? ? 00 4C 8B F2 48 8B F1 75 73 48 8D 0D ? ? ? ?",
 			"extract": {}
 		},
 		"SacrificeUI_Buy": {
