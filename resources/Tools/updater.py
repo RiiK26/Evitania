@@ -302,7 +302,6 @@ def main():
         "version": config.get("version", game_version),
         "steam_build_id": current_build_id,
         "assembly_sha256": current_sha256,
-        "last_updated_timestamp": int(time.time()),
         "signatures": config.get("signatures", {}),
     }
 
