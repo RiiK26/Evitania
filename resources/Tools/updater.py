@@ -6,6 +6,8 @@ Automates the end-to-end update workflow:
 2. Scans and validates AOB signatures & semantic offsets
 3. Re-baselines config.json metadata
 4. Invokes the project build script to produce release binaries
+5. Self-heals on failure (RAM dump, dump.cs regeneration, signature DB rebuild,
+   rollback) and diagnoses with the doctor (`--doctor`)
 """
 
 import argparse
@@ -14,6 +16,7 @@ import json
 import os
 import platform
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -25,6 +28,7 @@ sys.path.insert(0, SCRIPT_DIR)
 
 from aobgenerator import find_game_assembly, generate_signatures_and_offsets
 from dump_memory import find_pids_linux, find_pids_windows
+import doctor
 
 CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.json")
 APP_ID = "4119420"
@@ -96,7 +100,22 @@ def run_build(build_type):
         print(f"[-] Error: Build runner not found at {build_script}")
         return False
 
-    proc = subprocess.run(cmd, cwd=PROJECT_ROOT)
+    # Stream output live while capturing it for doctor diagnosis.
+    proc = subprocess.Popen(
+        cmd,
+        cwd=PROJECT_ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        errors="replace",
+    )
+    captured = []
+    for line in proc.stdout:
+        sys.stdout.write(line)
+        captured.append(line)
+    proc.wait()
+    if proc.returncode != 0:
+        doctor.diagnose_build_output("".join(captured))
     return proc.returncode == 0
 
 
@@ -141,7 +160,31 @@ def main():
         help="Dump unpacked GameAssembly.dll from live game process before updating",
     )
 
+    parser.add_argument(
+        "--doctor",
+        action="store_true",
+        help="Run read-only health diagnostics (env, game files, dump.cs, signatures, C++ refs) and exit",
+    )
+    parser.add_argument(
+        "--no-heal",
+        action="store_true",
+        help="Disable automatic self-healing when signatures break",
+    )
+    parser.add_argument(
+        "--allow-degraded",
+        action="store_true",
+        help="If healing cannot fix everything, still build: broken hooks are disabled at runtime and their offsets keep last-known-good values",
+    )
+
     args = parser.parse_args()
+
+    if args.doctor:
+        sys.exit(
+            doctor.run_doctor(
+                args.dll,
+                args.report and os.path.join(PROJECT_ROOT, "doctor_report.json"),
+            )
+        )
 
     print_banner("EVITANIA AUTOMATED UPDATE RUNNER")
 
@@ -219,6 +262,8 @@ def main():
         print(f"\n[*] Running forced update scan and rebuild...")
 
     # 3. Execute Signature Scanning & Semantic Offset Extraction
+    doctor.snapshot()
+    heal_log = []
     start_time = time.time()
     results = generate_signatures_and_offsets(
         dll_path=dll_path, sig_db_path=CONFIG_PATH, verbose=True
@@ -269,7 +314,56 @@ def main():
                     "[*] Game is not currently running. If the disk binary is encrypted/packed, launch Evitania and run `scripts/update --from-mem`."
                 )
 
+    # 4b. Self-heal: regenerate dump.cs / signature DB and re-scan.
+    if not results["success"] and not args.no_heal:
+        print_banner("SELF-HEAL")
+        healed, dll_path, heal_log = doctor.heal(
+            dll_path,
+            lambda d: generate_signatures_and_offsets(
+                dll_path=d, sig_db_path=CONFIG_PATH, verbose=False
+            ),
+        )
+        if healed is not None:
+            results = healed
+            current_sha256 = get_file_sha256(dll_path)
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            config = json.load(f)  # build_sig_db rewrote signatures
+        print(
+            "[+] Self-heal SUCCEEDED."
+            if results["success"]
+            else "[-] Self-heal incomplete."
+        )
+
+    # 4c. Degraded mode: keep last-known-good entries so the DLL still compiles.
+    if (
+        not results["success"]
+        and args.allow_degraded
+        and not results["ambiguous_signatures"]
+    ):
+        print_banner("DEGRADED BUILD")
+        # Restore previous headers first so last-known-good values can be carried over.
+        for p in (doctor.SIG_HPP, doctor.OFF_HPP):
+            snap = os.path.join(doctor.SNAPSHOT_DIR, os.path.basename(p))
+            if os.path.exists(snap):
+                shutil.copy2(snap, p)
+        results = generate_signatures_and_offsets(
+            dll_path=dll_path, sig_db_path=CONFIG_PATH, verbose=False, degraded=True
+        )
+        unresolved = [o for o in results["failed_offsets"]]
+        if not unresolved:
+            print(
+                f"[!] {len(results['degraded_signatures'])} hook(s) disabled: {', '.join(results['degraded_signatures'])}"
+            )
+            if results["stale_offsets"]:
+                print(
+                    f"[!] Stale offsets (verify!): {', '.join(results['stale_offsets'])}"
+                )
+            results["success"] = True
+            results["degraded"] = True
+
     if not results["success"]:
+        if not args.no_heal:
+            doctor.rollback()
         print_banner("UPDATE FAILED - SIGNATURE / OFFSET MISMATCH")
         if results["broken_signatures"]:
             print(f"[-] Broken Signatures ({len(results['broken_signatures'])}):")
@@ -284,6 +378,8 @@ def main():
             for off in results["failed_offsets"]:
                 print(f"    - {off}")
 
+        print("\n[*] Diagnosis:")
+        doctor.check_scan_and_dump(doctor.Report(), dll_path, config)
         print("\n[*] Recommended Actions:")
         print(
             "    1. If disk binary is packed or encrypted, launch the game and run: `scripts/update --from-mem`."
@@ -293,6 +389,9 @@ def main():
         )
         print(
             "    3. If the game is obfuscated, run the Deobfuscator Bridge (`python3 resources/Tools/deobfuscator.py --all`)."
+        )
+        print(
+            "    4. Build anyway with broken hooks disabled: `scripts/update --force --allow-degraded`."
         )
         sys.exit(1)
 
@@ -317,16 +416,23 @@ def main():
         build_success = run_build(args.build_type)
         if not build_success:
             print_banner("BUILD FAILED")
-            print("[-] Compilation failed. Check the build logs above.")
+            print(
+                "[-] Compilation failed. Check the build logs / doctor diagnosis above."
+            )
+            print(
+                "[*] config.json and headers are kept (signatures are valid); fix the C++ and run `scripts/build release`."
+            )
             sys.exit(1)
 
     # 7. Summary Report
+    if heal_log:
+        print(f"\n[*] Self-heal actions: {'; '.join(heal_log)}")
     print_banner("UPDATE & EXTRACTION SUMMARY")
     print(f"  Game Version:        Evitania v{game_version}")
     print(f"  Steam Build ID:      {current_build_id}")
     print(f"  Assembly SHA-256:    {current_sha256[:20]}...")
     print(
-        f"  Signatures Scanned:  {results['matched_signatures']} / {results['total_signatures']} (100% Validated)"
+        f"  Signatures Scanned:  {results['matched_signatures']} / {results['total_signatures']}{' (DEGRADED)' if results.get('degraded') else ' (100% Validated)'}"
     )
     print(
         f"  Offsets Extracted:   {results['total_offsets']} total ({results['semantic_matches']} semantic, {results['hardcoded_offsets']} hardcoded)"
@@ -344,7 +450,12 @@ def main():
         print(
             f"  Binary Generated:    build/{args.build_type}/Evitania v{game_version}.dll"
         )
-        print(f"  Status:              READY TO RUN (scripts/run)")
+        status = (
+            "DEGRADED - some hooks disabled"
+            if results.get("degraded")
+            else "READY TO RUN (scripts/run)"
+        )
+        print(f"  Status:              {status}")
     else:
         print(f"  Status:              HEADERS GENERATED (--no-build specified)")
     print("=" * 65)

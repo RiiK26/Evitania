@@ -44,6 +44,7 @@ graph TD
 | **Deobfuscator & Symbol Bridge** | [`deobfuscator.py`](deobfuscator.py) | Bridges obfuscated symbols to canonical project names using known AOB signatures as ground truth. |
 | **Field Usage Inspector** | [`find_field_usage.py`](find_field_usage.py) | Developer inspection tool. Disassembles methods to locate field displacements and generates semantic assembly templates. |
 | **Signature DB Builder** | [`build_sig_db.py`](build_sig_db.py) | Developer tool used when establishing new baseline signatures or adding new features from `dump.cs`. |
+| **Doctor & Self-Heal** | [`doctor.py`](doctor.py) | `scripts/update --doctor` health report (toolchain, metadata encryption, dump.cs RVA freshness, removed targets + rename suggestions, C++ symbol refs). Powers automatic self-healing, snapshot/rollback, degraded builds and compiler-error diagnosis. |
 
 ## 3. Step-by-Step Update Workflows
 

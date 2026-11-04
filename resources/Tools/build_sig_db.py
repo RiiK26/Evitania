@@ -4,24 +4,23 @@ import json
 import pefile
 import platform
 import sys
+import argparse
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
 
 DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
 DUMP_DIR = os.path.dirname(DUMP_PATH)
 
-if not os.path.exists(DUMP_DIR):
-    os.makedirs(DUMP_DIR, exist_ok=True)
-    print(f"[-] Created directory: {DUMP_DIR}")
-    print(
-        "[-] Please place your dump.cs from Il2CppDumper in this directory before running."
-    )
-    sys.exit(1)
-elif not os.path.exists(DUMP_PATH):
-    print(f"[-] dump.cs not found at {DUMP_PATH}")
-    print(
-        "[-] Please place your dump.cs from Il2CppDumper in this directory before running."
-    )
-    sys.exit(1)
+
+def ensure_dump_exists():
+    if not os.path.exists(DUMP_DIR):
+        os.makedirs(DUMP_DIR, exist_ok=True)
+        print(f"[-] Created directory: {DUMP_DIR}")
+    if not os.path.exists(DUMP_PATH):
+        print(f"[-] dump.cs not found at {DUMP_PATH}")
+        print(
+            "[-] Please place your dump.cs from Il2CppDumper in this directory before running."
+        )
+        sys.exit(1)
 
 
 def find_game_assembly():
@@ -101,14 +100,14 @@ def find_game_assembly():
     return fallback_path
 
 
-DLL_PATH = find_game_assembly()
+DLL_PATH = None  # resolved lazily in main() (importing this module has no side effects)
 
 
-def get_offsets():
+def get_offsets(dump_path=None):
     class_data = {}
     current_class = None
 
-    with open(DUMP_PATH, "r", encoding="utf-8") as f:
+    with open(dump_path or DUMP_PATH, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     class_regex = re.compile(
@@ -286,211 +285,258 @@ def find_usage(pe, pe_data, md, rva, target_offset):
     return None, None, None
 
 
-def main():
+# Master list of what we want in our signature database
+# (ClassName, MethodName, OverloadIdx, [(FieldName, FieldClass)])
+TARGETS = [
+    ("EnemyNpcController", "TakeDamage", 0, [("alive", "EnemyNpcController")]),
+    ("EnemyNpcController", "Update", 0, [("alive", "EnemyNpcController")]),
+    ("BossBase", "Update", 0, []),
+    ("WorldElite", "Update", 0, []),
+    ("YellowDragonBoss", "Update", 0, []),
+    ("AttackReceiver", "Recieve", 0, [("AttackDamage", "Attack")]),
+    ("RealmAttackReceiver", "Recieve", 0, []),
+    ("EasterAttackReceiver", "Recieve", 0, []),
+    ("AttackReceiver", "Awake", 0, [("isPlayer", "AttackReceiver")]),
+    ("CurrencyService", "Subtract", 0, []),
+    ("CurrencyService", "Subtract", 1, []),
+    ("Skill", "AddExperience", 0, []),
+    (
+        "SteamPurchaseService",
+        "InitiatePurchase",
+        0,
+        [("_rewarder", "SteamPurchaseService")],
+    ),
+    (
+        "MobilePurchaseService",
+        "InitiatePurchase",
+        0,
+        [("_rewarder", "SteamPurchaseService")],
+    ),
+    ("SteamPurchaseService", "FindLot", 0, []),
+    ("IAPRewarder", "Reward", 0, []),
+    (
+        "MovementControl",
+        "Move",
+        0,
+        [
+            ("_view", "MovementControl"),
+            ("networkPlayerSync", "PlayerCharacter"),
+            ("_isNet", "NetworkPlayerSync"),
+        ],
+    ),
+    ("Time", "set_timeScale", 0, []),
+    ("TimeskipItem", "get_CanUseImpl", 0, []),
+    (
+        "ItemDetail",
+        "get_Amount",
+        0,
+        [("itemAmount", "<Amount>k__BackingField", "ItemDetail")],
+    ),
+    ("BaseStorageService", "Remove", 0, []),
+    ("BaseStorageService", "TryRemove", 0, []),
+    ("HourglassService", "CostFactor", 0, []),
+    ("HourglassService", "AddResource", 0, []),
+    ("HourglassService", "UpgradeCost", 0, []),
+    ("HourglassService", "LevelCost", 0, []),
+    ("HourglassTalentConfig", "get_Cost", 0, [("cost", "HourglassTalentConfig")]),
+    ("HourglassSystemUI", "BuildTalentTooltipContent", 0, []),
+    ("HourglassTalentNodeView", "SetState", 0, []),
+    ("HourglassUpgradeItem", "GetCost", 0, []),
+    ("HourglassHardUUpgrade", "GetCostAmount", 0, []),
+    ("HourglassService", "BuyUpgrade", 0, []),
+    ("HourglassService", "BuyHardUpgrade", 0, []),
+    ("HourglassService", "BuyTalent", 0, []),
+    ("HourglassService", "BuyGenerator", 0, []),
+    ("HourglassService", "BuyUpgradeBlock", 0, []),
+    ("AntiCheatService", "Initialize", 0, []),
+    ("AntiCheatService", "OnSpeedHackDetected", 0, []),
+    ("AntiCheatService", "OnObscuredCheatingDetected", 0, []),
+    ("AntiCheatService", "Handle", 0, []),
+    ("AntiCheatService", "Apply", 0, []),
+    ("AntiCheatService", "ReportCheatToAnalytics", 0, []),
+    ("AntiCheatService", "OnDataLoaded", 0, []),
+    ("AntiCheatService", "SetFlag", 0, []),
+    ("MetaModel", "get_IsCheater", 0, []),
+    ("SpeedHackDetector", "IsTicksCheated", 0, []),
+    ("SpeedHackDetector", "IsTimeScaleCheated", 0, []),
+    ("ObscuredCheatingDetector", "OnCheatingDetected", 0, []),
+    ("ObscuredCheatingDetector", "OnCheatingDetected", 1, []),
+    ("TimeCheatingDetector", "ReportCheckResult", 0, []),
+    ("ObscuredFilePrefs", "OnNotGenuineDataDetected", 0, []),
+    ("ObscuredFilePrefs", "OnDataFromAnotherDeviceDetected", 0, []),
+    ("Attack", ".ctor", 0, [("AttackDamage", "Attack")]),
+    ("PlayerCharacter", ".ctor", 0, [("networkPlayerSync", "PlayerCharacter")]),
+    ("CurioGachaService", "RollRarity", 0, []),
+    ("CurioPowerService", "GetLevelUpCost", 0, []),
+    ("EngineerService", "TryGetUpgradeCost", 0, [("Amount", "UpgradeCost")]),
+    ("EngineerUpgradeConfig", "GetPrice", 0, []),
+    ("EngineerSystemUI", "TryBuyUpgrade", 0, []),
+    ("MarketLotScriptableObject", "CurrentPrice", 0, []),
+    ("MarketLot", "GetCurrentPrice", 0, []),
+    ("PlayerCharacter", "TakeDamage", 0, []),
+    ("HourglassService", "BuyCoinCdUpgrade", 0, []),
+    ("HourglassService", "BuyCoinRewardUpgrade", 0, []),
+    ("HourglassService", "BuyRiftWorker", 0, []),
+    ("HourglassService", "BuyShopItem", 0, []),
+    ("HourglassService", "CoinCdCost", 0, []),
+    ("HourglassService", "CoinRewardCost", 0, []),
+    ("HourglassService", "ShopNextCost", 0, []),
+    ("HourglassLevelConfig", "SandCost", 0, []),
+    ("HourglassLevelConfig", "GoldCost", 0, []),
+    ("BonfireService", "get_Lit", 0, []),
+    ("BonfireService", "get_CanIgnite", 0, []),
+    ("BonfireService", "TryIgnite", 0, []),
+    ("SacrificeUI", "Buy", 0, []),
+    ("SacrificeUI", "Select", 0, []),
+    ("SacrificeUI", "TryRollSacrificeHalfCost", 0, []),
+    ("BonfireFuelBurner", "get_Fuel", 0, []),
+    ("BonfireFuelBurner", "get_MaxFuel", 0, []),
+    ("ShopSpendingService", "CanSpend", 0, []),
+    ("ShopSpendingService", "Spend", 0, []),
+    ("Shop", "TryBuy", 0, []),
+    ("Shop", "UpdateDiscount", 0, [("discount", "Shop")]),
+    ("EnhancementTreeUI", "Buy", 0, []),
+    ("EnhancementTreeUI", "Select", 0, []),
+    ("PositionerService", "TryChangeScene", 0, []),
+    ("MapUi", "UpdatePlayerLocation", 0, []),
+    (
+        "OfflineProgressService",
+        "CreateActivitySnapshot",
+        0,
+        [
+            ("EntityGuid", "EntityGuid", "OfflineActivitySnapshot"),
+            ("Skill", "Skill", "OfflineActivitySnapshot"),
+            ("XpPerHour", "XpPerHour", "OfflineActivitySnapshot"),
+            ("KillsPerHour", "KillsPerHour", "OfflineActivitySnapshot"),
+            ("GoldPerHour", "GoldPerHour", "OfflineActivitySnapshot"),
+            ("_cardDatabase", "_cardDatabase", "OfflineProgressService"),
+        ],
+    ),
+    (
+        "OfflineProgressService",
+        "GetCombatCalculator",
+        0,
+        [("_combatCalculator", "OfflineProgressService")],
+    ),
+    (
+        "CombatOfflineRewardsCalculator",
+        "SetCurrentSpawner",
+        0,
+        [("_currentSpawner", "CombatOfflineRewardsCalculator")],
+    ),
+    (
+        "EnemySpawnerService",
+        "get_EnemyCard",
+        0,
+        [("_enemyCards", "EnemySpawnerService")],
+    ),
+    (
+        "EntityCardDatabase",
+        ".ctor",
+        0,
+        [("enemies", "EntityCardDatabase")],
+    ),
+    ("OfflineProgressService", "SetCurrentActivity", 0, []),
+    ("OfflineProgressService", "WriteClearedActivity", 0, []),
+    ("OfflineProgressService", "CanUseTimeskip", 0, []),
+    ("OfflineProgressService", "CurrentActivitySnapshot", 0, []),
+    (
+        "MobKillTrigger",
+        "Start",
+        0,
+        [
+            ("mobKillsToOpen", "mobKillsToOpen", "MobKillTrigger"),
+            ("enemy", "enemy", "MobKillTrigger"),
+        ],
+    ),
+    (
+        "MobKillTrigger",
+        "Apply",
+        0,
+        [
+            ("_portal", "_portal", "MobKillTrigger"),
+        ],
+    ),
+    (
+        "MobKillTrigger",
+        "CurrentKills",
+        0,
+        [
+            ("difficulty", "difficulty", "MobKillTrigger"),
+        ],
+    ),
+    ("MobKillTrigger", "OnEnable", 0, []),
+    ("MobKillTrigger", "OnDisable", 0, []),
+    (
+        "EnemyCard",
+        "get_UniqueName",
+        0,
+        [
+            ("uniqueName", "uniqueName", "EnemyCard"),
+        ],
+    ),
+    ("StatisticsService", "AddKillWithPortalProgress", 0, []),
+    ("StatisticsService", "AddPortalKill", 0, []),
+]
+
+# Shared generic instances (e.g. ACTkDetectorBase<__Canon>) only appear as
+# "|-RVA: 0x..." / "|-Class<__Canon>.Method" pairs, which get_offsets() skips.
+GENERIC_TARGETS = [
+    (
+        "ACTkDetectorBase<__Canon>",
+        "OnCheatingDetected",
+        "ACTkDetectorBase_OnCheatingDetected",
+    ),
+    (
+        "ACTkDetectorBase<__Canon>",
+        "InvokeCheatingDetectedEvent",
+        "ACTkDetectorBase_InvokeCheatingDetectedEvent",
+    ),
+]
+
+
+def method_key_for(cls, method, overload_idx):
+    method_clean = method.replace(".", "")
+    return (
+        f"{cls}_{method_clean}_{overload_idx}"
+        if overload_idx > 0
+        else f"{cls}_{method_clean}"
+    )
+
+
+def main(argv=None):
+    global DLL_PATH
+    parser = argparse.ArgumentParser(
+        description="Build the baseline signature DB (config.json)"
+    )
+    parser.add_argument(
+        "--dll",
+        default=None,
+        help="Path to GameAssembly.dll (default: Steam auto-discovery)",
+    )
+    args = parser.parse_args(argv)
+
+    ensure_dump_exists()
+    DLL_PATH = os.path.abspath(args.dll) if args.dll else find_game_assembly()
     class_data = get_offsets()
+    missing_targets = []
     pe = pefile.PE(DLL_PATH, fast_load=True)
     pe_data = pe.get_memory_mapped_image()
     md = Cs(CS_ARCH_X86, CS_MODE_64)
     md.detail = True
-
-    # Master list of what we want in our signature database
-    # (ClassName, MethodName, OverloadIdx, [(FieldName, FieldClass)])
-    targets = [
-        ("EnemyNpcController", "TakeDamage", 0, [("alive", "EnemyNpcController")]),
-        ("EnemyNpcController", "Update", 0, [("alive", "EnemyNpcController")]),
-        ("BossBase", "Update", 0, []),
-        ("WorldElite", "Update", 0, []),
-        ("YellowDragonBoss", "Update", 0, []),
-        ("AttackReceiver", "Recieve", 0, [("AttackDamage", "Attack")]),
-        ("RealmAttackReceiver", "Recieve", 0, []),
-        ("EasterAttackReceiver", "Recieve", 0, []),
-        ("AttackReceiver", "Awake", 0, [("isPlayer", "AttackReceiver")]),
-        ("CurrencyService", "Subtract", 0, []),
-        ("CurrencyService", "Subtract", 1, []),
-        ("Skill", "AddExperience", 0, []),
-        (
-            "SteamPurchaseService",
-            "InitiatePurchase",
-            0,
-            [("_rewarder", "SteamPurchaseService")],
-        ),
-        (
-            "MobilePurchaseService",
-            "InitiatePurchase",
-            0,
-            [("_rewarder", "SteamPurchaseService")],
-        ),
-        ("SteamPurchaseService", "FindLot", 0, []),
-        ("IAPRewarder", "Reward", 0, []),
-        (
-            "MovementControl",
-            "Move",
-            0,
-            [
-                ("_view", "MovementControl"),
-                ("networkPlayerSync", "PlayerCharacter"),
-                ("_isNet", "NetworkPlayerSync"),
-            ],
-        ),
-        ("Time", "set_timeScale", 0, []),
-        ("TimeskipItem", "get_CanUseImpl", 0, []),
-        (
-            "ItemDetail",
-            "get_Amount",
-            0,
-            [("itemAmount", "<Amount>k__BackingField", "ItemDetail")],
-        ),
-        ("BaseStorageService", "Remove", 0, []),
-        ("BaseStorageService", "TryRemove", 0, []),
-        ("HourglassService", "CostFactor", 0, []),
-        ("HourglassService", "AddResource", 0, []),
-        ("HourglassService", "UpgradeCost", 0, []),
-        ("HourglassService", "LevelCost", 0, []),
-        ("HourglassTalentConfig", "get_Cost", 0, [("cost", "HourglassTalentConfig")]),
-        ("HourglassSystemUI", "BuildTalentTooltipContent", 0, []),
-        ("HourglassTalentNodeView", "SetState", 0, []),
-        ("HourglassUpgradeItem", "GetCost", 0, []),
-        ("HourglassHardUUpgrade", "GetCostAmount", 0, []),
-        ("HourglassService", "BuyUpgrade", 0, []),
-        ("HourglassService", "BuyHardUpgrade", 0, []),
-        ("HourglassService", "BuyTalent", 0, []),
-        ("HourglassService", "BuyGenerator", 0, []),
-        ("HourglassService", "BuyUpgradeBlock", 0, []),
-        ("AntiCheatService", "Initialize", 0, []),
-        ("AntiCheatService", "OnSpeedHackDetected", 0, []),
-        ("AntiCheatService", "OnObscuredCheatingDetected", 0, []),
-        ("AntiCheatService", "Handle", 0, []),
-        ("AntiCheatService", "Apply", 0, []),
-        ("AntiCheatService", "ReportCheatToAnalytics", 0, []),
-        ("AntiCheatService", "OnDataLoaded", 0, []),
-        ("AntiCheatService", "SetFlag", 0, []),
-        ("MetaModel", "get_IsCheater", 0, []),
-        ("SpeedHackDetector", "IsTicksCheated", 0, []),
-        ("SpeedHackDetector", "IsTimeScaleCheated", 0, []),
-        ("ObscuredCheatingDetector", "OnCheatingDetected", 0, []),
-        ("ObscuredCheatingDetector", "OnCheatingDetected", 1, []),
-        ("TimeCheatingDetector", "ReportCheckResult", 0, []),
-        ("ObscuredFilePrefs", "OnNotGenuineDataDetected", 0, []),
-        ("ObscuredFilePrefs", "OnDataFromAnotherDeviceDetected", 0, []),
-        ("PlayerDataStorageService", "FireAccountMismatchAnalytics", 0, []),
-        ("Attack", ".ctor", 0, [("AttackDamage", "Attack")]),
-        ("PlayerCharacter", ".ctor", 0, [("networkPlayerSync", "PlayerCharacter")]),
-        ("CurioGachaService", "RollRarity", 0, []),
-        ("CurioPowerService", "GetLevelUpCost", 0, []),
-        ("EngineerService", "TryGetUpgradeCost", 0, [("Amount", "UpgradeCost")]),
-        ("EngineerUpgradeConfig", "GetPrice", 0, []),
-        ("EngineerSystemUI", "TryBuyUpgrade", 0, []),
-        ("MarketLotScriptableObject", "CurrentPrice", 0, []),
-        ("MarketLot", "GetCurrentPrice", 0, []),
-        ("PlayerCharacter", "TakeDamage", 0, []),
-        ("HourglassService", "BuyCoinCdUpgrade", 0, []),
-        ("HourglassService", "BuyCoinRewardUpgrade", 0, []),
-        ("HourglassService", "BuyRiftWorker", 0, []),
-        ("HourglassService", "BuyShopItem", 0, []),
-        ("HourglassService", "CoinCdCost", 0, []),
-        ("HourglassService", "CoinRewardCost", 0, []),
-        ("HourglassService", "ShopNextCost", 0, []),
-        ("HourglassLevelConfig", "SandCost", 0, []),
-        ("HourglassLevelConfig", "GoldCost", 0, []),
-        ("BonfireService", "get_Lit", 0, []),
-        ("BonfireService", "get_CanIgnite", 0, []),
-        ("BonfireService", "TryIgnite", 0, []),
-        ("SacrificeUI", "Buy", 0, []),
-        ("SacrificeUI", "Select", 0, []),
-        ("SacrificeUI", "TryRollSacrificeHalfCost", 0, []),
-        ("BonfireFuelBurner", "get_Fuel", 0, []),
-        ("BonfireFuelBurner", "get_MaxFuel", 0, []),
-        ("ShopSpendingService", "CanSpend", 0, []),
-        ("ShopSpendingService", "Spend", 0, []),
-        ("Shop", "TryBuy", 0, []),
-        ("Shop", "UpdateDiscount", 0, [("discount", "Shop")]),
-        ("EnhancementTreeUI", "Buy", 0, []),
-        ("EnhancementTreeUI", "Select", 0, []),
-        ("PositionerService", "TryChangeScene", 0, []),
-        ("MapUi", "UpdatePlayerLocation", 0, []),
-        (
-            "OfflineProgressService",
-            "CreateActivitySnapshot",
-            0,
-            [
-                ("EntityGuid", "EntityGuid", "OfflineActivitySnapshot"),
-                ("Skill", "Skill", "OfflineActivitySnapshot"),
-                ("XpPerHour", "XpPerHour", "OfflineActivitySnapshot"),
-                ("KillsPerHour", "KillsPerHour", "OfflineActivitySnapshot"),
-                ("GoldPerHour", "GoldPerHour", "OfflineActivitySnapshot"),
-                ("_cardDatabase", "_cardDatabase", "OfflineProgressService"),
-            ],
-        ),
-        (
-            "OfflineProgressService",
-            "GetCombatCalculator",
-            0,
-            [("_combatCalculator", "OfflineProgressService")],
-        ),
-        (
-            "CombatOfflineRewardsCalculator",
-            "SetCurrentSpawner",
-            0,
-            [("_currentSpawner", "CombatOfflineRewardsCalculator")],
-        ),
-        (
-            "EnemySpawnerService",
-            "get_EnemyCard",
-            0,
-            [("_enemyCards", "EnemySpawnerService")],
-        ),
-        (
-            "EntityCardDatabase",
-            ".ctor",
-            0,
-            [("enemies", "EntityCardDatabase")],
-        ),
-        ("OfflineProgressService", "SetCurrentActivity", 0, []),
-        ("OfflineProgressService", "WriteClearedActivity", 0, []),
-        ("OfflineProgressService", "CanUseTimeskip", 0, []),
-        ("OfflineProgressService", "CurrentActivitySnapshot", 0, []),
-        (
-            "MobKillTrigger",
-            "Start",
-            0,
-            [
-                ("mobKillsToOpen", "mobKillsToOpen", "MobKillTrigger"),
-                ("enemy", "enemy", "MobKillTrigger"),
-            ],
-        ),
-        (
-            "MobKillTrigger",
-            "Apply",
-            0,
-            [
-                ("_portal", "_portal", "MobKillTrigger"),
-            ],
-        ),
-        (
-            "MobKillTrigger",
-            "CurrentKills",
-            0,
-            [
-                ("difficulty", "difficulty", "MobKillTrigger"),
-            ],
-        ),
-        ("MobKillTrigger", "OnEnable", 0, []),
-        ("MobKillTrigger", "OnDisable", 0, []),
-        (
-            "EnemyCard",
-            "get_UniqueName",
-            0,
-            [
-                ("uniqueName", "uniqueName", "EnemyCard"),
-            ],
-        ),
-        ("StatisticsService", "AddKillWithPortalProgress", 0, []),
-        ("StatisticsService", "AddPortalKill", 0, []),
-    ]
-
     sig_db = {}
 
-    for cls, method, overload_idx, fields_to_extract in targets:
+    for cls, method, overload_idx, fields_to_extract in TARGETS:
+        overloads = class_data.get(cls, {}).get("methods", {}).get(method, [])
+        if overload_idx >= len(overloads):
+            missing_targets.append(method_key_for(cls, method, overload_idx))
+            reason = (
+                "class not found"
+                if cls not in class_data
+                else f"method not found ({len(overloads)} overloads)"
+            )
+            print(f"[!] MISSING in dump.cs: {cls}::{method}[{overload_idx}] ({reason})")
+            continue
         if cls in class_data and method in class_data[cls]["methods"]:
             if overload_idx < len(class_data[cls]["methods"][method]):
                 rva = class_data[cls]["methods"][method][overload_idx]
@@ -500,12 +546,7 @@ def main():
                     print(f"[-] Could not generate sig for {cls}::{method}")
                     continue
 
-                method_clean = method.replace(".", "")
-                method_key = (
-                    f"{cls}_{method_clean}_{overload_idx}"
-                    if overload_idx > 0
-                    else f"{cls}_{method_clean}"
-                )
+                method_key = method_key_for(cls, method, overload_idx)
 
                 extract_rules = {}
                 for field_tuple in fields_to_extract:
@@ -532,24 +573,10 @@ def main():
                 sig_db[method_key] = {"signature": sig, "extract": extract_rules}
                 print(f"[+] Added {method_key} to database")
 
-    # Shared generic instances (e.g. ACTkDetectorBase<__Canon>) only appear as
-    # "|-RVA: 0x..." / "|-Class<__Canon>.Method" pairs, which get_offsets() skips.
-    generic_targets = [
-        (
-            "ACTkDetectorBase<__Canon>",
-            "OnCheatingDetected",
-            "ACTkDetectorBase_OnCheatingDetected",
-        ),
-        (
-            "ACTkDetectorBase<__Canon>",
-            "InvokeCheatingDetectedEvent",
-            "ACTkDetectorBase_InvokeCheatingDetectedEvent",
-        ),
-    ]
     with open(DUMP_PATH, "r", encoding="utf-8") as f:
         dump_lines = f.readlines()
     generic_rva_regex = re.compile(r"\|-RVA: 0x([0-9A-Fa-f]+)")
-    for inst, method, key in generic_targets:
+    for inst, method, key in GENERIC_TARGETS:
         needle = f"|-{inst}.{method}"
         rva = None
         for i, line in enumerate(dump_lines):
@@ -562,6 +589,7 @@ def main():
                 break
         if rva is None:
             print(f"[-] Could not find generic instance {needle}")
+            missing_targets.append(key)
             continue
         sig = generate_signature(pe, md, pe_data, rva)
         if not sig:
@@ -620,6 +648,15 @@ def main():
     with open(config_path, "w") as f:
         json.dump(config, f, indent="\t")
     print("Database built successfully -> config.json")
+    if missing_targets:
+        print(
+            f"[!] {len(missing_targets)} target(s) missing from dump.cs (removed/renamed in game?): "
+            + ", ".join(missing_targets)
+        )
+        print(
+            "    Run `scripts/update --doctor` for rename suggestions and C++ references."
+        )
+    return missing_targets
 
 
 if __name__ == "__main__":

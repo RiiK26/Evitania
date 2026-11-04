@@ -202,7 +202,48 @@ def extract_offset_semantic(instructions, rule):
     return None, "failed"
 
 
-def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=True):
+SIG_HEADER_PATH = os.path.join(
+    os.path.dirname(__file__), "../../src/Modules/Hooks/Signatures.hpp"
+)
+OFF_HEADER_PATH = os.path.join(
+    os.path.dirname(__file__), "../../src/Modules/Hooks/Offsets.hpp"
+)
+
+
+def parse_existing_headers():
+    """Parse last generated headers -> (signatures{key: pattern}, offsets{name: value}).
+
+    Used by degraded mode to carry forward last-known-good entries."""
+    sigs, offs = {}, {}
+    try:
+        with open(SIG_HEADER_PATH, "r", encoding="utf-8") as f:
+            for m in re.finditer(
+                r'constexpr const char\*\s+(\w+)\s*=\s*"([^"]*)"', f.read()
+            ):
+                sigs[m.group(1)] = m.group(2)
+    except OSError:
+        pass
+    try:
+        with open(OFF_HEADER_PATH, "r", encoding="utf-8") as f:
+            for m in re.finditer(
+                r"constexpr int\s+([A-Za-z_<>][\w<>]*)\s*=\s*0x([0-9A-Fa-f]+);",
+                f.read(),
+            ):
+                offs[m.group(1)] = int(m.group(2), 16)
+    except OSError:
+        pass
+    return sigs, offs
+
+
+def generate_signatures_and_offsets(
+    dll_path=None, sig_db_path=None, verbose=True, write=True, degraded=False
+):
+    """Scan GameAssembly.dll against config.json and emit C++ headers.
+
+    write=False   -> scan only (used by doctor), headers untouched.
+    degraded=True -> broken signatures keep their previous pattern (hook fails
+                     gracefully at runtime via Hooks::bHooksFailed) and their
+                     offsets keep last-known-good values, so the build compiles."""
     target_dll = dll_path or DLL_PATH
     target_config = sig_db_path or SIG_DB_PATH
 
@@ -219,7 +260,11 @@ def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=Tru
         "failed_offsets": [],
         "sig_path": None,
         "off_path": None,
+        "matched_rvas": {},
+        "degraded_signatures": [],
+        "stale_offsets": [],
     }
+    prev_sigs, prev_offs = parse_existing_headers() if degraded else ({}, {})
 
     if not os.path.exists(target_dll):
         if verbose:
@@ -296,6 +341,7 @@ def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=Tru
         if len(matches) == 1:
             results["matched_signatures"] += 1
             rva = matches[0].start()
+            results["matched_rvas"][method_key] = rva
             if verbose:
                 print(f"[+] Found {method_key} at RVA: 0x{rva:X}")
 
@@ -332,6 +378,23 @@ def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=Tru
             results["broken_signatures"].append(method_key)
             if verbose:
                 print(f"[-] Could not find match for {method_key} (Broken)")
+            if degraded:
+                results["degraded_signatures"].append(method_key)
+                signatures_content.append(
+                    "  // [BROKEN] hook disabled at runtime until healed"
+                )
+                signatures_content.append(
+                    f'  constexpr const char* {method_key} = "{prev_sigs.get(method_key, pattern)}";'
+                )
+                signatures_content.append("")
+                for field_name in extract_rules:
+                    if field_name in prev_offs and field_name not in game_offsets:
+                        game_offsets[field_name] = prev_offs[field_name]
+                        results["stale_offsets"].append(f"{method_key}::{field_name}")
+                        if verbose:
+                            print(
+                                f"    [!] {field_name}: 0x{prev_offs[field_name]:X} (STALE last-known-good)"
+                            )
         else:
             results["ambiguous_signatures"].append((method_key, len(matches)))
             if verbose:
@@ -375,18 +438,15 @@ def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=Tru
         offsets_content.append(f"  constexpr int {field_name:<16} = 0x{val:X};")
     offsets_content.append("}  // namespace Offsets")
 
-    sig_path = os.path.join(
-        os.path.dirname(__file__), "../../src/Modules/Hooks/Signatures.hpp"
-    )
-    off_path = os.path.join(
-        os.path.dirname(__file__), "../../src/Modules/Hooks/Offsets.hpp"
-    )
+    sig_path = SIG_HEADER_PATH
+    off_path = OFF_HEADER_PATH
 
-    with open(sig_path, "w") as f:
-        f.write("\n".join(signatures_content))
+    if write:
+        with open(sig_path, "w") as f:
+            f.write("\n".join(signatures_content))
 
-    with open(off_path, "w") as f:
-        f.write("\n".join(offsets_content))
+        with open(off_path, "w") as f:
+            f.write("\n".join(offsets_content))
 
     results["sig_path"] = sig_path
     results["off_path"] = off_path
@@ -396,7 +456,7 @@ def generate_signatures_and_offsets(dll_path=None, sig_db_path=None, verbose=Tru
         and len(results["failed_offsets"]) == 0
     )
 
-    if verbose:
+    if verbose and write:
         print(f"\n[+] Generated {sig_path}")
         print(f"[+] Generated {off_path}")
 
