@@ -1,8 +1,8 @@
 {
 	"project_name": "Evitania",
-	"version": "0.321.2",
-	"steam_build_id": "26138857",
-	"assembly_sha256": "923544dce49751af79b1e4133f2a6da4e5bddef1a1eab8583c4680a4ecca9cf1",
+	"version": "0.322.0",
+	"steam_build_id": "26427781",
+	"assembly_sha256": "b91d961e38689992412f2987bf91a962bfbc378ac9af26fa026413d30102d29e",
 	"signatures": {
 		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
 			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
@@ -13,7 +13,7 @@
 			"extract": {}
 		},
 		"AntiCheatService_Apply": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 8B 07 48 8D 54 24 48",
+			"signature": "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B FA 48 8B D9",
 			"extract": {}
 		},
 		"AntiCheatService_Handle": {
@@ -37,7 +37,7 @@
 			"extract": {}
 		},
 		"AntiCheatService_ReportCheatToAnalytics": {
-			"signature": "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA 48 8B F1 0F 85 ? ? ? ?",
+			"signature": "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B FA 48 8B F1",
 			"extract": {}
 		},
 		"AntiCheatService_SetFlag": {
@@ -93,15 +93,15 @@
 			"extract": {}
 		},
 		"BonfireService_get_CanIgnite": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 74 54 48 8B 40 50",
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 74 54 48 8B 40 40",
 			"extract": {}
 		},
 		"BonfireService_get_Lit": {
-			"signature": "48 83 EC 28 48 8B 41 10 48 85 C0 74 1E 48 8B 40 50 48 85 C0 74 15 48 8B 80 80 00 00 00",
+			"signature": "48 83 EC 28 48 8B 41 10 48 85 C0 74 1E 48 8B 40 40 48 85 C0 74 15 48 8B 80 80 00 00 00",
 			"extract": {}
 		},
 		"BossBase_Update": {
-			"signature": "80 79 3C 00 74 1D 48 8B 89 38 01 00 00",
+			"signature": "80 79 3C 00 74 1D 48 8B 89 40 01 00 00",
 			"extract": {}
 		},
 		"CombatOfflineRewardsCalculator_SetCurrentSpawner": {
@@ -165,7 +165,7 @@
 			}
 		},
 		"EnemySpawnerService_get_EnemyCard": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 30 48 85 C9 74 13 4C 8B 05 ? ? ? ? 33 D2 48 83 C4 20 5B E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 0F B6 41 4D",
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 4B 30 48 85 C9 74 13 4C 8B 05 ? ? ? ? 33 D2 48 83 C4 20 5B E9 ? ? ? ? E8 ? ? ? ? CC CC CC CC CC CC CC CC CC CC 0F B6 41 69",
 			"extract": {
 				"_enemyCards": {
 					"pattern": "mov rcx, qword ptr [rbx + ?]",
@@ -183,7 +183,7 @@
 			}
 		},
 		"EngineerSystemUI_TryBuyUpgrade": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF 98 01 00 00 00",
+			"signature": "48 89 5C 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF A0 01 00 00 00",
 			"extract": {}
 		},
 		"EngineerUpgradeConfig_GetPrice": {
@@ -347,7 +347,7 @@
 			}
 		},
 		"MapUi_UpdatePlayerLocation": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 8B 18 01 00 00",
+			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 37 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 8B 10 01 00 00",
 			"extract": {}
 		},
 		"MarketLotScriptableObject_CurrentPrice": {
@@ -487,7 +487,7 @@
 			}
 		},
 		"OfflineProgressService_CurrentActivitySnapshot": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 30 48 8B F9 0F 29 74 24 20",
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 48 8B 49 50 48 85 C9",
 			"extract": {}
 		},
 		"OfflineProgressService_GetCombatCalculator": {
@@ -505,7 +505,7 @@
 			"extract": {}
 		},
 		"OfflineProgressService_WriteClearedActivity": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B 41 20 48 8B D9 48 85 C0 0F 84 ? ? ? ? 48 8B 40 50",
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B 41 20 48 8B D9 48 85 C0 0F 84 ? ? ? ? 48 8B 40 40",
 			"extract": {}
 		},
 		"PlayerCharacter_TakeDamage": {
@@ -519,10 +519,6 @@
 					"hardcoded": 136
 				}
 			}
-		},
-		"PlayerDataStorageService_FireAccountMismatchAnalytics": {
-			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 49 8B D8 48 8B F2 48 8B F9 75 43",
-			"extract": {}
 		},
 		"PositionerService_TryChangeScene": {
 			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 41 0F B6 F8 48 8B F2 48 8B D9 75 1F",
@@ -609,11 +605,11 @@
 			"extract": {}
 		},
 		"TimeskipItem_get_CanUseImpl": {
-			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 48 89 5C 24 10",
+			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 57",
 			"extract": {}
 		},
 		"WorldElite_Update": {
-			"signature": "40 53 48 83 EC 50 0F 29 74 24 40 33 D2 0F 29 7C 24 30 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 45 33 C0 48 8D 4C 24 20 48 8B D0 E8 ? ? ? ? F3 0F 10 35 ? ? ? ?",
+			"signature": "40 53 48 83 EC 40 33 D2 0F 29 74 24 30 48 8B D9 E8 ? ? ? ?",
 			"extract": {}
 		},
 		"YellowDragonBoss_Update": {
