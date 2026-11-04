@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+this tool is to generate the baseline database inside config.json at
+the project root. to generate new baselin, u must know which game function
+that u want to find. use Il2CppDumper to help dump the game file
+"""
 import os
 import re
 import json
@@ -7,7 +13,9 @@ import sys
 import argparse
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
 
-DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
+DUMP_PATH = os.path.join(
+    os.path.dirname(__file__), "../dumped/dump.cs"
+)  # Git-Ignored, u need dump by urself and put the dump.cs file inside the resources/dumped/
 DUMP_DIR = os.path.dirname(DUMP_PATH)
 
 
@@ -285,7 +293,7 @@ def find_usage(pe, pe_data, md, rva, target_offset):
     return None, None, None
 
 
-# Master list of what we want in our signature database
+# Master list of what we want in signature database (config.json)
 # (ClassName, MethodName, OverloadIdx, [(FieldName, FieldClass)])
 TARGETS = [
     ("EnemyNpcController", "TakeDamage", 0, [("alive", "EnemyNpcController")]),
@@ -374,15 +382,19 @@ TARGETS = [
     ("MarketLotScriptableObject", "CurrentPrice", 0, []),
     ("MarketLot", "GetCurrentPrice", 0, []),
     ("PlayerCharacter", "TakeDamage", 0, []),
-    ("HourglassService", "BuyCoinCdUpgrade", 0, []),
-    ("HourglassService", "BuyCoinRewardUpgrade", 0, []),
-    ("HourglassService", "BuyRiftWorker", 0, []),
     ("HourglassService", "BuyShopItem", 0, []),
-    ("HourglassService", "CoinCdCost", 0, []),
-    ("HourglassService", "CoinRewardCost", 0, []),
+    ("HourglassService", "CanReroll", 0, []),
+    ("HourglassService", "FindUpgrade", 0, []),
+    ("HourglassService", "FindPortal", 0, []),
+    ("HourglassService", "get_RiftTotalWorkers", 0, []),
+    ("HourglassService", "GrantReward", 0, []),
+    ("HourglassService", "OnWindowClose", 0, []),
+    ("HourglassService", "RiftUsedWorkers", 0, []),
+    ("HourglassService", "RiftFreeWorkers", 0, []),
+    ("HourglassService", "RiftRewardPerHour", 0, []),
     ("HourglassService", "ShopNextCost", 0, []),
     ("HourglassLevelConfig", "SandCost", 0, []),
-    ("HourglassLevelConfig", "GoldCost", 0, []),
+    ("HourglassLevelConfig", "TableCost", 0, []),
     ("BonfireService", "get_Lit", 0, []),
     ("BonfireService", "get_CanIgnite", 0, []),
     ("BonfireService", "TryIgnite", 0, []),

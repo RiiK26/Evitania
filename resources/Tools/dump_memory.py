@@ -21,7 +21,9 @@ import time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
-DEFAULT_OUTPUT_DIR = os.path.join(PROJECT_ROOT, "resources", "dumped")
+DEFAULT_OUTPUT_DIR = os.path.join(
+    PROJECT_ROOT, "resources", "dumped"
+)  # Git-Ignored, u need dump by urself and put the dump.cs file inside the resources/dumped/
 
 IL2CPP_METADATA_MAGIC = b"\xaf\x1b\xb1\xfa"  # 0xFAB11BAF in Little Endian
 

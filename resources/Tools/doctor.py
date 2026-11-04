@@ -35,7 +35,9 @@ PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
 sys.path.insert(0, SCRIPT_DIR)
 
 CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.json")
-DUMPED_DIR = os.path.join(PROJECT_ROOT, "resources", "dumped")
+DUMPED_DIR = os.path.join(
+    PROJECT_ROOT, "resources", "dumped"
+)  # Git-Ignored, u need dump by urself and put the dump.cs file inside the resources/dumped/
 DUMP_CS = os.path.join(DUMPED_DIR, "dump.cs")
 SIG_HPP = os.path.join(PROJECT_ROOT, "src", "Modules", "Hooks", "Signatures.hpp")
 OFF_HPP = os.path.join(PROJECT_ROOT, "src", "Modules", "Hooks", "Offsets.hpp")

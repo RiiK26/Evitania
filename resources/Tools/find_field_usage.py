@@ -9,7 +9,9 @@ import sys
 import pefile
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
 
-DUMP_PATH = os.path.join(os.path.dirname(__file__), "../dumped/dump.cs")
+DUMP_PATH = os.path.join(
+    os.path.dirname(__file__), "../dumped/dump.cs"
+)  # Git-Ignored, u need dump by urself and put the dump.cs file inside the resources/dumped/
 DUMP_DIR = os.path.dirname(DUMP_PATH)
 
 

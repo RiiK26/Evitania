@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+"""
+this file is a tool to generate new offsets and signatures into
+"src/Modules/Hooks/Signatures.hpp" and "src/Modules/Hooks/Offsets.hpp".
+the aob derived based on the config.json at the project root
+"""
+
 import os
 import re
 import json

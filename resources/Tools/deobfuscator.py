@@ -10,6 +10,8 @@ Reconciles obfuscated IL2CPP dumps using stable AOB signatures:
    - rename_ghidra.py (Ghidra auto-renamer)
    - rename_ida.py (IDA Pro auto-renamer)
    - dump_deobfuscated.cs (Clean, readable C# dump)
+
+This Tool provided if the game has been obfuscated in the future update
 """
 
 import argparse
@@ -28,7 +30,9 @@ sys.path.insert(0, SCRIPT_DIR)
 from aobgenerator import find_game_assembly, parse_pattern_to_regex
 
 CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.json")
-DUMP_DIR = os.path.join(PROJECT_ROOT, "resources", "dumped")
+DUMP_DIR = os.path.join(
+    PROJECT_ROOT, "resources", "dumped"
+)  # Git-Ignored, u need dump by urself and put the dump.cs file inside the resources/dumped/
 SCRIPT_JSON_PATH = os.path.join(DUMP_DIR, "script.json")
 DUMP_CS_PATH = os.path.join(DUMP_DIR, "dump.cs")
 MAP_OUTPUT_PATH = os.path.join(DUMP_DIR, "deobfuscation_map.json")

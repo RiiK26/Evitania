@@ -178,6 +178,11 @@ namespace Signatures
     "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? "
     "E8 ? ? ? ? C6 05 ? ? ? ? 01 45 33 C9";
 
+  // 0xAE5850
+  constexpr const char* HourglassLevelConfig_TableCost =
+    "48 8B C4 44 89 40 18 48 89 50 10 48 89 48 08 53 56 57 41 54 41 55 41 56 41 57 48 81 EC ? ? ? ? 0F 29 70 B8 0F 29 "
+    "78 A8 44 0F 29 40 98 44 0F 29 48 88 45 8B F8";
+
   // 0x8956B0
   constexpr const char* HourglassService_AddResource =
     "48 89 5C 24 10 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B DA 0F 29 7C 24 30";
@@ -206,19 +211,65 @@ namespace Signatures
   constexpr const char* HourglassService_BuyUpgradeBlock =
     "48 89 5C 24 18 48 89 54 24 10 48 89 4C 24 08 56 57 41 56 48 83 EC 60 4C 8B F2 48 8B F1";
 
+  // 0x899C00
+  constexpr const char* HourglassService_CanReroll =
+    "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? "
+    "45 33 C0 48 8B CB E8 ? ? ? ? 84 C0 75 06 48 83 C4 30 5B C3 48 8B 83 80 00 00 00";
+
   // 0x89A330
   constexpr const char* HourglassService_CostFactor =
     "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 0F 29 74 24 20 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? "
     "C6 05 ? ? ? ? 01 4C 8B 03 45 33 C9";
 
+  // 0x89D6B0
+  constexpr const char* HourglassService_FindPortal =
+    "48 83 EC 28 48 8B 89 80 00 00 00 48 85 C9 74 1F 48 8B 89 A8 00 00 00";
+
+  // 0x89D770
+  constexpr const char* HourglassService_FindUpgrade =
+    "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? "
+    "01 48 C7 44 24 38 ? ? ? ? 48 85 DB 74 34 48 8B 8F E0 00 00 00";
+
+  // 0x89E090
+  constexpr const char* HourglassService_GrantReward =
+    "48 89 5C 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 0F 29 74 24 30 48 8B D9 0F 29 7C 24 20";
+
   // 0x8A0380
   constexpr const char* HourglassService_LevelCost = "40 53 48 83 EC 20 48 8B 81 80 00 00 00 48 85 C0 74 2A";
+
+  // 0x8A15D0
+  constexpr const char* HourglassService_OnWindowClose =
+    "40 53 48 83 EC 40 80 3D ? ? ? ? 00 48 8B D9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D "
+    "0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 93 A8 00 00 00";
+
+  // 0x8A4B50
+  constexpr const char* HourglassService_RiftFreeWorkers =
+    "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 3D ? ? ? ? 00 "
+    "75 1F 48 8D 0D ? ? ? ?";
+
+  // 0x8A4F40
+  constexpr const char* HourglassService_RiftRewardPerHour =
+    "40 53 55 56 57 48 83 EC 28 48 8B 81 80 00 00 00 48 8B F2 48 8B D9 48 85 C0 74 6D 48 8B 88 A8 00 00 00 48 85 C9 74 "
+    "55 45 33 C0 E8 ? ? ? ? 48 8B E8 48 85 C0 74 45 48 8B 8B 80 00 00 00 48 85 C9 74 45 48 8B B9 A8 00 00 00 45 33 C0 "
+    "48 8B CB 48 8B D6 E8 ? ? ? ? 48 85 C0 74 2B 48 85 FF 74 26 44 8B 40 10 45 33 C9 48 8B D5 48 8B CF 48 83 C4 28 5F "
+    "5E 5D 5B E9 ? ? ? ? 0F 57 C0 48 83 C4 28 5F 5E 5D 5B C3 E8 ? ? ? ? CC CC CC 48 89 74 24 10";
+
+  // 0x8A50E0
+  constexpr const char* HourglassService_RiftUsedWorkers =
+    "48 89 5C 24 08 57 48 81 EC ? ? ? ? 48 8B D9 80 3D ? ? ? ? 00 75 43 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? "
+    "E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 "
+    "0F 57 C0 33 C0 0F 11 44 24 50 0F 11 44 24 60 48 89 44 24 70 33 D2";
 
   // 0x8A5FB0
   constexpr const char* HourglassService_ShopNextCost = "40 53 48 83 EC 20 48 8B DA 48 85 D2 74 1B";
 
   // 0x8A8130
   constexpr const char* HourglassService_UpgradeCost = "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00";
+
+  // 0x8A9580
+  constexpr const char* HourglassService_get_RiftTotalWorkers =
+    "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? "
+    "? ? ? 01 48 8B 83 80 00 00 00";
 
   // 0xBA90B0
   constexpr const char* HourglassSystemUI_BuildTalentTooltipContent =

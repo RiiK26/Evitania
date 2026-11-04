@@ -197,7 +197,10 @@ def main():
             print("[-] Failed to dump module from live process RAM.")
             sys.exit(1)
         dll_path = os.path.join(
-            PROJECT_ROOT, "resources", "dumped", "GameAssembly_memory.dll"
+            PROJECT_ROOT,
+            "resources",
+            "dumped",
+            "GameAssembly_memory.dll",
         )
     elif args.dll:
         dll_path = os.path.abspath(args.dll)
