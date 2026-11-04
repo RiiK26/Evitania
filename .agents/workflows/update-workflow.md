@@ -169,6 +169,16 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
 
 ---
 
+### Step 2.5.1: Doctor & Self-Healing
+`scripts/update` self-heals when signatures break:
+1. Snapshots `config.json`, `Signatures.hpp`, `Offsets.hpp` (`build/.update_snapshot/`).
+2. Dumps `GameAssembly.dll` from RAM if the game is running (packed binaries).
+3. Regenerates `dump.cs` via Il2CppDumper if it is older than `GameAssembly.dll` (set `$IL2CPPDUMPER` or place it in `resources/Tools/Il2CppDumper/`).
+4. Rebuilds `config.json` with `build_sig_db.py` and rescans.
+5. On failure: rolls back, prints a diagnosis (removed methods + rename suggestions). On compile errors it maps `'X' is not a member of 'Signatures'` to its cause.
+
+Run `scripts/update --doctor` anytime for a read-only health report (exit code 1 if unhealthy). Flags: `--no-heal`, `--allow-degraded`.
+
 ### Step 2.6: Compile & Test
 1. Build the release DLL:
    ```bash
@@ -194,6 +204,12 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
 
 # 3. Force re-scan and rebuild:
 ./scripts/update --force
+
+# 3a. Health diagnostics (read-only):
+./scripts/update --doctor
+
+# 3b. Build even if some hooks are broken (disabled at runtime, stale offsets kept):
+./scripts/update --force --allow-degraded
 
 # 4. Extract from Live RAM (For Encrypted/Packed Binaries):
 ./scripts/update --from-mem

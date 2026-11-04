@@ -11,6 +11,8 @@
 ## Commands
 - **Unified Game Update & Rebuild**: `scripts/update` (Detects Steam update, validates signatures & semantic offsets, updates config.json, and rebuilds)
 - **Check Game Update Status**: `scripts/update --check`
+- **Update Doctor (diagnostics)**: `scripts/update --doctor` (Checks toolchain, metadata encryption, Steam build drift, live signature scan, dump.cs RVA freshness, removed/renamed targets with rename suggestions, and undefined `Signatures::`/`Offsets::` references in C++)
+- **Self-Healing Update**: `scripts/update` heals automatically on broken signatures (snapshot → RAM dump if game running → regenerate dump.cs via `$IL2CPPDUMPER` if stale → rebuild config.json → rescan → rollback on failure). `--no-heal` disables it; `--allow-degraded` builds with broken hooks disabled at runtime and last-known-good offsets.
 - **Build Project**: `scripts/build [release|clean|debug|no-injector]` (Cross-compiles with MinGW on Linux or builds with MSVC on Windows)
 - **Run the Project**: `scripts/run.sh` (Linux Proton / Steam Deck launch option) or `scripts\run.bat` (Windows)
 - **Verify Code Formatting**:
