@@ -41,9 +41,6 @@ namespace Features
     bool (*Orig_MetaModel_get_IsCheater)(void* __this, void* method);
     void (*Orig_ObscuredFilePrefs_OnNotGenuineDataDetected)(void* method);
     void (*Orig_ObscuredFilePrefs_OnDataFromAnotherDeviceDetected)(void* method);
-    void (*Orig_PlayerData_FireAccountMismatchAnalytics)(
-      void* __this, void* sessionPlayFabId, void* cloudModel, void* method
-    );
 
     // Safety net: clean account even if the save already carries flags.
     bool Hook_MetaModel_get_IsCheater(void*, void*) { return false; }
@@ -51,9 +48,6 @@ namespace Features
     // Encrypted prefs tamper / device-lock callbacks (source of SaveAltered / ForeignSave).
     void Hook_ObscuredFilePrefs_OnNotGenuineDataDetected(void*) { }
     void Hook_ObscuredFilePrefs_OnDataFromAnotherDeviceDetected(void*) { }
-
-    // Local-vs-cloud account mismatch telemetry.
-    void Hook_PlayerData_FireAccountMismatchAnalytics(void*, void*, void*, void*) { }
 
     // ─────────────────────────────────────────────────────────────
     // Layer 3: ACTk detectors (CodeStage.AntiCheat.Detectors)
@@ -151,11 +145,6 @@ namespace Features
         "ObscuredFilePrefs::OnDataFromAnotherDeviceDetected",
         Signatures::ObscuredFilePrefs_OnDataFromAnotherDeviceDetected,
         Hook_ObscuredFilePrefs_OnDataFromAnotherDeviceDetected, Orig_ObscuredFilePrefs_OnDataFromAnotherDeviceDetected
-      );
-      HOOK_SIGNATURE(
-        "PlayerDataStorageService::FireAccountMismatchAnalytics",
-        Signatures::PlayerDataStorageService_FireAccountMismatchAnalytics, Hook_PlayerData_FireAccountMismatchAnalytics,
-        Orig_PlayerData_FireAccountMismatchAnalytics
       );
 
       // Layer 3
