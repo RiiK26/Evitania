@@ -1,13 +1,9 @@
 {
 	"project_name": "Evitania",
-	"version": "0.322.0",
-	"steam_build_id": "26427781",
-	"assembly_sha256": "b91d961e38689992412f2987bf91a962bfbc378ac9af26fa026413d30102d29e",
+	"version": "0.323.1",
+	"steam_build_id": "26646529",
+	"assembly_sha256": "6b88f19eb19716b2de587c4ca2c0ebcf9208662a76430f92a2867eb34f731138",
 	"signatures": {
-		"ACTkDetectorBase_InvokeCheatingDetectedEvent": {
-			"signature": "48 8B 41 40 48 85 C0 74 0C 48 8B 50 28",
-			"extract": {}
-		},
 		"ACTkDetectorBase_OnCheatingDetected": {
 			"signature": "40 53 48 83 EC 20 48 8B D9 C6 41 48 01",
 			"extract": {}
@@ -77,31 +73,31 @@
 			"extract": {}
 		},
 		"BaseStorageService_TryRemove": {
-			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B F8 48 8B DA 48 8B F1 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00",
+			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B D8 48 8B FA 48 8B F1 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00",
 			"extract": {}
 		},
 		"BonfireFuelBurner_get_Fuel": {
-			"signature": "48 83 EC 28 48 8B 41 18 48 85 C0 74 0A F3 0F 10 40 14",
+			"signature": "48 83 EC 28 48 8B 41 20 48 85 C0 74 0A F3 0F 10 40 14",
 			"extract": {}
 		},
 		"BonfireFuelBurner_get_MaxFuel": {
-			"signature": "F3 0F 10 41 34 C3 CC CC CC CC CC CC CC CC CC CC F3 0F 10 41 2C",
+			"signature": "F3 0F 10 41 3C C3 CC CC CC CC CC CC CC CC CC CC F3 0F 11 49 3C",
 			"extract": {}
 		},
 		"BonfireService_TryIgnite": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 0F 84 ? ? ? ?",
+			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 18 48 89 7C 24 30 48 85 C0 0F 84 ? ? ? ? 48 8B 40 40",
 			"extract": {}
 		},
 		"BonfireService_get_CanIgnite": {
-			"signature": "40 53 48 83 EC 20 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 43 10 48 85 C0 74 54 48 8B 40 40",
+			"signature": "40 53 48 83 EC 20 48 8B 41 18 48 85 C0 74 46 48 8B 40 40",
 			"extract": {}
 		},
 		"BonfireService_get_Lit": {
-			"signature": "48 83 EC 28 48 8B 41 10 48 85 C0 74 1E 48 8B 40 40 48 85 C0 74 15 48 8B 80 80 00 00 00",
+			"signature": "48 83 EC 28 48 8B 41 18 48 85 C0 74 1E 48 8B 40 40 48 85 C0 74 15 48 8B 80 80 00 00 00",
 			"extract": {}
 		},
 		"BossBase_Update": {
-			"signature": "80 79 3C 00 74 1D 48 8B 89 40 01 00 00",
+			"signature": "80 79 3C 00 74 1D 48 8B 89 48 01 00 00",
 			"extract": {}
 		},
 		"CombatOfflineRewardsCalculator_SetCurrentSpawner": {
@@ -183,7 +179,7 @@
 			}
 		},
 		"EngineerSystemUI_TryBuyUpgrade": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 4F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF A0 01 00 00 00",
+			"signature": "48 89 5C 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 43 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 BF C8 01 00 00 00",
 			"extract": {}
 		},
 		"EngineerUpgradeConfig_GetPrice": {
@@ -191,11 +187,11 @@
 			"extract": {}
 		},
 		"EnhancementTreeUI_Buy": {
-			"signature": "40 53 55 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B E9 0F 85 ? ? ? ?",
+			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 75 5B 48 8D 0D ? ? ? ?",
 			"extract": {}
 		},
 		"EnhancementTreeUI_Select": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 0F 29 74 24 30",
+			"signature": "48 89 5C 24 10 48 89 6C 24 18 57 48 83 EC 40 0F 29 74 24 30",
 			"extract": {}
 		},
 		"EntityCardDatabase_ctor": {
@@ -207,6 +203,10 @@
 					"op_idx": 1
 				}
 			}
+		},
+		"HourglassCalc_GeometricMaxAffordable": {
+			"signature": "40 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B F8",
+			"extract": {}
 		},
 		"HourglassHardUUpgrade_GetCostAmount": {
 			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 80 3D ? ? ? ? 00 8B FA",
@@ -224,12 +224,16 @@
 			"signature": "48 89 5C 24 10 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B DA 0F 29 7C 24 30",
 			"extract": {}
 		},
+		"HourglassService_BulkCost": {
+			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 81 EC ? ? ? ? 0F 57 C0 33 C0",
+			"extract": {}
+		},
 		"HourglassService_BuyGenerator": {
 			"signature": "48 89 6C 24 18 48 89 74 24 20 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00 49 8B E8",
 			"extract": {}
 		},
 		"HourglassService_BuyHardUpgrade": {
-			"signature": "40 55 56 48 83 EC 48 80 3D ? ? ? ? 00 48 8B EA 48 8B F1 75 37 48 8D 0D ? ? ? ?",
+			"signature": "40 55 56 48 83 EC 48 80 3D ? ? ? ? 00 48 8B EA 48 8B F1 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 3D ? ? ? ? 00",
 			"extract": {}
 		},
 		"HourglassService_BuyShopItem": {
@@ -237,7 +241,11 @@
 			"extract": {}
 		},
 		"HourglassService_BuyTalent": {
-			"signature": "48 89 5C 24 20 56 48 83 EC 60 80 3D ? ? ? ? 00",
+			"signature": "40 53 56 48 83 EC 68 80 3D ? ? ? ? 00 48 8B F2 48 8B D9",
+			"extract": {}
+		},
+		"HourglassService_BuyTimeEcho": {
+			"signature": "40 57 48 83 EC 50 80 3D ? ? ? ? 00 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? 45 33 C0 48 89 5C 24 60",
 			"extract": {}
 		},
 		"HourglassService_BuyUpgrade": {
@@ -248,8 +256,16 @@
 			"signature": "48 89 5C 24 18 48 89 54 24 10 48 89 4C 24 08 56 57 41 56 48 83 EC 60 4C 8B F2 48 8B F1",
 			"extract": {}
 		},
+		"HourglassService_CanAffordHardUpgrade": {
+			"signature": "48 89 5C 24 20 56 48 83 EC 40 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 75 13 48 8D 0D ? ? ? ?",
+			"extract": {}
+		},
+		"HourglassService_CanBuyTalent": {
+			"signature": "40 53 57 48 83 EC 48 45 33 C0",
+			"extract": {}
+		},
 		"HourglassService_CanReroll": {
-			"signature": "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? 45 33 C0 48 8B CB E8 ? ? ? ? 84 C0 75 06 48 83 C4 30 5B C3 48 8B 83 80 00 00 00",
+			"signature": "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 15 ? ? ? ? 45 33 C0 48 8B CB E8 ? ? ? ? 84 C0 75 06 48 83 C4 30 5B C3 48 8B 83 88 00 00 00",
 			"extract": {}
 		},
 		"HourglassService_CostFactor": {
@@ -257,23 +273,39 @@
 			"extract": {}
 		},
 		"HourglassService_FindPortal": {
-			"signature": "48 83 EC 28 48 8B 89 80 00 00 00 48 85 C9 74 1F 48 8B 89 A8 00 00 00",
+			"signature": "48 83 EC 28 48 8B 89 88 00 00 00 48 85 C9 74 1F 48 8B 89 A8 00 00 00",
+			"extract": {}
+		},
+		"HourglassService_FindTalent": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 38 ? ? ? ? 48 85 DB 74 39 48 83 BF 08 01 00 00 00",
 			"extract": {}
 		},
 		"HourglassService_FindUpgrade": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 38 ? ? ? ? 48 85 DB 74 34 48 8B 8F E0 00 00 00",
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 38 ? ? ? ? 48 85 DB 74 34 48 8B 8F E8 00 00 00",
 			"extract": {}
 		},
 		"HourglassService_GrantReward": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 0F 29 74 24 30 48 8B D9 0F 29 7C 24 20",
+			"signature": "48 89 5C 24 18 57 48 83 EC 40 80 3D ? ? ? ? 00 48 8B FA 0F 29 74 24 30",
+			"extract": {}
+		},
+		"HourglassService_HardUpgradeCost": {
+			"signature": "48 89 5C 24 18 48 89 74 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B D8 48 8B FA 48 8B F1 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 3D ? ? ? ? 00",
+			"extract": {}
+		},
+		"HourglassService_IsTalentUnlocked": {
+			"signature": "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 40 48 8B FA 48 8B F1 80 3D ? ? ? ? 00 75 43 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 C7 44 24 58 ? ? ? ? 80 3D ? ? ? ? 00",
 			"extract": {}
 		},
 		"HourglassService_LevelCost": {
-			"signature": "40 53 48 83 EC 20 48 8B 81 80 00 00 00 48 85 C0 74 2A",
+			"signature": "40 53 48 83 EC 20 48 8B 81 88 00 00 00 48 85 C0 74 2A",
+			"extract": {}
+		},
+		"HourglassService_MaxAffordable": {
+			"signature": "48 89 5C 24 08 57 48 81 EC ? ? ? ? 0F 57 C0 33 C0 38 05 ? ? ? ? 48 8B FA 48 8B D9 48 89 44 24 70",
 			"extract": {}
 		},
 		"HourglassService_OnWindowClose": {
-			"signature": "40 53 48 83 EC 40 80 3D ? ? ? ? 00 48 8B D9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 93 A8 00 00 00",
+			"signature": "40 53 48 83 EC 40 80 3D ? ? ? ? 00 48 8B D9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 93 B0 00 00 00",
 			"extract": {}
 		},
 		"HourglassService_RiftFreeWorkers": {
@@ -281,7 +313,7 @@
 			"extract": {}
 		},
 		"HourglassService_RiftRewardPerHour": {
-			"signature": "40 53 55 56 57 48 83 EC 28 48 8B 81 80 00 00 00 48 8B F2 48 8B D9 48 85 C0 74 6D 48 8B 88 A8 00 00 00 48 85 C9 74 55 45 33 C0 E8 ? ? ? ? 48 8B E8 48 85 C0 74 45 48 8B 8B 80 00 00 00 48 85 C9 74 45 48 8B B9 A8 00 00 00 45 33 C0 48 8B CB 48 8B D6 E8 ? ? ? ? 48 85 C0 74 2B 48 85 FF 74 26 44 8B 40 10 45 33 C9 48 8B D5 48 8B CF 48 83 C4 28 5F 5E 5D 5B E9 ? ? ? ? 0F 57 C0 48 83 C4 28 5F 5E 5D 5B C3 E8 ? ? ? ? CC CC CC 48 89 74 24 10",
+			"signature": "40 53 55 56 57 48 83 EC 28 48 8B 81 88 00 00 00 48 8B F2 48 8B D9 48 85 C0 74 6D 48 8B 88 A8 00 00 00 48 85 C9 74 55 45 33 C0 E8 ? ? ? ? 48 8B E8 48 85 C0 74 45 48 8B 8B 88 00 00 00 48 85 C9 74 45 48 8B B9 A8 00 00 00 45 33 C0 48 8B CB 48 8B D6 E8 ? ? ? ? 48 85 C0 74 2B 48 85 FF 74 26 44 8B 40 10 45 33 C9 48 8B D5 48 8B CF 48 83 C4 28 5F 5E 5D 5B E9 ? ? ? ? 0F 57 C0 48 83 C4 28 5F 5E 5D 5B C3 E8 ? ? ? ? CC CC CC 48 89 74 24 10",
 			"extract": {}
 		},
 		"HourglassService_RiftUsedWorkers": {
@@ -292,12 +324,30 @@
 			"signature": "40 53 48 83 EC 20 48 8B DA 48 85 D2 74 1B",
 			"extract": {}
 		},
+		"HourglassService_TimeEchoBatchCost": {
+			"signature": "40 53 48 83 EC 50 48 8B 81 88 00 00 00",
+			"extract": {}
+		},
+		"HourglassService_TreeBalance": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 40 0F 29 74 24 30 48 8B FA 48 8B D9 48 85 D2",
+			"extract": {
+				"currency": {
+					"pattern": "mov eax, dword ptr [rdx + ?]",
+					"instr_idx": 8,
+					"op_idx": 1
+				}
+			}
+		},
+		"HourglassService_TreeOf": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 85 DB 74 26 48 8B 8F 10 01 00 00",
+			"extract": {}
+		},
 		"HourglassService_UpgradeCost": {
 			"signature": "48 89 5C 24 08 56 48 83 EC 20 80 3D ? ? ? ? 00",
 			"extract": {}
 		},
 		"HourglassService_get_RiftTotalWorkers": {
-			"signature": "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 83 80 00 00 00",
+			"signature": "40 53 48 83 EC 30 80 3D ? ? ? ? 00 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 83 88 00 00 00",
 			"extract": {}
 		},
 		"HourglassSystemUI_BuildTalentTooltipContent": {
@@ -314,16 +364,12 @@
 				}
 			}
 		},
-		"HourglassTalentNodeView_SetState": {
-			"signature": "40 53 55 56 57 48 83 EC 28 80 3D ? ? ? ? 00 0F B6 FA 41 0F B6 F1",
-			"extract": {}
-		},
 		"HourglassUpgradeItem_GetCost": {
 			"signature": "48 89 5C 24 08 57 48 83 EC 50 80 3D ? ? ? ? 00 8B FA 0F 29 74 24 40",
 			"extract": {}
 		},
 		"IAPRewarder_Reward": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 20 80 3D ? ? ? ? 00 45 0F B6 F1",
+			"signature": "48 89 5C 24 10 48 89 6C 24 18 56 57 41 57 48 83 EC 20 80 3D ? ? ? ? 00 45 0F B6 F9 41 0F B6 F0",
 			"extract": {}
 		},
 		"Il2Cpp_Array": {
@@ -403,11 +449,11 @@
 			"extract": {}
 		},
 		"MobKillTrigger_Apply": {
-			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F2 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 63 43 20",
+			"signature": "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 63 43 20",
 			"extract": {
 				"_portal": {
-					"pattern": "mov qword ptr [rsp + ?], rdi",
-					"instr_idx": 13,
+					"pattern": "mov qword ptr [rsp + ?], rbp",
+					"instr_idx": 11,
 					"op_idx": 0
 				}
 			}
@@ -500,8 +546,8 @@
 					"op_idx": 0
 				},
 				"Skill": {
-					"pattern": "mov rax, qword ptr [rdi + ?]",
-					"instr_idx": 26,
+					"pattern": "mov rcx, qword ptr [rax + ?]",
+					"instr_idx": 32,
 					"op_idx": 1
 				},
 				"XpPerHour": {
@@ -510,9 +556,9 @@
 					"op_idx": 0
 				},
 				"KillsPerHour": {
-					"pattern": "mov dword ptr [rbx + ?], eax",
-					"instr_idx": 121,
-					"op_idx": 0
+					"pattern": "mov rax, qword ptr [rdi + ?]",
+					"instr_idx": 26,
+					"op_idx": 1
 				},
 				"GoldPerHour": {
 					"pattern": "mov dword ptr [rbx + ?], eax",
@@ -520,18 +566,18 @@
 					"op_idx": 0
 				},
 				"_cardDatabase": {
-					"pattern": "mov eax, dword ptr [rax + ?]",
-					"instr_idx": 102,
+					"pattern": "mov rcx, qword ptr [rdi + ?]",
+					"instr_idx": 168,
 					"op_idx": 1
 				}
 			}
 		},
 		"OfflineProgressService_CurrentActivitySnapshot": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 48 8B 49 50 48 85 C9",
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 48 8B 49 58 48 85 C9",
 			"extract": {}
 		},
 		"OfflineProgressService_GetCombatCalculator": {
-			"signature": "48 8B 41 48 C3 CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 58",
+			"signature": "48 8B 41 50 C3 CC CC CC CC CC CC CC CC CC CC CC 0F B6 41 58",
 			"extract": {
 				"_combatCalculator": {
 					"pattern": "mov rax, qword ptr [rcx + ?]",
@@ -545,7 +591,7 @@
 			"extract": {}
 		},
 		"OfflineProgressService_WriteClearedActivity": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B 41 20 48 8B D9 48 85 C0 0F 84 ? ? ? ? 48 8B 40 40",
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B 41 28 48 8B D9 48 85 C0 0F 84 ? ? ? ?",
 			"extract": {}
 		},
 		"PlayerCharacter_TakeDamage": {
@@ -569,7 +615,7 @@
 			"extract": {}
 		},
 		"SacrificeUI_Buy": {
-			"signature": "40 56 57 48 83 EC 48 80 3D ? ? ? ? 00 48 8B F2 48 8B F9 75 7F 48 8D 0D ? ? ? ?",
+			"signature": "40 56 57 48 83 EC 48 80 3D ? ? ? ? 00 48 8B F2 48 8B F9 75 73 48 8D 0D ? ? ? ?",
 			"extract": {}
 		},
 		"SacrificeUI_Select": {
@@ -589,18 +635,12 @@
 			"extract": {}
 		},
 		"Shop_TryBuy": {
-			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F1 0F 85 ? ? ? ?",
+			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 40 80 3D ? ? ? ? 00 48 8B DA",
 			"extract": {}
 		},
-		"Shop_UpdateDiscount": {
-			"signature": "40 53 48 83 EC 40 80 79 50 00",
-			"extract": {
-				"discount": {
-					"pattern": "movss dword ptr [rcx + ?], xmm6",
-					"instr_idx": 10,
-					"op_idx": 0
-				}
-			}
+		"Shop_get_Discount": {
+			"signature": "40 53 48 83 EC 20 80 79 60 00 48 8B D9 74 2A 48 8B 49 48",
+			"extract": {}
 		},
 		"Skill_AddExperience": {
 			"signature": "40 53 48 83 EC 70 0F 10 41 30",
@@ -648,8 +688,16 @@
 			"signature": "48 83 EC 28 80 3D ? ? ? ? 00 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 05 ? ? ? ? 83 B8 E4 00 00 00 00 75 0F 48 8B C8 E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8B 80 A0 00 00 00 48 8B 08 48 85 C9 74 0B 33 D2 48 83 C4 28 E9 ? ? ? ? E8 ? ? ? ? CC CC 40 57",
 			"extract": {}
 		},
+		"Trader_CanSpend_1": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 03 4D 85 C0",
+			"extract": {}
+		},
+		"Trader_Spend_1": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 70 80 3D ? ? ? ? 00 48 8B DA 48 8B F9 75 2B 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 03 0F 57 C0",
+			"extract": {}
+		},
 		"WorldElite_Update": {
-			"signature": "40 53 48 83 EC 40 33 D2 0F 29 74 24 30 48 8B D9 E8 ? ? ? ?",
+			"signature": "40 53 48 83 EC 50 0F 29 74 24 40 33 D2 0F 29 7C 24 30 48 8B D9 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 45 33 C0 48 8D 4C 24 20 48 8B D0 E8 ? ? ? ? F3 0F 10 35 ? ? ? ?",
 			"extract": {}
 		},
 		"YellowDragonBoss_Update": {
