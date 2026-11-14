@@ -23,6 +23,8 @@
  */
 
 #include "Hooks.hpp"
+#include "Signatures.hpp"
+#include "../Menu/Menu.hpp"
 
 #include "../../Features/Combat/GodMode.hpp"
 #include "../../Features/Combat/AuraKill.hpp"
@@ -44,6 +46,33 @@
 #include "MinHook.h"
 
 bool Hooks::bHooksFailed = false;
+
+namespace
+{
+  bool (*Orig_ShopSpendingService_CanSpend)(void* __this, void* price, void* source, void* method_info);
+  bool Hook_ShopSpendingService_CanSpend(void* __this, void* price, void* source, void* method_info)
+  {
+    if (
+      Features::Bonfire::IsFreeSpending() || Menu::Config.bFreeHunterUpgrades
+      || Features::HourglassUpgrades::IsPurchasing()
+    ) {
+      return true;
+    }
+    return Orig_ShopSpendingService_CanSpend(__this, price, source, method_info);
+  }
+
+  bool (*Orig_ShopSpendingService_Spend)(void* __this, void* price, void* source, void* method_info);
+  bool Hook_ShopSpendingService_Spend(void* __this, void* price, void* source, void* method_info)
+  {
+    if (
+      Features::Bonfire::IsFreeSpending() || Features::HunterHacks::IsInHunterBuy()
+      || Features::HourglassUpgrades::IsPurchasing()
+    ) {
+      return true;
+    }
+    return Orig_ShopSpendingService_Spend(__this, price, source, method_info);
+  }
+}  // namespace
 
 void Hooks::Initialize()
 {
@@ -68,6 +97,15 @@ void Hooks::Initialize()
   Features::EngineerHacks::Initialize();
   Features::HunterHacks::Initialize();
   Features::Bonfire::Initialize();
+
+  HOOK_SIGNATURE(
+    "ShopSpendingService::CanSpend", Signatures::ShopSpendingService_CanSpend, Hook_ShopSpendingService_CanSpend,
+    Orig_ShopSpendingService_CanSpend
+  );
+  HOOK_SIGNATURE(
+    "ShopSpendingService::Spend", Signatures::ShopSpendingService_Spend, Hook_ShopSpendingService_Spend,
+    Orig_ShopSpendingService_Spend
+  );
   Features::StageHopper::Initialize();
 }
 
