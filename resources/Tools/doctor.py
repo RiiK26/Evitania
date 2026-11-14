@@ -198,6 +198,44 @@ def scan_cpp_references():
     return sig_refs, off_refs
 
 
+def scan_resolve_only_signatures():
+    """Return set of signature keys used strictly with HOOK_SIGNATURE(..., nullptr, Orig) for pointer resolution."""
+    resolve_only = set()
+    hook_macro_re = re.compile(
+        r"HOOK_SIGNATURE\s*\(\s*\"[^\"]*\"\s*,\s*Signatures::(\w+)\s*,\s*(nullptr|NULL|0)\s*,",
+        re.DOTALL,
+    )
+    for root, _, files in os.walk(SRC_DIR):
+        for fn in files:
+            if not fn.endswith((".cpp", ".hpp", ".h")):
+                continue
+            path = os.path.join(root, fn)
+            if VENDOR_RE.search(path) or path in (SIG_HPP, OFF_HPP):
+                continue
+            with open(path, encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+            for m in hook_macro_re.finditer(content):
+                resolve_only.add(m.group(1))
+    return resolve_only
+
+
+def parse_icf_annotations(dump_path=None):
+    """Return dict mapping RVA (int) -> ICF merged method count from dump.cs comments."""
+    rva_icf = {}
+    p = dump_path or DUMP_CS
+    if not os.path.exists(p):
+        return rva_icf
+    icf_re = re.compile(
+        r"// \[Compiler-Merged Stub / ICF: (\d+) methods share RVA 0x([0-9A-Fa-f]+)\]"
+    )
+    with open(p, encoding="utf-8", errors="ignore") as f:
+        for line in f:
+            m = icf_re.search(line)
+            if m:
+                rva_icf[int(m.group(2), 16)] = int(m.group(1))
+    return rva_icf
+
+
 def load_targets():
     import build_sig_db
 
@@ -429,10 +467,104 @@ def check_scan_and_dump(rep, dll_path, config):
             )
     if not analysis["missing_targets"]:
         rep.add(OK, "targets", f"all {len(tidx)} build_sig_db targets exist in dump.cs")
+
+    # Hardcoded offset drift check: verify non-Il2Cpp hardcoded offsets against dump.cs.
+    field_map = {}
+    for cls, method, ov, fields_to_extract in bsd.TARGETS:
+        key = bsd.method_key_for(cls, method, ov)
+        for ft in fields_to_extract:
+            if len(ft) == 2:
+                out_name, f_cls = ft
+                f_name = out_name
+            else:
+                out_name, f_name, f_cls = ft
+            field_map[(key, out_name)] = (f_cls, f_name)
+
+    hc_checked, hc_drifted = 0, []
+    for key, meta in config.get("signatures", {}).items():
+        if key.startswith("Il2Cpp_"):
+            continue
+        for out_name, rule in meta.get("extract", {}).items():
+            if "hardcoded" in rule:
+                val = rule["hardcoded"]
+                f_cls, f_name = field_map.get((key, out_name), (None, None))
+                actual = (
+                    class_data.get(f_cls, {}).get("fields", {}).get(f_name)
+                    if f_cls
+                    else None
+                )
+                if actual is not None:
+                    hc_checked += 1
+                    if actual != val:
+                        hc_drifted.append((out_name, f_cls, f_name, val, actual))
+                        rep.add(
+                            FAIL,
+                            "offsets",
+                            f"hardcoded offset drift for Offsets::{out_name}: config.json has 0x{val:X}, dump.cs ({f_cls}::{f_name}) has 0x{actual:X}",
+                            "python3 resources/Tools/build_sig_db.py && scripts/update -f",
+                        )
+    if hc_checked and not hc_drifted:
+        rep.add(
+            OK,
+            "offsets",
+            f"all {hc_checked} hardcoded fallback offset(s) match dump.cs",
+        )
+
+    # ICF & Stub Safety check: ensure actively detoured hooks do not collide with ICF stubs
+    # or target functions smaller than 5 bytes (MinHook relative-jump minimum).
+    rva_icf = parse_icf_annotations(DUMP_CS)
+    resolve_only = scan_resolve_only_signatures()
+    active_hooks = [k for k in sig_refs if k not in resolve_only]
+    icf_collisions = []
+    short_stubs = []
+    try:
+        import pefile
+        from capstone import Cs, CS_ARCH_X86, CS_MODE_64
+
+        pe = pefile.PE(dll_path, fast_load=True)
+        pe_data = pe.get_memory_mapped_image()
+        md = Cs(CS_ARCH_X86, CS_MODE_64)
+    except Exception:
+        pe_data, md = None, None
+
+    for key in sorted(active_hooks):
+        rva = scan["matched_rvas"].get(key)
+        if not rva:
+            continue
+        icf_count = rva_icf.get(rva, 0)
+        if icf_count > 1:
+            icf_collisions.append((key, rva, icf_count))
+            rep.add(
+                WARN,
+                "hooks",
+                f"{key} (0x{rva:X}) is an ICF-merged stub shared by {icf_count} methods in dump.cs",
+                "avoid detouring ICF-merged stubs or pass nullptr as HookFunc if only resolving pointer",
+            )
+        if pe_data is not None and md is not None:
+            code = pe_data[rva : rva + 32]
+            size = 0
+            for ins in md.disasm(code, rva):
+                size += len(ins.bytes)
+                if ins.mnemonic in ("ret", "int3"):
+                    break
+            if 0 < size < 5:
+                short_stubs.append((key, rva, size))
+                rep.add(
+                    FAIL,
+                    "hooks",
+                    f"{key} (0x{rva:X}) body is {size}B (< 5B required for MinHook relative jmp)",
+                    "hook a caller or non-stub method instead",
+                )
+    if not icf_collisions and not short_stubs:
+        rep.add(
+            OK,
+            "hooks",
+            f"{len(active_hooks)} active detour(s) verified (no ICF collisions, all >= 5B)",
+        )
     return analysis
 
 
-def check_cpp(rep, analysis=None):
+def check_cpp(rep, analysis=None, config=None):
     hdr_sigs, hdr_offs = parse_header_names()
     sig_refs, off_refs = scan_cpp_references()
     bad = 0
@@ -460,7 +592,13 @@ def check_cpp(rep, analysis=None):
                 f"Offsets::{name} undefined (used at {', '.join(locs[:3])})",
                 "add an extraction rule in build_sig_db.py TARGETS",
             )
-    unused = sorted(hdr_sigs - set(sig_refs))
+    sigs_cfg = (config or {}).get("signatures", {})
+    carriers = set()
+    for key in hdr_sigs - set(sig_refs):
+        extracts = sigs_cfg.get(key, {}).get("extract", {})
+        if any(f in off_refs for f in extracts):
+            carriers.add(key)
+    unused = sorted(hdr_sigs - set(sig_refs) - carriers)
     if unused:
         rep.add(
             INFO,
@@ -471,7 +609,7 @@ def check_cpp(rep, analysis=None):
         rep.add(
             OK,
             "c++",
-            f"{len(sig_refs)} signature + {len(off_refs)} offset references resolve",
+            f"{len(sig_refs)} hooked/resolved + {len(carriers)} offset-carrier signature(s), {len(off_refs)} offset references resolve",
         )
     return bad
 
@@ -488,7 +626,7 @@ def run_doctor(dll_path=None, report_path=None):
     config = check_config(rep)
     check_game(rep, dll_path, config)
     analysis = check_scan_and_dump(rep, dll_path, config)
-    check_cpp(rep, analysis)
+    check_cpp(rep, analysis, config)
 
     fails, warns = rep.count(FAIL), rep.count(WARN)
     print("=" * 65)

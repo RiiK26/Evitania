@@ -200,6 +200,17 @@ def main():
         action="store_true",
         help="If healing cannot fix everything, still build: broken hooks are disabled at runtime and their offsets keep last-known-good values",
     )
+    parser.add_argument(
+        "--set-version",
+        type=str,
+        default=None,
+        help="Set the target game version in config.json (e.g. 0.324.0)",
+    )
+    parser.add_argument(
+        "--bump",
+        action="store_true",
+        help="Increment the patch number of config.json's version (e.g. 0.323.1 -> 0.323.2)",
+    )
 
     args = parser.parse_args()
 
@@ -257,8 +268,23 @@ def main():
     recorded_sha256 = config.get("assembly_sha256")
     game_version = config.get("version", "unknown")
 
+    if args.set_version:
+        game_version = args.set_version.lstrip("v")
+        config["version"] = game_version
+        print(f"[+] Setting target game version -> {game_version}")
+    elif args.bump:
+        parts = game_version.split(".")
+        if parts and parts[-1].isdigit():
+            parts[-1] = str(int(parts[-1]) + 1)
+            game_version = ".".join(parts)
+            config["version"] = game_version
+            print(f"[+] Bumped target game version -> {game_version}")
+
     is_updated = (
-        recorded_build_id != current_build_id or recorded_sha256 != current_sha256
+        recorded_build_id != current_build_id
+        or recorded_sha256 != current_sha256
+        or bool(args.set_version)
+        or bool(args.bump)
     )
 
     if args.check:
@@ -426,7 +452,7 @@ def main():
     # 5. Update config.json metadata
     ordered_config = {
         "project_name": config.get("project_name", "Evitania"),
-        "version": config.get("version", game_version),
+        "version": game_version,
         "steam_build_id": current_build_id,
         "assembly_sha256": current_sha256,
         "signatures": config.get("signatures", {}),
