@@ -70,6 +70,7 @@ namespace Offsets
   constexpr int _enemyCards       = 0x30;
   constexpr int Amount            = 0x8;
   constexpr int enemies           = 0x18;
+  constexpr int currency          = 0x18;
   constexpr int cost              = 0x48;
   constexpr int itemAmount        = 0x18;
   constexpr int _portal           = 0x38;
@@ -85,7 +86,6 @@ namespace Offsets
   constexpr int XpPerHour         = 0x24;
   constexpr int KillsPerHour      = 0x28;
   constexpr int GoldPerHour       = 0x2C;
-  constexpr int _cardDatabase     = 0x60;
-  constexpr int _combatCalculator = 0x48;
-  constexpr int discount          = 0x58;
+  constexpr int _cardDatabase     = 0x68;
+  constexpr int _combatCalculator = 0x50;
 }  // namespace Offsets
