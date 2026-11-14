@@ -28,4 +28,5 @@ namespace Features::HourglassUpgrades
 {
   void Initialize();
   void Uninitialize();
+  bool IsPurchasing();
 }  // namespace Features::HourglassUpgrades
