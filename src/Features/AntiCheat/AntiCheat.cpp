@@ -78,11 +78,11 @@ namespace Features
     // ─────────────────────────────────────────────────────────────
     // Shared generic base (ACTkDetectorBase<__Canon>): one address serves every
     // detector -> covers Injection / WallHack / SpeedHack / Obscured at once.
+    // Note: InvokeCheatingDetectedEvent is NOT hooked because MSVC ICF merges its
+    // 7-instruction stub with UI click lambdas (e.g. HourglassTalentTooltipContent::<PopulateContent>b__19_0).
     void (*Orig_ACTkBase_OnCheatingDetected)(void* __this, void* detectionInfo, void* method);
-    void (*Orig_ACTkBase_InvokeCheatingDetectedEvent)(void* __this, void* method);
 
     void Hook_ACTkBase_OnCheatingDetected(void*, void*, void*) { }
-    void Hook_ACTkBase_InvokeCheatingDetectedEvent(void*, void*) { }
 
     bool (*Orig_SpeedHack_IsTicksCheated)(
       void* __this, int64_t ticks, int64_t* previousTicks, int64_t reliableDelta, void* method
@@ -175,10 +175,6 @@ namespace Features
       HOOK_SIGNATURE(
         "ACTkDetectorBase::OnCheatingDetected", Signatures::ACTkDetectorBase_OnCheatingDetected,
         Hook_ACTkBase_OnCheatingDetected, Orig_ACTkBase_OnCheatingDetected
-      );
-      HOOK_SIGNATURE(
-        "ACTkDetectorBase::InvokeCheatingDetectedEvent", Signatures::ACTkDetectorBase_InvokeCheatingDetectedEvent,
-        Hook_ACTkBase_InvokeCheatingDetectedEvent, Orig_ACTkBase_InvokeCheatingDetectedEvent
       );
       HOOK_SIGNATURE(
         "SpeedHackDetector::IsTicksCheated", Signatures::SpeedHackDetector_IsTicksCheated,
