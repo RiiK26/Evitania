@@ -136,28 +136,10 @@ namespace Features
     }
 
 
-    bool (*Orig_ShopSpendingService_CanSpend)(void* __this, void* price, void* source, void* method_info);
-    bool Hook_ShopSpendingService_CanSpend(void* __this, void* price, void* source, void* method_info)
+    bool IsFreeSpending()
     {
-      if (currentContext == BonfireContext::Sacrifice && Menu::Config.bFreeSacrificeCost) {
-        return true;
-      }
-      if (currentContext == BonfireContext::AshUpgrade && Menu::Config.bFreeAshUpgrade) {
-        return true;
-      }
-      return Orig_ShopSpendingService_CanSpend(__this, price, source, method_info);
-    }
-
-    bool (*Orig_ShopSpendingService_Spend)(void* __this, void* price, void* source, void* method_info);
-    bool Hook_ShopSpendingService_Spend(void* __this, void* price, void* source, void* method_info)
-    {
-      if (currentContext == BonfireContext::Sacrifice && Menu::Config.bFreeSacrificeCost) {
-        return true;
-      }
-      if (currentContext == BonfireContext::AshUpgrade && Menu::Config.bFreeAshUpgrade) {
-        return true;
-      }
-      return Orig_ShopSpendingService_Spend(__this, price, source, method_info);
+      return (currentContext == BonfireContext::Sacrifice && Menu::Config.bFreeSacrificeCost)
+          || (currentContext == BonfireContext::AshUpgrade && Menu::Config.bFreeAshUpgrade);
     }
 
     bool (*Orig_SacrificeUI_TryRollSacrificeHalfCost)(void* method_info);
@@ -182,14 +164,6 @@ namespace Features
       HOOK_SIGNATURE(
         "BonfireFuelBurner::get_MaxFuel", Signatures::BonfireFuelBurner_get_MaxFuel, nullptr,
         Orig_BonfireFuelBurner_get_MaxFuel
-      );
-      HOOK_SIGNATURE(
-        "ShopSpendingService::CanSpend", Signatures::ShopSpendingService_CanSpend, Hook_ShopSpendingService_CanSpend,
-        Orig_ShopSpendingService_CanSpend
-      );
-      HOOK_SIGNATURE(
-        "ShopSpendingService::Spend", Signatures::ShopSpendingService_Spend, Hook_ShopSpendingService_Spend,
-        Orig_ShopSpendingService_Spend
       );
       HOOK_SIGNATURE(
         "EnhancementTreeUI::Buy", Signatures::EnhancementTreeUI_Buy, Hook_EnhancementTreeUI_Buy,
