@@ -30,5 +30,6 @@ namespace Features
   {
     void Initialize();
     void Uninitialize();
+    bool IsInHunterBuy();
   }  // namespace HunterHacks
 }  // namespace Features
