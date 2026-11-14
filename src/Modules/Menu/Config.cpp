@@ -122,12 +122,16 @@ namespace Menu
             fSpeedMultiplier = SafeParseFloat(value, fSpeedMultiplier);
           else if (key == "hourglass_bypass")
             bHourglassBypass = (value == "1");
+          else if (key == "free_sand_upgrade")
+            bFreeSandUpgrade = (value == "1");
+          else if (key == "free_upgrade_generator")
+            bFreeUpgradeGenerator = (value == "1");
           else if (key == "free_timeline_nodes")
             bFreeTimelineNodes = (value == "1");
+          else if (key == "free_awakening_generator")
+            bFreeAwakeningGenerator = (value == "1");
           else if (key == "free_restoration_nodes")
             bFreeRestorationNodes = (value == "1");
-          else if (key == "free_hourglass_upgrades")
-            bFreeHourglassUpgrades = (value == "1");
           else if (key == "free_engineer_upgrades")
             bFreeEngineerUpgrades = (value == "1");
           else if (key == "free_hunter_upgrades")
@@ -180,9 +184,11 @@ namespace Menu
     out << "speed_hack=" << (bSpeedHack ? "1" : "0") << "\n";
     out << "speed_multiplier=" << fSpeedMultiplier << "\n";
     out << "hourglass_bypass=" << (bHourglassBypass ? "1" : "0") << "\n";
+    out << "free_sand_upgrade=" << (bFreeSandUpgrade ? "1" : "0") << "\n";
+    out << "free_upgrade_generator=" << (bFreeUpgradeGenerator ? "1" : "0") << "\n";
     out << "free_timeline_nodes=" << (bFreeTimelineNodes ? "1" : "0") << "\n";
+    out << "free_awakening_generator=" << (bFreeAwakeningGenerator ? "1" : "0") << "\n";
     out << "free_restoration_nodes=" << (bFreeRestorationNodes ? "1" : "0") << "\n";
-    out << "free_hourglass_upgrades=" << (bFreeHourglassUpgrades ? "1" : "0") << "\n";
     out << "free_engineer_upgrades=" << (bFreeEngineerUpgrades ? "1" : "0") << "\n";
     out << "free_hunter_upgrades=" << (bFreeHunterUpgrades ? "1" : "0") << "\n";
     out << "always_lit_bonfire=" << (bAlwaysLitBonfire ? "1" : "0") << "\n";

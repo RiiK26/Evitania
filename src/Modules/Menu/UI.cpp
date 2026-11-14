@@ -166,12 +166,41 @@ namespace Menu
           ImGui::BeginChild("HourglassChild", ImVec2(0, -50), 0);
 
           ImGui::Checkbox("Use Timeskip hourglass anywhere", &Config.bHourglassBypass);
-          ImGui::Checkbox("Free Timeline upgrade tree", &Config.bFreeTimelineNodes);
-          ImGui::Checkbox("Free Hourglass upgrades", &Config.bFreeHourglassUpgrades);
+          ImGui::Separator();
+
+          ImGui::Checkbox("Free Sand upgrade", &Config.bFreeSandUpgrade);
           ImGui::SameLine();
           ImGui::TextDisabled("(?)");
           if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Free generators, upgrades, hard upgrades, talents, and shop items");
+            ImGui::SetTooltip("Free Sand generators level-up cost");
+          }
+
+          ImGui::Checkbox("Free Upgrade generator", &Config.bFreeUpgradeGenerator);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Free generator upgrades & upgrade blocks");
+          }
+
+          ImGui::Checkbox("Free Timeline upgrade tree", &Config.bFreeTimelineNodes);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Free Timeline talent tree nodes");
+          }
+
+          ImGui::Checkbox("Free Awakening generator", &Config.bFreeAwakeningGenerator);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Free Awakening upgrade");
+          }
+
+          ImGui::Checkbox("Free Restoration of Eternity upgrade", &Config.bFreeRestorationNodes);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Free Restoration talent tree nodes & Time Echoes");
           }
 
           ImGui::EndChild();

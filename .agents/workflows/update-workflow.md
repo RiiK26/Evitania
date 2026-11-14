@@ -103,7 +103,7 @@ If the game update introduces obfuscation (scrambled class/method/field names in
 ---
 
 ### Step 2.3: Update Baseline Signatures (`build_sig_db.py`)
-Add any new or changed methods/fields to the `targets` list in [resources/Tools/build_sig_db.py](file:///home/riik/Projects/Evitania/resources/Tools/build_sig_db.py):
+Add any new or changed methods/fields to the `targets` list in [resources/Tools/build_sig_db.py](/resources/Tools/build_sig_db.py):
 
 ```python
 # Format: (ClassName, MethodName, OverloadIndex, FieldsToExtract)
@@ -177,7 +177,18 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
 4. Rebuilds `config.json` with `build_sig_db.py` and rescans.
 5. On failure: rolls back, prints a diagnosis (removed methods + rename suggestions). On compile errors it maps `'X' is not a member of 'Signatures'` to its cause.
 
-Run `scripts/update --doctor` anytime for a read-only health report (exit code 1 if unhealthy). Flags: `--no-heal`, `--allow-degraded`.
+Run `scripts/update --doctor` anytime for a read-only health report (exit code 1 if unhealthy). The Doctor performs 7 automated audits:
+- **Toolchain & Metadata**: Verifies `pefile`, `capstone`, `cmake`, `x86_64-w64-mingw32-g++`, `Il2CppDumper`, and unencrypted `global-metadata.dat`.
+- **Steam Build Drift**: Compares the live Steam `appmanifest_4119420.acf` `buildid` against `config.json`.
+- **Live AOB Scan & RVA Freshness**: Verifies every signature against `GameAssembly.dll` and cross-checks matched RVAs against `dump.cs`.
+- **Hardcoded Fallback Offset Drift**: Cross-checks all non-`Il2Cpp_*` `"hardcoded"` offsets in `config.json` against live field offsets in `dump.cs`.
+- **ICF & Stub Safety Audit**: Verifies that active detours (`HOOK_SIGNATURE` with non-null `HookFunc`) do not target MSVC Identical Code Folding (`[Compiler-Merged Stub / ICF: ...]`) stubs shared with unrelated game/UI methods, and ensures function bodies are $\ge 5$ bytes (required for MinHook's relative jump). Passing `nullptr` as `HookFunc` in `HOOK_SIGNATURE` resolves the function pointer directly without calling `MH_CreateHook`.
+- **Offset-Carrier vs. Hook Classification**: Distinguishes directly hooked/resolved `Signatures::*` from offset-carrier signatures (methods present in `config.json` strictly to extract `Offsets::*` fields used in C++), reporting only genuinely unused signatures.
+
+Additional `scripts/update` flags:
+- `--no-heal`: Disable automatic self-healing on broken signatures.
+- `--allow-degraded`: Build even if some hooks are broken (disabled at runtime, last-known-good offsets kept).
+- `--set-version <X.Y.Z>` / `--bump`: Update or increment the target version in `config.json` during an update.
 
 ### Step 2.6: Compile & Test
 1. Build the release DLL:
@@ -208,7 +219,11 @@ Run `scripts/update --doctor` anytime for a read-only health report (exit code 1
 # 3a. Health diagnostics (read-only):
 ./scripts/update --doctor
 
-# 3b. Build even if some hooks are broken (disabled at runtime, stale offsets kept):
+# 3b. Bump version or set explicit version during update:
+./scripts/update --bump
+./scripts/update --set-version 0.324.0
+
+# 3c. Build even if some hooks are broken (disabled at runtime, stale offsets kept):
 ./scripts/update --force --allow-degraded
 
 # 4. Extract from Live RAM (For Encrypted/Packed Binaries):

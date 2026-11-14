@@ -36,18 +36,6 @@
 
 Evitania is engineered with a strict modular architecture (located within `src/Features/`), categorized 1:1 with the in-game ImGui interface tabs:
 
-<details>
-<summary><b>Click to view In-Game Menu Preview</b></summary>
-<br>
-
-<div align="center">
-
-![image](resources/images/Preview.png)
-
-</div>
-
-</details>
-
 ### Feature Matrix
 
 | Category | Feature | Description |

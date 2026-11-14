@@ -56,9 +56,14 @@ namespace Hooks
   do { \
     void* target = (void*) Scanner::FindPattern((HMODULE) IL2CPP::Globals.m_GameAssembly, Signature); \
     if (target) { \
-      int createStatus = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
-      if (createStatus != MH_OK) { \
-        Hooks::bHooksFailed = true; \
+      if ((void*) (HookFunc) == nullptr) { \
+        OrigFuncPtr = reinterpret_cast<decltype(OrigFuncPtr)>(target); \
+      } \
+      else { \
+        int createStatus = MH_CreateHook(target, (LPVOID) HookFunc, (LPVOID*) &OrigFuncPtr); \
+        if (createStatus != MH_OK) { \
+          Hooks::bHooksFailed = true; \
+        } \
       } \
     } \
     else { \

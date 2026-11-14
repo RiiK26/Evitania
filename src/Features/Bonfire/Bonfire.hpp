@@ -30,5 +30,6 @@ namespace Features
   {
     void Initialize();
     void Uninitialize();
+    bool IsFreeSpending();
   }  // namespace Bonfire
 }  // namespace Features

@@ -24,7 +24,6 @@
 
 #include "HunterHacks.hpp"
 #include "../../Modules/Hooks/Hooks.hpp"
-#include "../../Modules/Hooks/Offsets.hpp"
 #include "../../Modules/Hooks/Signatures.hpp"
 #include "../../Modules/Menu/Menu.hpp"
 
@@ -32,28 +31,35 @@ namespace Features
 {
   namespace HunterHacks
   {
-    void (*Orig_Shop_UpdateDiscount)(void* __this, void* method_info);
-    void Hook_Shop_UpdateDiscount(void* __this, void* method_info)
+    thread_local bool g_inHunterBuy = false;
+
+    float (*Orig_Shop_get_Discount)(void* __this, void* method_info);
+    float Hook_Shop_get_Discount(void* __this, void* method_info)
     {
-      Orig_Shop_UpdateDiscount(__this, method_info);
-      if (Menu::Config.bFreeHunterUpgrades && __this) {
-        *(float*) ((uintptr_t) __this + Offsets::discount) = 0.0f;
+      if (Menu::Config.bFreeHunterUpgrades) {
+        return 0.0f;
       }
+      return Orig_Shop_get_Discount(__this, method_info);
     }
 
     bool (*Orig_Shop_TryBuy)(void* __this, void* lot, void* method_info);
     bool Hook_Shop_TryBuy(void* __this, void* lot, void* method_info)
     {
-      if (Menu::Config.bFreeHunterUpgrades && __this) {
-        *(float*) ((uintptr_t) __this + Offsets::discount) = 0.0f;
+      if (Menu::Config.bFreeHunterUpgrades) {
+        g_inHunterBuy = true;
+        bool result   = Orig_Shop_TryBuy(__this, lot, method_info);
+        g_inHunterBuy = false;
+        return result;
       }
       return Orig_Shop_TryBuy(__this, lot, method_info);
     }
 
+    bool IsInHunterBuy() { return g_inHunterBuy; }
+
     void Initialize()
     {
       HOOK_SIGNATURE(
-        "Shop::UpdateDiscount", Signatures::Shop_UpdateDiscount, Hook_Shop_UpdateDiscount, Orig_Shop_UpdateDiscount
+        "Shop::get_Discount", Signatures::Shop_get_Discount, Hook_Shop_get_Discount, Orig_Shop_get_Discount
       );
       HOOK_SIGNATURE("Shop::TryBuy", Signatures::Shop_TryBuy, Hook_Shop_TryBuy, Orig_Shop_TryBuy);
     }
