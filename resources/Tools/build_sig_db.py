@@ -368,17 +368,30 @@ TARGETS = [
     ("BaseStorageService", "Remove", 0, []),
     ("BaseStorageService", "TryRemove", 0, []),
     ("HourglassService", "CostFactor", 0, []),
+    ("HourglassService", "BulkCost", 0, []),
+    ("HourglassService", "MaxAffordable", 0, []),
     ("HourglassService", "AddResource", 0, []),
     ("HourglassService", "UpgradeCost", 0, []),
     ("HourglassService", "LevelCost", 0, []),
     ("HourglassTalentConfig", "get_Cost", 0, [("cost", "HourglassTalentConfig")]),
     ("HourglassSystemUI", "BuildTalentTooltipContent", 0, []),
-    ("HourglassTalentNodeView", "SetState", 0, []),
     ("HourglassUpgradeItem", "GetCost", 0, []),
     ("HourglassHardUUpgrade", "GetCostAmount", 0, []),
     ("HourglassService", "BuyUpgrade", 0, []),
+    ("Trader", "CanSpend", 1, []),  # Awakening (level 4) hourglass
+    ("Trader", "Spend", 1, []),
+    ("HourglassService", "HardUpgradeCost", 0, []),
+    ("HourglassService", "CanAffordHardUpgrade", 0, []),
     ("HourglassService", "BuyHardUpgrade", 0, []),
+    ("HourglassService", "FindTalent", 0, []),
+    ("HourglassService", "TreeOf", 0, []),
+    ("HourglassService", "TreeBalance", 0, [("currency", "HourglassTalentTreeConfig")]),
+    ("HourglassService", "IsTalentUnlocked", 0, []),
+    ("HourglassService", "CanBuyTalent", 0, []),
     ("HourglassService", "BuyTalent", 0, []),
+    ("HourglassService", "TimeEchoBatchCost", 0, []),
+    ("HourglassService", "BuyTimeEcho", 0, []),
+    ("HourglassCalc", "GeometricMaxAffordable", 0, []),
     ("HourglassService", "BuyGenerator", 0, []),
     ("HourglassService", "BuyUpgradeBlock", 0, []),
     ("AntiCheatService", "Initialize", 0, []),
@@ -431,7 +444,7 @@ TARGETS = [
     ("ShopSpendingService", "CanSpend", 0, []),
     ("ShopSpendingService", "Spend", 0, []),
     ("Shop", "TryBuy", 0, []),
-    ("Shop", "UpdateDiscount", 0, [("discount", "Shop")]),
+    ("Shop", "get_Discount", 0, []),
     ("EnhancementTreeUI", "Buy", 0, []),
     ("EnhancementTreeUI", "Select", 0, []),
     ("PositionerService", "TryChangeScene", 0, []),
@@ -518,16 +531,13 @@ TARGETS = [
 
 # Shared generic instances (e.g. ACTkDetectorBase<__Canon>) only appear as
 # "|-RVA: 0x..." / "|-Class<__Canon>.Method" pairs, which get_offsets() skips.
+# Note: ACTkDetectorBase<__Canon>.InvokeCheatingDetectedEvent is omitted because
+# MSVC ICF merges it with UI click lambdas (e.g. HourglassTalentTooltipContent::<PopulateContent>b__19_0).
 GENERIC_TARGETS = [
     (
         "ACTkDetectorBase<__Canon>",
         "OnCheatingDetected",
         "ACTkDetectorBase_OnCheatingDetected",
-    ),
-    (
-        "ACTkDetectorBase<__Canon>",
-        "InvokeCheatingDetectedEvent",
-        "ACTkDetectorBase_InvokeCheatingDetectedEvent",
     ),
 ]
 
@@ -562,6 +572,17 @@ def main(argv=None):
     md = Cs(CS_ARCH_X86, CS_MODE_64)
     md.detail = True
     sig_db = {}
+
+    with open(DUMP_PATH, "r", encoding="utf-8", errors="ignore") as f:
+        dump_lines = f.readlines()
+    icf_re = re.compile(
+        r"// \[Compiler-Merged Stub / ICF: (\d+) methods share RVA 0x([0-9A-Fa-f]+)\]"
+    )
+    rva_icf = {}
+    for line in dump_lines:
+        m = icf_re.search(line)
+        if m:
+            rva_icf[int(m.group(2), 16)] = int(m.group(1))
 
     for cls, method, overload_idx, fields_to_extract in TARGETS:
         overloads = class_data.get(cls, {}).get("methods", {}).get(method, [])
@@ -609,9 +630,12 @@ def main(argv=None):
 
                 sig_db[method_key] = {"signature": sig, "extract": extract_rules}
                 print(f"[+] Added {method_key} to database")
+                icf_count = rva_icf.get(rva, 0)
+                if icf_count > 1 and not extract_rules:
+                    print(
+                        f"[!] NOTE: {method_key} (0x{rva:X}) is an ICF-merged stub ({icf_count} methods share RVA) - safe for pointer resolution (nullptr HookFunc), avoid detouring"
+                    )
 
-    with open(DUMP_PATH, "r", encoding="utf-8") as f:
-        dump_lines = f.readlines()
     generic_rva_regex = re.compile(r"\|-RVA: 0x([0-9A-Fa-f]+)")
     for inst, method, key in GENERIC_TARGETS:
         needle = f"|-{inst}.{method}"
@@ -634,6 +658,11 @@ def main(argv=None):
             continue
         sig_db[key] = {"signature": sig, "extract": {}}
         print(f"[+] Added {key} (generic) to database")
+        icf_count = rva_icf.get(rva, 0)
+        if icf_count > 1:
+            print(
+                f"[!] WARNING: {key} (0x{rva:X}) is an ICF-merged stub ({icf_count} methods share RVA) - detouring will affect all merged callers!"
+            )
 
     # Add hardcoded offsets for generic classes that Il2CppDumper outputs as 0x0
     sig_db["Il2Cpp_Array"] = {
