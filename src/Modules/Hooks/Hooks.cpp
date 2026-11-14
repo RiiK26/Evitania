@@ -52,10 +52,10 @@ namespace
   bool (*Orig_ShopSpendingService_CanSpend)(void* __this, void* price, void* source, void* method_info);
   bool Hook_ShopSpendingService_CanSpend(void* __this, void* price, void* source, void* method_info)
   {
-    if (
-      Features::Bonfire::IsFreeSpending() || Menu::Config.bFreeHunterUpgrades
-      || Features::HourglassUpgrades::IsPurchasing()
-    ) {
+    if (Features::Bonfire::IsFreeSpending() || Menu::Config.bFreeHunterUpgrades) {
+      return true;
+    }
+    if (Features::HourglassUpgrades::IsPurchasing()) {
       return true;
     }
     return Orig_ShopSpendingService_CanSpend(__this, price, source, method_info);
@@ -64,10 +64,10 @@ namespace
   bool (*Orig_ShopSpendingService_Spend)(void* __this, void* price, void* source, void* method_info);
   bool Hook_ShopSpendingService_Spend(void* __this, void* price, void* source, void* method_info)
   {
-    if (
-      Features::Bonfire::IsFreeSpending() || Features::HunterHacks::IsInHunterBuy()
-      || Features::HourglassUpgrades::IsPurchasing()
-    ) {
+    if (Features::Bonfire::IsFreeSpending() || Features::HunterHacks::IsInHunterBuy()) {
+      return true;
+    }
+    if (Features::HourglassUpgrades::IsPurchasing()) {
       return true;
     }
     return Orig_ShopSpendingService_Spend(__this, price, source, method_info);
