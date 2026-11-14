@@ -59,9 +59,11 @@ namespace Menu
     int   iCurioRarity            = 4;
     bool  bFreeCurioUpgrades      = false;
     bool  bHourglassBypass        = false;
+    bool  bFreeSandUpgrade        = false;
+    bool  bFreeUpgradeGenerator   = false;
     bool  bFreeTimelineNodes      = false;
+    bool  bFreeAwakeningGenerator = false;
     bool  bFreeRestorationNodes   = false;
-    bool  bFreeHourglassUpgrades  = false;
     bool  bFreeEngineerUpgrades   = false;
     bool  bFreeHunterUpgrades     = false;
     bool  bAlwaysLitBonfire       = false;
