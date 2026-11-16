@@ -1,8 +1,8 @@
 {
 	"project_name": "Evitania",
-	"version": "0.323.1",
-	"steam_build_id": "26646529",
-	"assembly_sha256": "6b88f19eb19716b2de587c4ca2c0ebcf9208662a76430f92a2867eb34f731138",
+	"version": "0.323.2",
+	"steam_build_id": "26700908",
+	"assembly_sha256": "bdae3da9c0fe9c320a26be432c5cdc13527848d3bf0d819b1422d3e6fdef1086",
 	"signatures": {
 		"ACTkDetectorBase_OnCheatingDetected": {
 			"signature": "40 53 48 83 EC 20 48 8B D9 C6 41 48 01",
