@@ -36,10 +36,8 @@
 
 <!-- How was this change tested? -->
 
-- [ ] **Release Build**: Compiled cleanly locally via `./scripts/build release` (or `scripts\build.bat release`).
-- [ ] **C/C++ Code Formatting**: Checked via `.clang-format` (`clang-format 23.1.5`)
-- [ ] **Python Formatting**: Verified with `ruff format --check resources/Tools/*.py` (if Python scripts were modified).
-- [ ] **Signature & Offset Diagnostics**: Validated via `./scripts/update --doctor` (`HEALTHY`, 0 failures) if signatures, offsets, or targets were modified.
+- [ ] **Release Build**: Compiled cleanly locally via `./scripts/build release`.
+- [ ] **Pre-PR Gate**: Passed `./scripts/update --verify` (`HEALTHY` doctor diagnostics, `clang-format 23.1.5`, and `ruff format --check`).
 - [ ] **In-Game Verification**: Tested in-game functionality and menu hotkey (`INSERT`) on Windows / Linux (Proton).
 
 ## Screenshots / Recordings (Optional)
