@@ -339,6 +339,166 @@ def run_build(build_type):
     return proc.returncode == 0
 
 
+def _extract_gamesystems_types(dump_path):
+    """Return dict mapping GameSystems.* namespace -> set of top-level type names."""
+    ns_types = {}
+    cur_ns = None
+    ns_re = re.compile(r"^// Namespace:\s*(GameSystems(?:\.[A-Za-z0-9_]+)*)\s*$")
+    type_re = re.compile(
+        r"^(?:public|internal|private)\s+(?:sealed\s+|abstract\s+|static\s+)*(?:class|struct|enum|interface)\s+([A-Za-z0-9_]+)"
+    )
+    with open(dump_path, "r", encoding="utf-8", errors="ignore") as f:
+        for line in f:
+            if line.startswith("// Namespace:"):
+                m = ns_re.match(line)
+                cur_ns = m.group(1) if m else None
+                continue
+            if cur_ns:
+                tm = type_re.match(line)
+                if tm:
+                    name = tm.group(1)
+                    if "<" not in name:
+                        ns_types.setdefault(cur_ns, set()).add(name)
+                    cur_ns = None
+    return ns_types
+
+
+def run_diff_dump(old_dump=None, new_dump=None):
+    """Compare dump.cs.bak vs dump.cs for added/removed GameSystems.* namespaces & types."""
+    print_banner("DUMP.CS GAMESYSTEMS DIFF")
+    new_path = new_dump or doctor.DUMP_CS
+    old_path = old_dump or (doctor.DUMP_CS + ".bak")
+    if not os.path.isfile(new_path):
+        print(f"[-] Current dump.cs not found: {new_path}")
+        return 1
+    if not os.path.isfile(old_path):
+        print(f"[*] Previous dump backup not found: {old_path}")
+        print(
+            "    Copy your previous dump.cs to resources/dumped/dump.cs.bak before replacing it to diff updates."
+        )
+        return 0
+
+    old_map = _extract_gamesystems_types(old_path)
+    new_map = _extract_gamesystems_types(new_path)
+
+    added_ns = sorted(set(new_map) - set(old_map))
+    removed_ns = sorted(set(old_map) - set(new_map))
+
+    if added_ns:
+        print(f"\n[+] New GameSystems namespaces ({len(added_ns)}):")
+        for ns in added_ns:
+            print(f"    + {ns} ({len(new_map[ns])} types)")
+    if removed_ns:
+        print(f"\n[-] Removed GameSystems namespaces ({len(removed_ns)}):")
+        for ns in removed_ns:
+            print(f"    - {ns} ({len(old_map[ns])} types)")
+
+    changed = []
+    for ns in sorted(set(old_map) & set(new_map)):
+        a = sorted(new_map[ns] - old_map[ns])
+        r = sorted(old_map[ns] - new_map[ns])
+        if a or r:
+            changed.append((ns, a, r))
+
+    if changed:
+        print(f"\n[*] Modified GameSystems namespaces ({len(changed)}):")
+        for ns, a, r in changed[:20]:
+            summary = []
+            if a:
+                summary.append(
+                    f"+{len(a)} ({', '.join(a[:4])}{'...' if len(a) > 4 else ''})"
+                )
+            if r:
+                summary.append(
+                    f"-{len(r)} ({', '.join(r[:4])}{'...' if len(r) > 4 else ''})"
+                )
+            print(f"    ~ {ns}: {'; '.join(summary)}")
+
+    if not added_ns and not removed_ns and not changed:
+        print("[+] No GameSystems namespace or type changes detected.")
+    return 0
+
+
+def run_verify(dll_path=None):
+    """Pre-PR verification gate: doctor + clang-format + ruff format."""
+    print_banner("PRE-PR VERIFICATION GATE")
+    ok = True
+
+    doc_rc = doctor.run_doctor(dll_path, None)
+    if doc_rc != 0:
+        ok = False
+
+    print("\n--- C/C++ Formatting Check (clang-format) ---")
+    clang_fmt = shutil.which("clang-format")
+    if not clang_fmt:
+        print("[-] clang-format not found in PATH.")
+        ok = False
+    else:
+        ver_out = subprocess.run(
+            [clang_fmt, "--version"], capture_output=True, text=True
+        ).stdout.strip()
+        print(f"[*] {ver_out}")
+        if "23.1.5" not in ver_out:
+            print("[!] Warning: CI pins clang-format==23.1.5; local version differs.")
+        files_proc = subprocess.run(
+            ["git", "ls-files", "*.cpp", "*.hpp", "*.h"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        vendor_re = re.compile(r"src/Modules/(ImGui|MinHook|Il2CppResolver)/")
+        cpp_files = [
+            f for f in files_proc.stdout.splitlines() if f and not vendor_re.search(f)
+        ]
+        failed_cpp = []
+        for f in cpp_files:
+            r = subprocess.run(
+                [clang_fmt, "--dry-run", "--Werror", "--Wno-error=unknown", f],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            if r.returncode != 0:
+                failed_cpp.append(f)
+        if failed_cpp:
+            print(f"[-] clang-format violations in {len(failed_cpp)} file(s):")
+            for f in failed_cpp:
+                print(f"    - {f}")
+            print(f"    -> fix: clang-format -i {' '.join(failed_cpp)}")
+            ok = False
+        else:
+            print(f"[+] All {len(cpp_files)} C/C++ file(s) properly formatted.")
+
+    print("\n--- Python Formatting Check (ruff) ---")
+    ruff = shutil.which("ruff")
+    if not ruff:
+        print("[!] ruff not found in PATH; skipping local Python format check.")
+    else:
+        py_files = [
+            os.path.join("resources", "Tools", fn)
+            for fn in sorted(os.listdir(SCRIPT_DIR))
+            if fn.endswith(".py")
+        ]
+        r = subprocess.run(
+            [ruff, "format", "--check"] + py_files,
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if r.returncode != 0:
+            print("[-] ruff format violations detected:")
+            print(r.stdout.strip() or r.stderr.strip())
+            print("    -> fix: ruff format resources/Tools/*.py")
+            ok = False
+        else:
+            print(f"[+] All {len(py_files)} Python tool file(s) properly formatted.")
+
+    print("=" * 65)
+    print(f"  Pre-PR Verdict: {'PASS' if ok else 'FAIL'}")
+    print("=" * 65)
+    return 0 if ok else 1
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Evitania Automated Update Runner - Validates signatures, extracts offsets, and rebuilds binaries on game updates."
@@ -386,6 +546,16 @@ def main():
         help="Run read-only health diagnostics (env, game files, dump.cs, signatures, C++ refs) and exit",
     )
     parser.add_argument(
+        "--verify",
+        action="store_true",
+        help="Run pre-PR verification gate (doctor + clang-format + ruff format) and exit",
+    )
+    parser.add_argument(
+        "--diff-dump",
+        action="store_true",
+        help="Compare dump.cs.bak vs dump.cs for added/removed GameSystems.* namespaces and types",
+    )
+    parser.add_argument(
         "--no-heal",
         action="store_true",
         help="Disable automatic self-healing when signatures break",
@@ -416,6 +586,12 @@ def main():
                 args.report and os.path.join(PROJECT_ROOT, "doctor_report.json"),
             )
         )
+
+    if args.verify:
+        sys.exit(run_verify(args.dll))
+
+    if args.diff_dump:
+        sys.exit(run_diff_dump())
 
     print_banner("EVITANIA AUTOMATED UPDATE RUNNER")
 
