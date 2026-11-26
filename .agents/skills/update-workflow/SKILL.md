@@ -1,5 +1,6 @@
 ---
-description: This workflow documents the standard procedure for updating Evitania when the target game (Evitania Online) receives an update, when hooking a new game system, or when maintaining signature/offset resilience.
+name: update-workflow
+description: Standard procedure for updating Evitania when Evitania Online receives a game update, when hooking a new game system, or when maintaining signature and semantic offset resilience.
 ---
 
 # Evitania Update & Reverse Engineering Workflow
@@ -23,10 +24,10 @@ graph TD
 ### Key Tool Roles
 | Tool | Path | Role |
 | :--- | :--- | :--- |
-| **`scripts/update`** | `scripts/update` | **Primary Entry Point**: Detects Steam updates, scans signatures, extracts semantic offsets, updates config.json, and compiles `Evitania.dll`. |
-| **`updater.py`** | `resources/Tools/updater.py` | Python engine behind `scripts/update`. Handles build ID tracking, signature validation, live RAM dumping, and build automation. |
+| **`scripts/update`** | `scripts/update` | **Primary Entry Point**: Detects Steam updates & Unity `PlayerSettings` game version, scans signatures, extracts semantic offsets, updates `config.json`, and compiles `Evitania.dll`. |
+| **`updater.py`** | `resources/Tools/updater.py` | Python engine behind `scripts/update`. Handles build ID & Unity `PlayerSettings` version tracking, signature validation, live RAM dumping, pre-PR verification (`--verify`), dump diffing (`--diff-dump`), and build automation. |
 | **`dump_memory.py`** | `resources/Tools/dump_memory.py` | Live process RAM dumper. Extracts decrypted `GameAssembly.dll` and metadata from running game (Linux/Wine and Windows). |
-| **`aobgenerator.py`** | `resources/Tools/aobgenerator.py` | Pattern scans `GameAssembly.dll` against `config.json` and dynamically outputs `Signatures.hpp` and `Offsets.hpp` using two-pass semantic matching. |
+| **`aobgenerator.py`** | `resources/Tools/aobgenerator.py` | Pattern scans `GameAssembly.dll` against `config.json`, outputs `Signatures.hpp` and `Offsets.hpp` using two-pass semantic matching, and auto-runs `clang-format -i` when available. |
 | **`find_field_usage.py`** | `resources/Tools/find_field_usage.py` | Disassembles methods to locate exact instruction and operand indices where fields are accessed and emits semantic patterns. |
 | **`build_sig_db.py`** | `resources/Tools/build_sig_db.py` | Scans `dump.cs` + `GameAssembly.dll` to generate unique AOB signatures and extraction rules into `config.json`. |
 | **`Il2CppDumper`** | External tool | Generates `dump.cs` and `script.json` from `GameAssembly.dll` and `global-metadata.dat` (only needed when adding brand new features). |
@@ -45,12 +46,13 @@ When a game update drops on Steam:
    - Windows: `C:\Program Files (x86)\Steam\steamapps\common\Evitania Online\`
 2. Dump the assembly using `Il2CppDumper`:
    ```bash
-   Il2CppDumper.exe GameAssembly.dll Evitania_Data/il2cpp_data/Metadata/global-metadata.dat <output_dir>
+   Il2CppDumper.exe GameAssembly.dll EvitaniaOnline_Data/il2cpp_data/Metadata/global-metadata.dat <output_dir>
    ```
-3. Copy the newly generated `dump.cs` to:
+3. Optionally back up the previous dump (`cp resources/dumped/dump.cs resources/dumped/dump.cs.bak`) and copy the newly generated `dump.cs` to:
    ```bash
    resources/dumped/dump.cs
    ```
+   Then run `./scripts/update --diff-dump` to spot newly added or removed `GameSystems.*` namespaces and classes.
    *(Note: `GameAssembly.dll` is automatically discovered from your Steam library via AppID `4119420`, but you can also place a copy at `resources/dumped/GameAssembly.dll`).*
 
 ---
@@ -103,11 +105,11 @@ If the game update introduces obfuscation (scrambled class/method/field names in
 ---
 
 ### Step 2.3: Update Baseline Signatures (`build_sig_db.py`)
-Add any new or changed methods/fields to the `targets` list in [resources/Tools/build_sig_db.py](/resources/Tools/build_sig_db.py):
+Add any new or changed methods/fields to the `TARGETS` list in [resources/Tools/build_sig_db.py](/resources/Tools/build_sig_db.py):
 
 ```python
 # Format: (ClassName, MethodName, OverloadIndex, FieldsToExtract)
-targets = [
+TARGETS = [
     # Simple method signature without field extraction:
     ("Shop", "TryBuy", 0, []),
 
@@ -136,7 +138,7 @@ Run `aobgenerator.py` to scan `GameAssembly.dll` and generate the C++ headers:
 python3 resources/Tools/aobgenerator.py
 ```
 
-This updates:
+This updates (and auto-formats with `clang-format` when installed):
 1. `src/Modules/Hooks/Signatures.hpp` – Contains `constexpr const char*` byte patterns.
 2. `src/Modules/Hooks/Offsets.hpp` – Contains centralized field offsets under `namespace Offsets`.
 
@@ -163,13 +165,13 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
    - Game spend resolvers also block purchases if amount is $\le 0$.
    - **Pattern**: Use a `thread_local bool` flag during purchase execution to bypass checks, and use `Utils::Il2Cpp::ZeroDictionaryFloatValues` during UI rendering so icons remain visible with zero cost.
 4. **Feature Isolation**:
-   - Keep store purchase bypasses (`SteamPurchaseService` / `MobilePurchaseService`) strictly segregated from in-game skill progression (combat, woodcutting, mining talent points, or bonfire upgrades).
+   - Keep store purchase bypasses (`SteamPurchaseService` / `MobilePurchaseService`) strictly segregated from in-game skill progression (combat, woodcutting, mining talent points, bonfire, or camp upgrades).
 5. **Hot-Path Performance**:
    - Never allocate memory on the heap or perform expensive string searches inside getters or game loops.
 
 ---
 
-### Step 2.5.1: Doctor & Self-Healing
+### Step 2.5.1: Doctor, Self-Healing & Pre-PR Gate
 `scripts/update` self-heals when signatures break:
 1. Snapshots `config.json`, `Signatures.hpp`, `Offsets.hpp` (`build/.update_snapshot/`).
 2. Dumps `GameAssembly.dll` from RAM if the game is running (packed binaries).
@@ -177,18 +179,20 @@ Follow these strict project conventions defined in `.agents/AGENTS.md`:
 4. Rebuilds `config.json` with `build_sig_db.py` and rescans.
 5. On failure: rolls back, prints a diagnosis (removed methods + rename suggestions). On compile errors it maps `'X' is not a member of 'Signatures'` to its cause.
 
-Run `scripts/update --doctor` anytime for a read-only health report (exit code 1 if unhealthy). The Doctor performs 7 automated audits:
+Run `scripts/update --doctor` anytime for a read-only health report (exit code 1 if unhealthy), or `scripts/update --verify` as a one-command pre-PR gate (doctor + `clang-format` + `ruff`). The Doctor performs 7 automated audits:
 - **Toolchain & Metadata**: Verifies `pefile`, `capstone`, `cmake`, `x86_64-w64-mingw32-g++`, `Il2CppDumper`, and unencrypted `global-metadata.dat`.
-- **Steam Build Drift**: Compares the live Steam `appmanifest_4119420.acf` `buildid` against `config.json`.
+- **Steam Build & Game Version Drift**: Compares the live Steam `appmanifest_4119420.acf` `buildid` and Unity `PlayerSettings` `bundleVersion` (from `data.unity3d`/`globalgamemanagers`) against `config.json`.
 - **Live AOB Scan & RVA Freshness**: Verifies every signature against `GameAssembly.dll` and cross-checks matched RVAs against `dump.cs`.
 - **Hardcoded Fallback Offset Drift**: Cross-checks all non-`Il2Cpp_*` `"hardcoded"` offsets in `config.json` against live field offsets in `dump.cs`.
 - **ICF & Stub Safety Audit**: Verifies that active detours (`HOOK_SIGNATURE` with non-null `HookFunc`) do not target MSVC Identical Code Folding (`[Compiler-Merged Stub / ICF: ...]`) stubs shared with unrelated game/UI methods, and ensures function bodies are $\ge 5$ bytes (required for MinHook's relative jump). Passing `nullptr` as `HookFunc` in `HOOK_SIGNATURE` resolves the function pointer directly without calling `MH_CreateHook`.
 - **Offset-Carrier vs. Hook Classification**: Distinguishes directly hooked/resolved `Signatures::*` from offset-carrier signatures (methods present in `config.json` strictly to extract `Offsets::*` fields used in C++), reporting only genuinely unused signatures.
 
 Additional `scripts/update` flags:
+- `--verify`: Run pre-PR gate (`--doctor` + `clang-format` + `ruff format --check`).
+- `--diff-dump`: Compare `dump.cs.bak` vs `dump.cs` for newly added or removed `GameSystems.*` namespaces and types.
 - `--no-heal`: Disable automatic self-healing on broken signatures.
 - `--allow-degraded`: Build even if some hooks are broken (disabled at runtime, last-known-good offsets kept).
-- `--set-version <X.Y.Z>` / `--bump`: Update or increment the target version in `config.json` during an update.
+- `--set-version <X.Y.Z>` / `--bump`: Override the target version explicitly (`--set-version`), or fall back to a patch increment (`--bump`) only when Unity `PlayerSettings` cannot be auto-detected from `*_Data`.
 
 ### Step 2.6: Compile & Test
 1. Build the release DLL:
@@ -196,8 +200,12 @@ Additional `scripts/update` flags:
    ./scripts/build release
    ```
    *(For debugging symbols and verbose logs: `./scripts/build debug`).*
-2. Verify that the output DLL exists at `build/release/Evitania v0.320.2.dll`.
-3. Test in-game:
+2. Verify that the output DLL exists at `build/release/Evitania v<version>.dll`.
+3. Run the pre-PR gate:
+   ```bash
+   ./scripts/update --verify
+   ```
+4. Test in-game:
    ```bash
    ./scripts/run
    ```
@@ -216,14 +224,17 @@ Additional `scripts/update` flags:
 # 3. Force re-scan and rebuild:
 ./scripts/update --force
 
-# 3a. Health diagnostics (read-only):
+# 3a. Health diagnostics (read-only) & Pre-PR verification gate:
 ./scripts/update --doctor
+./scripts/update --verify
 
-# 3b. Bump version or set explicit version during update:
-./scripts/update --bump
+# 3b. Diff dump.cs.bak vs dump.cs for new GameSystems.* features:
+./scripts/update --diff-dump
+
+# 3c. Override explicit version during update:
 ./scripts/update --set-version 0.324.0
 
-# 3c. Build even if some hooks are broken (disabled at runtime, stale offsets kept):
+# 3d. Build even if some hooks are broken (disabled at runtime, stale offsets kept):
 ./scripts/update --force --allow-degraded
 
 # 4. Extract from Live RAM (For Encrypted/Packed Binaries):
@@ -244,3 +255,4 @@ python3 resources/Tools/build_sig_db.py
 # 9. Launch game & inject:
 ./scripts/run
 ```
+

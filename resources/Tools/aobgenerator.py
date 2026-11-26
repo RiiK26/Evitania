@@ -33,6 +33,8 @@ the aob derived based on the config.json at the project root
 import os
 import re
 import json
+import shutil
+import subprocess
 import pefile
 import platform
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, CS_OP_IMM
@@ -409,7 +411,7 @@ def generate_signatures_and_offsets(
             )
             signatures_content.append("")
 
-            code = pe_data[rva : rva + 1200]
+            code = pe_data[rva : rva + 1600]
             instructions = list(md.disasm(code, rva))
 
             for field_name, rule in extract_rules.items():
@@ -502,10 +504,18 @@ def generate_signatures_and_offsets(
 
     if write:
         with open(sig_path, "w") as f:
-            f.write("\n".join(signatures_content))
+            f.write("\n".join(signatures_content) + "\n")
 
         with open(off_path, "w") as f:
-            f.write("\n".join(offsets_content))
+            f.write("\n".join(offsets_content) + "\n")
+
+        clang_fmt = shutil.which("clang-format")
+        if clang_fmt:
+            subprocess.run(
+                [clang_fmt, "-i", sig_path, off_path],
+                cwd=os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")),
+                check=False,
+            )
 
     results["sig_path"] = sig_path
     results["off_path"] = off_path

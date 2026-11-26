@@ -1,8 +1,8 @@
 {
 	"project_name": "Evitania",
-	"version": "0.323.2",
-	"steam_build_id": "26700908",
-	"assembly_sha256": "bdae3da9c0fe9c320a26be432c5cdc13527848d3bf0d819b1422d3e6fdef1086",
+	"version": "0.324.0",
+	"steam_build_id": "26928931",
+	"assembly_sha256": "df3a9d280a673cf9302428ec8cb008eee39242193e28a3faf83bca57109183cf",
 	"signatures": {
 		"ACTkDetectorBase_OnCheatingDetected": {
 			"signature": "40 53 48 83 EC 20 48 8B D9 C6 41 48 01",
@@ -54,7 +54,9 @@
 			"signature": "48 89 74 24 18 41 56 48 83 EC 60 80 3D ? ? ? ? 00",
 			"extract": {
 				"AttackDamage": {
-					"hardcoded": 16
+					"pattern": "mov ecx, dword ptr [rdi + ?]",
+					"instr_idx": 305,
+					"op_idx": 1
 				}
 			}
 		},
@@ -73,7 +75,7 @@
 			"extract": {}
 		},
 		"BaseStorageService_TryRemove": {
-			"signature": "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B D8 48 8B FA 48 8B F1 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00",
+			"signature": "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 49 8B F8 48 8B DA 48 8B F1 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7E 20 00",
 			"extract": {}
 		},
 		"BonfireFuelBurner_get_Fuel": {
@@ -98,6 +100,14 @@
 		},
 		"BossBase_Update": {
 			"signature": "80 79 3C 00 74 1D 48 8B 89 48 01 00 00",
+			"extract": {}
+		},
+		"ClientCampBag_Count": {
+			"signature": "48 89 5C 24 08 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 1F 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 4C 8B 43 18 4D 85 C0 74 6E 48 8B 15 ? ? ? ?",
+			"extract": {}
+		},
+		"ClientCampBag_TrySpend": {
+			"signature": "48 89 5C 24 18 48 89 4C 24 08 56 57 41 55 41 56 41 57 48 83 EC 60 48 8B FA",
 			"extract": {}
 		},
 		"CombatOfflineRewardsCalculator_SetCurrentSpawner": {
@@ -174,7 +184,9 @@
 			"signature": "40 55 56 57 41 56 48 83 EC 38 80 3D ? ? ? ? 00 4D 8B F1 49 8B F0 8B EA 48 8B F9",
 			"extract": {
 				"Amount": {
-					"hardcoded": 8
+					"pattern": "mov qword ptr [rsp + ?], rbx",
+					"instr_idx": 383,
+					"op_idx": 0
 				}
 			}
 		},
@@ -241,7 +253,7 @@
 			"extract": {}
 		},
 		"HourglassService_BuyTalent": {
-			"signature": "40 53 56 48 83 EC 68 80 3D ? ? ? ? 00 48 8B F2 48 8B D9",
+			"signature": "40 53 56 48 83 EC 68 80 3D ? ? ? ? 00 48 8B F2 48 8B D9 75 5B 48 8D 0D ? ? ? ?",
 			"extract": {}
 		},
 		"HourglassService_BuyTimeEcho": {
@@ -449,11 +461,11 @@
 			"extract": {}
 		},
 		"MobKillTrigger_Apply": {
-			"signature": "48 89 5C 24 20 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 63 43 20",
+			"signature": "48 89 5C 24 18 48 89 6C 24 20 56 48 83 EC 20 80 3D ? ? ? ? 00 48 8B F2 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 63 43 20",
 			"extract": {
 				"_portal": {
-					"pattern": "mov qword ptr [rsp + ?], rbp",
-					"instr_idx": 11,
+					"pattern": "mov qword ptr [rsp + ?], rdi",
+					"instr_idx": 13,
 					"op_idx": 0
 				}
 			}
@@ -492,7 +504,7 @@
 			}
 		},
 		"MobilePurchaseService_InitiatePurchase": {
-			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 4C 00 48 C7 44 24 30 ? ? ? ? 75 78",
+			"signature": "48 89 5C 24 10 57 48 83 EC 20 80 3D ? ? ? ? 00 48 8B FA 48 8B D9 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 80 7B 6A 00",
 			"extract": {
 				"_rewarder": {
 					"pattern": "sub rsp, ?",
@@ -510,10 +522,14 @@
 					"op_idx": 0
 				},
 				"networkPlayerSync": {
-					"hardcoded": 136
+					"pattern": "mov qword ptr [rsp + ?], rbp",
+					"instr_idx": 279,
+					"op_idx": 0
 				},
 				"_isNet": {
-					"hardcoded": 88
+					"pattern": "movss xmm7, dword ptr [rsp + ?]",
+					"instr_idx": 177,
+					"op_idx": 1
 				}
 			}
 		},
@@ -567,13 +583,13 @@
 				},
 				"_cardDatabase": {
 					"pattern": "mov rcx, qword ptr [rdi + ?]",
-					"instr_idx": 168,
+					"instr_idx": 188,
 					"op_idx": 1
 				}
 			}
 		},
 		"OfflineProgressService_CurrentActivitySnapshot": {
-			"signature": "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 48 8B 49 58 48 85 C9",
+			"signature": "48 89 5C 24 08 57 48 83 EC 30 80 3D ? ? ? ? 00 48 8B F9 0F 29 74 24 20 75 13 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? 01 48 8B 5F 60",
 			"extract": {}
 		},
 		"OfflineProgressService_GetCombatCalculator": {

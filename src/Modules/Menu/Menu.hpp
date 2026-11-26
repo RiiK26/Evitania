@@ -70,6 +70,7 @@ namespace Menu
     bool              bAlwaysLitBonfire       = false;
     bool              bFreeAshUpgrade         = false;
     bool              bFreeSacrificeCost      = false;
+    bool              bFreeCampBag            = false;
     bool              bStageHopperLoop        = false;
     float             fStageHopperDelay       = 5.0f;
     char              szStageHopperTarget[32] = "1.0";

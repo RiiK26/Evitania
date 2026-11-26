@@ -304,6 +304,24 @@ namespace Menu
           ImGui::EndChild();
           ImGui::EndTabItem();
         }
+
+        // Camp Tab menu
+        if (ImGui::BeginTabItem("Camp")) {
+          ImGui::BeginChild("CampChild", ImVec2(0, -50), 0);
+
+          ImGui::Checkbox("Free Bag Costs", &Menu::Config.bFreeCampBag);
+          ImGui::SameLine();
+          ImGui::TextDisabled("(?)");
+          if (ImGui::IsItemHovered())
+            ImGui::SetTooltip(
+              "Free upgrading output of each building.\n"
+              "The item that visualy change into 999999 are just visual, not included to the real item on inventory.\n"
+              "Note: Camp Resources and Town Hall star requirements are server-validated."
+            );
+
+          ImGui::EndChild();
+          ImGui::EndTabItem();
+        }
         ImGui::EndTabBar();
       }
 

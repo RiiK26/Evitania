@@ -314,7 +314,11 @@ def check_game(rep, dll_path, config):
                 "launch the game and run `scripts/update --from-mem`",
             )
     try:
-        from updater import find_steam_manifest, read_manifest_info
+        from updater import (
+            detect_game_version,
+            find_steam_manifest,
+            read_manifest_info,
+        )
 
         info = read_manifest_info(find_steam_manifest(dll_path))
         rec = config.get("steam_build_id") if config else None
@@ -327,6 +331,19 @@ def check_game(rep, dll_path, config):
             )
         else:
             rep.add(OK, "game", f"Steam build {info['buildid']} matches config.json")
+
+        det_ver = detect_game_version(dll_path)
+        rec_ver = config.get("version") if config else None
+        if det_ver:
+            if det_ver != rec_ver:
+                rep.add(
+                    WARN,
+                    "game",
+                    f"Game version {det_ver} != recorded {rec_ver}",
+                    "scripts/update",
+                )
+            else:
+                rep.add(OK, "game", f"Game version {det_ver} matches config.json")
     except Exception as e:
         rep.add(INFO, "game", f"Steam manifest check skipped ({e})")
 

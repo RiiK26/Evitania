@@ -54,6 +54,7 @@ Evitania is engineered with a strict modular architecture (located within `src/F
 | | **Hunter Hacks** | Instant hunter rank unlocking and bounty reward progression. |
 | | **Hourglass of Eternity**| Offline timeskip acceleration, instant progress bypass, and free upgrades. |
 | | **Bonfire Hacks** | Free ash sacrifice and enhancement tree unlocks. |
+| | **Camp** | Free upgrading all building output. |
 | **AntiCheat** | **Bypass AntiCheat** | Neutralizes runtime integrity scans, memory monitors, and telemetry callbacks. |
 
 ## Architecture & Tech Stack

@@ -306,7 +306,7 @@ def generate_pattern_from_instr(instr, offset):
 
 
 def find_usage(pe, pe_data, md, rva, target_offset):
-    code = pe_data[rva : rva + 800]
+    code = pe_data[rva : rva + 1600]
     for i, instr in enumerate(md.disasm(code, rva)):
         for op_idx, op in enumerate(instr.operands):
             if op.type == CS_OP_MEM and op.mem.disp == target_offset:
@@ -527,6 +527,8 @@ TARGETS = [
     ),
     ("StatisticsService", "AddKillWithPortalProgress", 0, []),
     ("StatisticsService", "AddPortalKill", 0, []),
+    ("ClientCampBag", "Count", 0, []),
+    ("ClientCampBag", "TrySpend", 0, []),
 ]
 
 # Shared generic instances (e.g. ACTkDetectorBase<__Canon>) only appear as
@@ -627,6 +629,9 @@ def main(argv=None):
                             }
                         else:
                             extract_rules[output_name] = {"hardcoded": offset}
+                            print(
+                                f"[!] Fallback to hardcoded offset for {method_key}::{output_name} (0x{offset:X})"
+                            )
 
                 sig_db[method_key] = {"signature": sig, "extract": extract_rules}
                 print(f"[+] Added {method_key} to database")
