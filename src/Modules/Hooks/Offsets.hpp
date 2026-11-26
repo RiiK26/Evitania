@@ -86,6 +86,6 @@ namespace Offsets
   constexpr int XpPerHour         = 0x24;
   constexpr int KillsPerHour      = 0x28;
   constexpr int GoldPerHour       = 0x2C;
-  constexpr int _cardDatabase     = 0x68;
+  constexpr int _cardDatabase     = 0x70;
   constexpr int _combatCalculator = 0x50;
 }  // namespace Offsets
