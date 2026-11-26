@@ -41,6 +41,7 @@
 #include "../../Features/Engineer/EngineerHacks.hpp"
 #include "../../Features/Hunter/HunterHacks.hpp"
 #include "../../Features/Bonfire/Bonfire.hpp"
+#include "../../Features/Camp/CampHacks.hpp"
 #include "../../Features/Player/StageHopper.hpp"
 
 #include "MinHook.h"
@@ -97,6 +98,7 @@ void Hooks::Initialize()
   Features::EngineerHacks::Initialize();
   Features::HunterHacks::Initialize();
   Features::Bonfire::Initialize();
+  Features::CampHacks::Initialize();
 
   HOOK_SIGNATURE(
     "ShopSpendingService::CanSpend", Signatures::ShopSpendingService_CanSpend, Hook_ShopSpendingService_CanSpend,
@@ -113,6 +115,7 @@ void Hooks::Uninitialize()
 {
   // MinHook handles uninitialization
   Features::StageHopper::Uninitialize();
+  Features::CampHacks::Uninitialize();
   Features::Bonfire::Uninitialize();
   Features::EngineerHacks::Uninitialize();
   Features::CurioHacks::Uninitialize();

@@ -142,6 +142,8 @@ namespace Menu
             bFreeAshUpgrade = (value == "1");
           else if (key == "free_sacrifice_cost")
             bFreeSacrificeCost = (value == "1");
+          else if (key == "free_camp_bag")
+            bFreeCampBag = (value == "1");
           else if (key == "force_curio_rarity")
             bForceCurioRarity = (value == "1");
           else if (key == "curio_rarity")
@@ -194,6 +196,7 @@ namespace Menu
     out << "always_lit_bonfire=" << (bAlwaysLitBonfire ? "1" : "0") << "\n";
     out << "free_ash_upgrade=" << (bFreeAshUpgrade ? "1" : "0") << "\n";
     out << "free_sacrifice_cost=" << (bFreeSacrificeCost ? "1" : "0") << "\n";
+    out << "free_camp_bag=" << (bFreeCampBag ? "1" : "0") << "\n";
     out << "force_curio_rarity=" << (bForceCurioRarity ? "1" : "0") << "\n";
     out << "curio_rarity=" << iCurioRarity << "\n";
     out << "stage_hopper_loop=" << (bStageHopperLoop ? "1" : "0") << "\n";
