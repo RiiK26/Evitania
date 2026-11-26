@@ -27,6 +27,7 @@
 #include "imgui.h"
 #include "../../Features/Player/SpeedHack.hpp"
 #include "../../Features/Player/StageHopper.hpp"
+#include <algorithm>
 
 namespace Menu
 {
@@ -40,6 +41,19 @@ namespace Menu
         "Evitania Online v" PROJECT_VERSION, nullptr,
         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
       );
+
+      // Keep the window titlebar reachable if resolution/display size shrunk while hidden
+      ImGuiIO& io = ImGui::GetIO();
+      if (io.DisplaySize.x > 0.0f && io.DisplaySize.y > 0.0f) {
+        ImVec2 pos  = ImGui::GetWindowPos();
+        ImVec2 size = ImGui::GetWindowSize();
+        float  minX = std::min(0.0f, 60.0f - size.x);
+        float  maxX = std::max(0.0f, io.DisplaySize.x - 60.0f);
+        float  maxY = std::max(0.0f, io.DisplaySize.y - 40.0f);
+        if (pos.x < minX || pos.x > maxX || pos.y < 0.0f || pos.y > maxY) {
+          ImGui::SetWindowPos(ImVec2(std::clamp(pos.x, minX, maxX), std::clamp(pos.y, 0.0f, maxY)));
+        }
+      }
 
       if (ImGui::BeginTabBar("CheatTabs", ImGuiTabBarFlags_FittingPolicyScroll)) {
         // Combat Tab menu
