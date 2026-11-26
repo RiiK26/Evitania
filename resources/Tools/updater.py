@@ -42,6 +42,7 @@ import os
 import platform
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import time
@@ -103,6 +104,200 @@ def read_manifest_info(manifest_path):
     except Exception:
         pass
     return info
+
+
+def _lz4_decompress_block(src):
+    """Minimal pure-Python LZ4 raw block decompressor (for UnityFS bundles)."""
+    out = bytearray()
+    i, n = 0, len(src)
+    while i < n:
+        token = src[i]
+        i += 1
+        lit_len = token >> 4
+        if lit_len == 15:
+            while i < n:
+                b = src[i]
+                i += 1
+                lit_len += b
+                if b != 255:
+                    break
+        out.extend(src[i : i + lit_len])
+        i += lit_len
+        if i >= n:
+            break
+        offset = src[i] | (src[i + 1] << 8)
+        i += 2
+        if offset <= 0 or offset > len(out):
+            break
+        match_len = (token & 0x0F) + 4
+        if match_len == 19:
+            while i < n:
+                b = src[i]
+                i += 1
+                match_len += b
+                if b != 255:
+                    break
+        start = len(out) - offset
+        for j in range(match_len):
+            out.append(out[start + j])
+    return bytes(out)
+
+
+def _read_globalgamemanagers_head(data_dir, max_bytes=65536):
+    """Return the first `max_bytes` of Unity's globalgamemanagers asset."""
+    loose = os.path.join(data_dir, "globalgamemanagers")
+    if os.path.isfile(loose):
+        with open(loose, "rb") as f:
+            return f.read(max_bytes)
+
+    bundle = os.path.join(data_dir, "data.unity3d")
+    if not os.path.isfile(bundle):
+        return None
+
+    def _read_cstr(fh):
+        buf = bytearray()
+        while True:
+            ch = fh.read(1)
+            if not ch or ch == b"\x00":
+                return bytes(buf)
+            buf.extend(ch)
+
+    with open(bundle, "rb") as f:
+        if _read_cstr(f) != b"UnityFS":
+            return None
+        ver = struct.unpack(">I", f.read(4))[0]
+        _read_cstr(f)  # unity version
+        _read_cstr(f)  # unity revision
+        size, c_blocks_size, u_blocks_size, flags = struct.unpack(">QIII", f.read(20))
+        if ver >= 7:
+            pad = (16 - (f.tell() % 16)) % 16
+            f.read(pad)
+        if flags & 0x80:
+            data_pos = f.tell()
+            f.seek(size - c_blocks_size)
+            raw_blocks_info = f.read(c_blocks_size)
+        else:
+            raw_blocks_info = f.read(c_blocks_size)
+            data_pos = f.tell()
+            if flags & 0x200:
+                data_pos = (data_pos + 15) & ~15
+
+        comp = flags & 0x3F
+        if comp in (2, 3):
+            blocks_info = _lz4_decompress_block(raw_blocks_info)
+        elif comp == 0:
+            blocks_info = raw_blocks_info
+        else:
+            return None
+
+        pos = 16  # skip 16-byte uncompressedDataHash
+        num_blocks = struct.unpack_from(">I", blocks_info, pos)[0]
+        pos += 4
+        blocks = []
+        for _ in range(num_blocks):
+            blocks.append(struct.unpack_from(">IIH", blocks_info, pos))
+            pos += 10
+        num_nodes = struct.unpack_from(">I", blocks_info, pos)[0]
+        pos += 4
+        ggm_range = None
+        for _ in range(num_nodes):
+            off, sz, _ = struct.unpack_from(">QQI", blocks_info, pos)
+            pos += 20
+            end = blocks_info.index(b"\x00", pos)
+            name = blocks_info[pos:end].decode("utf-8", "ignore")
+            pos = end + 1
+            if name == "globalgamemanagers":
+                ggm_range = (off, min(sz, max_bytes))
+                break
+
+        if not ggm_range:
+            return None
+
+        g_off, g_len = ggm_range
+        cur_u = 0
+        cur_c = data_pos
+        out = bytearray()
+        for u_sz, c_sz, b_flags in blocks:
+            if cur_u + u_sz > g_off and cur_u < g_off + g_len:
+                f.seek(cur_c)
+                raw = f.read(c_sz)
+                bc = b_flags & 0x3F
+                if bc in (2, 3):
+                    dec = _lz4_decompress_block(raw)
+                elif bc == 0:
+                    dec = raw
+                else:
+                    return None
+                s = max(0, g_off - cur_u)
+                e = min(u_sz, g_off + g_len - cur_u)
+                out.extend(dec[s:e])
+            cur_u += u_sz
+            cur_c += c_sz
+            if cur_u >= g_off + g_len:
+                break
+        return bytes(out)
+
+
+def detect_game_version(dll_path):
+    """Extract the real Unity PlayerSettings bundleVersion next to GameAssembly.dll."""
+    if not dll_path:
+        return None
+    game_dir = os.path.dirname(os.path.abspath(dll_path))
+    if not os.path.isdir(game_dir):
+        return None
+
+    data_dir = None
+    for entry in os.listdir(game_dir):
+        candidate = os.path.join(game_dir, entry)
+        if entry.endswith("_Data") and os.path.isdir(candidate):
+            data_dir = candidate
+            break
+    if not data_dir:
+        return None
+
+    anchors = []
+    app_info = os.path.join(data_dir, "app.info")
+    if os.path.isfile(app_info):
+        try:
+            with open(app_info, "r", encoding="utf-8", errors="ignore") as f:
+                lines = [ln.strip() for ln in f.read().splitlines() if ln.strip()]
+            # Prefer productName (line 1) then companyName (line 0)
+            for ln in reversed(lines[:2]):
+                anchors.append(ln.encode("utf-8"))
+        except Exception:
+            pass
+
+    try:
+        ggm = _read_globalgamemanagers_head(data_dir)
+    except Exception:
+        return None
+    if not ggm:
+        return None
+
+    start_idx = -1
+    for anchor in anchors:
+        idx = ggm.find(anchor)
+        if idx != -1:
+            start_idx = idx + len(anchor)
+            break
+    if start_idx == -1:
+        start_idx = 0
+
+    # Align to 4-byte boundary and scan PlayerSettings for a length-prefixed X.Y.Z string
+    scan_start = (start_idx + 3) & ~3
+    scan_end = min(len(ggm) - 8, scan_start + 2048)
+    ver_re = re.compile(rb"^\d+\.\d+\.\d+(?:[-+._a-zA-Z0-9]*)?$")
+    for pos in range(scan_start, scan_end, 4):
+        str_len = struct.unpack_from("<I", ggm, pos)[0]
+        if 3 <= str_len <= 32 and pos + 4 + str_len <= len(ggm):
+            raw_s = ggm[pos + 4 : pos + 4 + str_len]
+            if ver_re.match(raw_s):
+                pad_len = (4 - (str_len % 4)) % 4
+                if all(
+                    b == 0 for b in ggm[pos + 4 + str_len : pos + 4 + str_len + pad_len]
+                ):
+                    return raw_s.decode("ascii")
+    return None
 
 
 def print_banner(title):
@@ -209,7 +404,7 @@ def main():
     parser.add_argument(
         "--bump",
         action="store_true",
-        help="Increment the patch number of config.json's version (e.g. 0.323.1 -> 0.323.2)",
+        help="Fallback patch bump if real game version cannot be auto-detected from Unity PlayerSettings",
     )
 
     args = parser.parse_args()
@@ -256,6 +451,10 @@ def main():
     current_build_id = manifest_info["buildid"]
     print(f"[+] Steam Build ID:   {current_build_id} (AppID: {APP_ID})")
 
+    detected_version = detect_game_version(dll_path)
+    if detected_version:
+        print(f"[+] Game Version:     {detected_version} (from Unity PlayerSettings)")
+
     # 2. Check config.json Metadata
     if not os.path.exists(CONFIG_PATH):
         print(f"[-] Error: config.json not found at {CONFIG_PATH}")
@@ -266,39 +465,59 @@ def main():
 
     recorded_build_id = config.get("steam_build_id")
     recorded_sha256 = config.get("assembly_sha256")
-    game_version = config.get("version", "unknown")
+    recorded_version = config.get("version", "unknown")
+    game_version = recorded_version
 
     if args.set_version:
         game_version = args.set_version.lstrip("v")
         config["version"] = game_version
         print(f"[+] Setting target game version -> {game_version}")
+        if detected_version and game_version != detected_version:
+            print(
+                f"[!] Warning: --set-version ({game_version}) differs from detected game version ({detected_version})."
+            )
+    elif detected_version:
+        game_version = detected_version
+        config["version"] = game_version
+        if args.bump:
+            print(
+                f"[!] Ignoring blind --bump; using authoritative Unity PlayerSettings version -> {game_version}"
+            )
+        elif game_version != recorded_version:
+            print(
+                f"[+] Synced target game version: {recorded_version} -> {game_version}"
+            )
     elif args.bump:
         parts = game_version.split(".")
         if parts and parts[-1].isdigit():
             parts[-1] = str(int(parts[-1]) + 1)
             game_version = ".".join(parts)
             config["version"] = game_version
-            print(f"[+] Bumped target game version -> {game_version}")
+            print(
+                f"[+] Bumped target game version -> {game_version} (Unity PlayerSettings unavailable)"
+            )
 
     is_updated = (
         recorded_build_id != current_build_id
         or recorded_sha256 != current_sha256
-        or bool(args.set_version)
-        or bool(args.bump)
+        or recorded_version != game_version
     )
 
     if args.check:
         if is_updated:
             print(
-                f"\n[!] UPDATE AVAILABLE: Current Steam Build {current_build_id} != Recorded {recorded_build_id}"
+                f"\n[!] UPDATE AVAILABLE: Steam Build {current_build_id} (recorded {recorded_build_id}), Version {game_version} (recorded {recorded_version})"
             )
             sys.exit(1)
         else:
-            print(f"\n[+] Game is UP TO DATE (Build {current_build_id}).")
+            print(
+                f"\n[+] Game is UP TO DATE (Build {current_build_id}, v{game_version})."
+            )
             sys.exit(0)
 
     if not is_updated and not args.force:
         print(f"\n[*] Game binary is already up to date:")
+        print(f"    - Game Version:    v{game_version} (Matches recorded)")
         print(f"    - Steam Build ID:  {current_build_id} (Matches recorded)")
         print(f"    - Assembly SHA256: {current_sha256[:16]}... (Matches recorded)")
         print(
@@ -308,6 +527,8 @@ def main():
 
     if is_updated:
         print(f"\n[!] Game update detected!")
+        if recorded_version != game_version:
+            print(f"    - Game Version:   {recorded_version} -> {game_version}")
         print(f"    - Steam Build:    {recorded_build_id} -> {current_build_id}")
         print(
             f"    - Assembly Hash:  {str(recorded_sha256)[:16]}... -> {current_sha256[:16]}..."
