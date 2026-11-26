@@ -87,7 +87,6 @@ jobs:
           cp "build/release/Evitania v$VERSION.dll" "release_pkg/$FOLDER_NAME/"
           cp build/release/injector.exe "release_pkg/$FOLDER_NAME/"
           cp scripts/run.sh "release_pkg/$FOLDER_NAME/"
-          cp scripts/run.bat "release_pkg/$FOLDER_NAME/"
           cp resources/template/README.md "release_pkg/$FOLDER_NAME/README.md"
 
           chmod +x "release_pkg/$FOLDER_NAME/run.sh"
